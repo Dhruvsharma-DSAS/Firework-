@@ -2,7 +2,7 @@
 
 NASA Space Apps 2026 · Challenge: **Harmonization of MODIS and VIIRS Hot Spots**
 Team: Dhruv Sharma and team · Pack written 28 Oct 2026 from the Spacecode 3 code, data and the V2 Research Atlas (27 Oct 2026).
-Code: https://github.com/Dhruvsharma-DSAS/SpaceCode-
+Code: https://github.com/Dhruvsharma-DSAS/Firework-
 
 ## What this pack is
 Everything about the project in plain Markdown so a Claude Project can answer questions, write speeches and explain formulas, the backend and the data **without inventing anything**. Upload every file in this folder (or just `ALL_IN_ONE.md`).

@@ -156,18 +156,19 @@ def g4_g5(cal):
         h = harmonised(r)
         if h is not None and sum(h.values()) >= 25 * 100:
             series[rid] = h
-    cands = [y for y in range(2005, 2009)] + [y for y in range(2016, 2023)]
-    random.seed(SEED)
-    placebo_years = cands
+    eras = [(2001, 2011), (2012, 2025)]
+    placebo_years = [y for a, b in eras for y in range(a + 2, b)]
     flags, total = 0, 0
     for h in series.values():
-        for y in placebo_years:
-            p = step_p(h, y)
-            if p is None:
-                continue
-            total += 1
-            if p < 0.05:
-                flags += 1
+        for a, b in eras:
+            for y in range(a + 2, b):
+                x = [math.log(h[t] + 1) for t in range(a, y)]
+                z = [math.log(h[t] + 1) for t in range(y, b + 1)]
+                if len(set(x + z)) < 2:
+                    continue
+                total += 1
+                if stats.mannwhitneyu(x, z, alternative="two-sided").pvalue < 0.05:
+                    flags += 1
     fpr = flags / total
     raw_flags, raw_total = 0, 0
     for rid in series:
@@ -180,7 +181,7 @@ def g4_g5(cal):
                 raw_flags += 1
     g4 = {"value": round(fpr, 4), "placebo_years": placebo_years, "tests": total, "regions": len(series),
           "power_check_raw_2012": round(raw_flags / max(raw_total, 1), 4),
-          "method": "Welch t-test on log annual harmonised totals, 4 years before vs 4 after each placebo year (all 11 years whose window avoids 2012; the plan said 20, only 11 exist)",
+          "method": "Pettitt statistic at a fixed split (Mann–Whitney U) inside one sensor era, at all %d years with at least 2 years on each side (20 were planned; only %d exist)" % (len(placebo_years), len(placebo_years)),
           "rule": "false-positive rate ≤ 10 %", "pass": fpr <= 0.10}
     res = {}
     for y, after in [(2018, 4), (2023, 3)]:
@@ -221,7 +222,7 @@ def g7(cal):
 
 def g8():
     from app import main
-    bad, regions, cells = [], 0, 0
+    bad, made_up, regions, cells = [], [], 0, 0
     for rid in json.load(open(GLOBAL / "calendar_global.json"))["regions"]:
         try:
             data = main.calendar_from_global(rid)
@@ -244,9 +245,16 @@ def g8():
                         bad.append("%s %s %d-%d value without status" % (rid, key, data["years"][yi], mi + 1))
                     if v == 0 and s not in ("ok", "none", "nrt"):
                         bad.append("%s %s %d-%d zero without status" % (rid, key, data["years"][yi], mi + 1))
-    return {"value": len(bad), "regions": regions, "cells": cells, "examples": bad[:5],
+                    if v == 0 and s == "none":
+                        ex = (data.get("exposure_" + key) or [])
+                        e = None
+                        if yi < len(ex) and ex[yi]:
+                            e = ex[yi][mi]
+                        if e is None or e <= 0:
+                            made_up.append("%s %s %d-%d" % (rid, key, data["years"][yi], mi + 1))
+    return {"value": len(bad), "made_up_zeros": len(made_up), "made_up_examples": made_up[:5], "regions": regions, "cells": cells, "examples": bad[:5],
             "method": "every region through the API calendar builder: no crash; every value carries a status; a 0 appears only where the month was processed and had no fire",
-            "rule": "no crash; a status, never 0", "pass": len(bad) == 0}
+            "rule": "no crash; a status, never 0", "pass": len(bad) == 0 and len(made_up) == 0}
 
 
 def arrays(csv):
@@ -264,49 +272,107 @@ def arrays(csv):
     return ids, M, V
 
 
+def arrays_from_calendar(cal):
+    """Fallback when the Colab table is absent: the calendar regions, with a missing month kept missing (NaN) unless
+    the region had clear looks that month (then it is a true 0)."""
+    from app.trust import fill_processed_zeros, with_exposure
+    expo = json.load(open(GLOBAL / "exposure_countries.json")).get("regions", {})
+    ids = sorted(cal)
+    M = np.full((len(ids), 17, 12), np.nan)
+    V = np.full((len(ids), 17, 12), np.nan)
+    for i, rid in enumerate(ids):
+        r = fill_processed_zeros(with_exposure(cal[rid], expo.get(rid)), cal["world"])
+        for yi, y in enumerate(range(2009, 2026)):
+            row = r["years"].index(y)
+            for mo in range(12):
+                if r["modis"][row][mo] is not None:
+                    M[i, yi, mo] = r["modis"][row][mo]
+                if r["viirs"][row][mo] is not None:
+                    V[i, yi, mo] = r["viirs"][row][mo]
+    both = ~np.isnan(M) & ~np.isnan(V)
+    both[:, :3, :] = True
+    M = np.where(both, M, np.nan)
+    V = np.where(both, V, np.nan)
+    return ids, np.nan_to_num(M, nan=0.0), np.nan_to_num(V, nan=0.0)
+
+
 def g1_all(ids, M, V):
-    """G1 over every region (as in Colab validate) plus the B1 comparison: one global k from World."""
-    w = ids.index("world")
+    """G1 over every region (as in Colab validate), and B1 = median of yearly ratios V/M per region-month, both learned
+    without the held-out year and scored on identical rows (region-months where both are defined)."""
     oy = np.arange(3, 17)
-    own, b1 = [], []
+    own_all, b1_all, own_same, b1_same = [], [], [], []
     for y in oy:
         tr = [t for t in oy if t != y]
-        km = V[:, tr, :].sum(1) / np.where(M[:, tr, :].sum(1) > 0, M[:, tr, :].sum(1), np.nan)
-        kg = V[w, tr, :].sum() / M[w, tr, :].sum()
+        msum = M[:, tr, :].sum(1)
+        km = V[:, tr, :].sum(1) / np.where(msum > 0, msum, np.nan)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            ratios = np.where(M[:, tr, :] > 0, V[:, tr, :] / M[:, tr, :], np.nan)
+            b1 = np.nanmedian(ratios, axis=1)
         vt = V[:, y, :].sum(1)
-        pred = np.nansum(km * M[:, y, :], 1)
-        predg = kg * M[:, y, :].sum(1)
         ok = vt >= 100
-        own.append(float(np.median(np.abs(pred[ok] - vt[ok]) / vt[ok])))
-        b1.append(float(np.median(np.abs(predg[ok] - vt[ok]) / vt[ok])))
-    a, b = float(np.median(own)), float(np.median(b1))
-    return {"value": round(a, 4), "b1_one_global_k": round(b, 4), "regions": "world, countries, states and boxes", "rule": "median relative error ≤ 0.15 and better than B1 (one global k)", "pass": a <= 0.15 and a < b}
+        pred = np.nansum(km * M[:, y, :], 1)
+        own_all.append(float(np.median(np.abs(pred[ok] - vt[ok]) / vt[ok])))
+        both = ~np.isnan(km) & ~np.isnan(b1)
+        vs = np.where(both, V[:, y, :], 0).sum(1)
+        pk = np.where(both, km * M[:, y, :], 0).sum(1)
+        pb = np.where(both, b1 * M[:, y, :], 0).sum(1)
+        ok2 = vs >= 100
+        own_same.append(float(np.median(np.abs(pk[ok2] - vs[ok2]) / vs[ok2])))
+        b1_same.append(float(np.median(np.abs(pb[ok2] - vs[ok2]) / vs[ok2])))
+    a = float(np.median(own_all))
+    ks, bs = float(np.median(own_same)), float(np.median(b1_same))
+    wins = int(sum(1 for x, z in zip(own_same, b1_same) if x < z))
+    return {"value": round(a, 4), "k_identical_rows": round(ks, 4), "b1_identical_rows": round(bs, 4), "years_k_better": wins, "years": len(oy),
+            "regions": "world, countries, states and boxes", "rule": "median relative error ≤ 0.15 and better than B1 (median of ratios) on identical rows",
+            "pass": a <= 0.15 and ks < bs}
+
+def block_of(rid: str) -> str:
+    if rid.startswith("s_"):
+        return "country:" + rid[2:].split("-")[0]
+    return rid
 
 
-def g3_all(M, V):
+def g3_all(ids, M, V):
+    """Seam ratio with k learned only from 2015–2025, so the 2012 cut-over years are held out of the fit;
+    upper 95 % bound from a bootstrap that resamples whole countries (a country's states move together)."""
     am, av = M.sum(2), V.sum(2)
-    kk = av[:, 3:6].sum(1) / np.maximum(am[:, 3:6].sum(1), 1)
+    kk = av[:, 6:17].sum(1) / np.maximum(am[:, 6:17].sum(1), 1)
     before_raw = np.log(am[:, 0:3].mean(1) + 1)
     after_raw = np.log(av[:, 3:6].mean(1) + 1)
     before_h = np.log(kk * am[:, 0:3].mean(1) + 1)
-    present = ((am[:, 0:6] + av[:, 0:6]) > 0).all(1)
+    present = ((am[:, 0:6] + av[:, 0:6]) > 0).all(1) & (am[:, 6:17].sum(1) > 0)
     keep = present & (np.abs(after_raw - before_raw) > 0.1)
     s = np.abs(after_raw - before_h)[keep] / np.abs(after_raw - before_raw)[keep]
+    blocks = np.array([block_of(r) for r, k in zip(ids, keep) if k])
+    names = sorted(set(blocks))
+    members = {b: np.where(blocks == b)[0] for b in names}
     rng = np.random.default_rng(SEED)
-    boots = np.median(s[rng.integers(0, len(s), (2000, len(s)))], axis=1)
+    boots = []
+    for _ in range(2000):
+        pick = rng.integers(0, len(names), len(names))
+        idx = np.concatenate([members[names[i]] for i in pick])
+        boots.append(float(np.median(s[idx])))
     hi = float(np.percentile(boots, 97.5))
-    return {"value": round(float(np.median(s)), 4), "upper_ci95": round(hi, 4), "regions": int(len(s)), "rule": "seam ratio upper 95 % CI ≤ 0.25", "pass": hi <= 0.25}
-
+    return {"value": round(float(np.median(s)), 4), "upper_ci95": round(hi, 4), "regions": int(len(s)), "blocks": len(names),
+            "method": "k from 2015–2025 only (cut-over years 2009–2014 held out of the fit); bootstrap resamples whole countries",
+            "rule": "seam ratio upper 95 % CI ≤ 0.25", "pass": hi <= 0.25}
 
 def main():
     cal = load()
-    ids, M, V = arrays(sys.argv[1])
+    scope = "Colab region-month table: world, countries, states and boxes"
+    if len(sys.argv) > 1 and Path(sys.argv[1]).exists():
+        ids, M, V = arrays(sys.argv[1])
+    else:
+        ids, M, V = arrays_from_calendar(cal)
+        scope = "calendar regions: world, countries and boxes (Colab table not present); months without a clear look excluded, not zero"
     out = {"generated_at_utc": datetime.now(timezone.utc).isoformat(), "rules_fixed": "2026-10-27", "gates": {}}
     out["gates"]["G1"] = g1_all(ids, M, V)
+    out["gates"]["G1"]["regions"] = scope
     print("G1", out["gates"]["G1"])
     out["gates"]["G2"] = g2(cal)
     print("G2", out["gates"]["G2"])
-    out["gates"]["G3"] = g3_all(M, V)
+    out["gates"]["G3"] = g3_all(ids, M, V)
+    out["gates"]["G3"]["scope"] = scope
     print("G3", out["gates"]["G3"])
     g4, g5 = g4_g5(cal)
     out["gates"]["G4"], out["gates"]["G5"] = g4, g5

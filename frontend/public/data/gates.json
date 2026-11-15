@@ -1,12 +1,15 @@
 {
- "generated_at_utc": "2026-11-15T07:03:30.357829+00:00",
+ "generated_at_utc": "2026-11-15T12:42:13.855024+00:00",
  "rules_fixed": "2026-10-27",
  "gates": {
   "G1": {
-   "value": 0.0971,
-   "b1_one_global_k": 0.2808,
-   "regions": "world, countries, states and boxes",
-   "rule": "median relative error ≤ 0.15 and better than B1 (one global k)",
+   "value": 0.0696,
+   "k_identical_rows": 0.0693,
+   "b1_identical_rows": 0.0773,
+   "years_k_better": 13,
+   "years": 14,
+   "regions": "calendar regions: world, countries and boxes (Colab table not present); months without a clear look excluded, not zero",
+   "rule": "median relative error ≤ 0.15 and better than B1 (median of ratios) on identical rows",
    "pass": true,
    "status": "passed"
   },
@@ -20,35 +23,46 @@
    "status": "failed"
   },
   "G3": {
-   "value": 0.1901,
-   "upper_ci95": 0.2005,
-   "regions": 3081,
+   "value": 0.1493,
+   "upper_ci95": 0.1823,
+   "regions": 190,
+   "blocks": 190,
+   "method": "k from 2015–2025 only (cut-over years 2009–2014 held out of the fit); bootstrap resamples whole countries",
    "rule": "seam ratio upper 95 % CI ≤ 0.25",
    "pass": true,
+   "scope": "calendar regions: world, countries and boxes (Colab table not present); months without a clear look excluded, not zero",
    "status": "passed"
   },
   "G4": {
-   "value": 0.0808,
+   "value": 0.1696,
    "placebo_years": [
+    2003,
+    2004,
     2005,
     2006,
     2007,
     2008,
+    2009,
+    2010,
+    2014,
+    2015,
     2016,
     2017,
     2018,
     2019,
     2020,
     2021,
-    2022
+    2022,
+    2023,
+    2024
    ],
-   "tests": 1881,
+   "tests": 3249,
    "regions": 171,
    "power_check_raw_2012": 0.848,
-   "method": "Welch t-test on log annual harmonised totals, 4 years before vs 4 after each placebo year (all 11 years whose window avoids 2012; the plan said 20, only 11 exist)",
+   "method": "Pettitt statistic at a fixed split (Mann–Whitney U) inside one sensor era, at all 19 years with at least 2 years on each side (20 were planned; only 19 exist)",
    "rule": "false-positive rate ≤ 10 %",
-   "pass": true,
-   "status": "passed"
+   "pass": false,
+   "status": "failed"
   },
   "G5": {
    "value": {
@@ -82,6 +96,8 @@
   },
   "G8": {
    "value": 0,
+   "made_up_zeros": 0,
+   "made_up_examples": [],
    "regions": 237,
    "cells": 153576,
    "examples": [],

@@ -1,7 +1,7 @@
 {
  "name": "FIREWORK CHRONOS harmonised fire calendar",
  "method_version": "harmonise v1.1 + trust v1.0",
- "generated_at_utc": "2026-11-15T06:55:58.577372+00:00",
+ "generated_at_utc": "2026-11-15T12:41:57.019981+00:00",
  "calendar_generated_at_utc": "2026-11-15T06:52:37.856918+00:00",
  "inputs": [
   {
@@ -60,68 +60,63 @@
  "conformal": {
   "method": "Mondrian split conformal: leave-one-year-out log-ratio scores, one quantile per MODIS-size class pooled over all regions; interval = H × exp(± q_class)",
   "results": {
-   "method": "Mondrian split conformal by MODIS size class",
+   "method": "Mondrian split conformal by MODIS size class, nested: the held-out year is removed before any calibration score is made",
    "nominal": {
-    "90": 0.9,
     "95": 0.95
    },
    "achieved_on_unseen_years": {
-    "90": 0.9,
-    "95": 0.95
+    "95": 0.9476
    },
    "scores": 19984,
+   "checks": 19984,
+   "leaks": 0,
+   "nested": true,
    "classes": [
     {
      "from": 10,
      "to": 30,
-     "q95": 1.0036,
-     "factor95": 2.728,
-     "q90": 0.7912,
+     "q95": 1.0011,
+     "factor95": 2.721,
      "n": 4398,
-     "achieved95": 0.95
+     "achieved95": 0.9393
     },
     {
      "from": 30,
      "to": 100,
      "q95": 0.6784,
      "factor95": 1.971,
-     "q90": 0.5398,
      "n": 4986,
-     "achieved95": 0.9499
+     "achieved95": 0.9487
     },
     {
      "from": 100,
      "to": 300,
      "q95": 0.5263,
      "factor95": 1.693,
-     "q90": 0.4121,
      "n": 3281,
-     "achieved95": 0.9497
+     "achieved95": 0.9494
     },
     {
      "from": 300,
      "to": 1000,
      "q95": 0.3682,
      "factor95": 1.445,
-     "q90": 0.2949,
      "n": 2791,
-     "achieved95": 0.9509
+     "achieved95": 0.9523
     },
     {
      "from": 1000,
      "to": 3000,
      "q95": 0.3347,
      "factor95": 1.398,
-     "q90": 0.2463,
      "n": 2087,
-     "achieved95": 0.9502
+     "achieved95": 0.9516
     },
     {
      "from": 3000,
      "to": null,
      "q95": 0.2437,
      "factor95": 1.276,
-     "q90": 0.1758,
      "n": 2441,
      "achieved95": 0.9492
     }
@@ -158,7 +153,7 @@
    "status": "PASSED"
   },
   "G6": {
-   "value": 0.95,
+   "value": 0.9476,
    "bar": "0.88–0.99",
    "status": "PASSED"
   }
@@ -192,36 +187,36 @@
   },
   "why_k": {
    "method": "gradient-boosted trees on ln k, exact interventional Shapley values (32 coalitions, 30 real background rows)",
-   "rows": 1980,
+   "rows": 1979,
    "cv": "GroupKFold by region (5 folds)",
-   "r2_unseen_regions": 0.24,
-   "median_abs_ln_error": 0.2564,
-   "median_abs_ln_error_constant": 0.3392,
+   "r2_unseen_regions": 0.253,
+   "median_abs_ln_error": 0.2565,
+   "median_abs_ln_error_constant": 0.337,
    "importance": [
     {
      "f": "abs_lat",
      "label": "Distance from equator",
-     "mean_abs_ln": 0.1116
+     "mean_abs_ln": 0.1106
     },
     {
      "f": "season_sin",
      "label": "Season (spring/autumn)",
-     "mean_abs_ln": 0.0507
+     "mean_abs_ln": 0.0496
     },
     {
      "f": "season_cos",
      "label": "Season (summer/winter)",
-     "mean_abs_ln": 0.0266
+     "mean_abs_ln": 0.0283
     },
     {
      "f": "fire_level",
      "label": "Amount of fire",
-     "mean_abs_ln": 0.1382
+     "mean_abs_ln": 0.134
     },
     {
      "f": "month_share",
      "label": "How peaked the fire season is",
-     "mean_abs_ln": 0.1705
+     "mean_abs_ln": 0.175
     }
    ]
   },
@@ -232,45 +227,45 @@
     "rule": "median error of the transferred k is lower than a single global k, overall and on at least 4 of 6 continents",
     "n": 19576,
     "median_abs_log_error": {
-     "model": 0.2936,
-     "global_k": 0.3339,
+     "model": 0.2941,
+     "global_k": 0.3342,
      "own_k": 0.141
     },
     "typical_factor": {
-     "model": 1.341,
-     "global_k": 1.396,
+     "model": 1.342,
+     "global_k": 1.397,
      "own_k": 1.151
     },
     "by_continent": {
      "Africa": {
       "n": 6363,
-      "model": 0.3092,
-      "global_k": 0.3504
+      "model": 0.3047,
+      "global_k": 0.3497
      },
      "Asia": {
       "n": 5545,
-      "model": 0.3453,
-      "global_k": 0.3193
+      "model": 0.3457,
+      "global_k": 0.3198
      },
      "Europe": {
       "n": 2553,
-      "model": 0.2871,
+      "model": 0.2859,
       "global_k": 0.3507
      },
      "North America": {
       "n": 2136,
-      "model": 0.2321,
-      "global_k": 0.2841
+      "model": 0.2295,
+      "global_k": 0.2831
      },
      "Oceania": {
       "n": 774,
-      "model": 0.2758,
-      "global_k": 0.3868
+      "model": 0.2736,
+      "global_k": 0.387
      },
      "South America": {
       "n": 2205,
-      "model": 0.2293,
-      "global_k": 0.3401
+      "model": 0.2296,
+      "global_k": 0.3398
      }
     },
     "continents_won": 5,
@@ -282,7 +277,7 @@
     "name": "Agreement with MODIS burned area (MCD64A1)",
     "rule": "median year-to-year Spearman correlation between harmonised fire cell-days and burned area is at least 0.5, over countries with ≥ 15 years and ≥ 100 km² burned per year",
     "countries": 114,
-    "median_rho": 0.689,
+    "median_rho": 0.69,
     "share_positive": 0.974,
     "top": [
      {

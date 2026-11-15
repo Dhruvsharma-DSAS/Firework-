@@ -20,7 +20,7 @@ from sklearn.model_selection import GroupKFold
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
-from app.trust import MIN_MODIS, OVERLAP_START, fill_processed_zeros, harmonised_series, overlap_pairs, spearman
+from app.trust import MIN_MODIS, OVERLAP_START, fill_processed_zeros, with_exposure, harmonised_series, overlap_pairs, spearman
 
 GLOBAL = ROOT / "data" / "processed" / "global"
 FEATURES = ["abs_lat", "season_sin", "season_cos", "fire_level", "month_share"]
@@ -226,7 +226,8 @@ def burned_area_test(regions: dict) -> dict:
 def main():
     calendar = json.load(open(GLOBAL / "calendar_global.json"))
     world = calendar["regions"].get("world")
-    regions = {rid: fill_processed_zeros(r, world) for rid, r in calendar["regions"].items()}
+    expo = json.load(open(GLOBAL / "exposure_countries.json")).get("regions", {})
+    regions = {rid: fill_processed_zeros(with_exposure(r, expo.get(rid)), world) for rid, r in calendar["regions"].items()}
     trust = json.load(open(GLOBAL / "trust_global.json"))
     geo = places()
     rows = table(regions, geo)

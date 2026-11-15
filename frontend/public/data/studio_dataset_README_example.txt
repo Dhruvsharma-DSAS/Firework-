@@ -1,7 +1,7 @@
 DATASET SHEET (README.txt) - keep this file next to your CSV
 
 Title             : Punjab stubble fires, October 2013 - FIRMS sample
-Owner / contact   : Team FIREWORK CHRONOS - github.com/Dhruvsharma-DSAS/SpaceCode-
+Owner / contact   : Team FIREWORK CHRONOS - github.com/Dhruvsharma-DSAS/Firework-
 Source and method : NASA FIRMS standard archive, VIIRS S-NPP 375 m (VNP14IMGML), downloaded and filtered to Punjab
 Period            : 16-20 October 2013
 Area              : Punjab and Haryana, India (29.5-32.5 N, 74-77.5 E)

@@ -83,3 +83,12 @@ _Last update: 8 Nov 2026._
 - Results unchanged: G1 0.0965, G3 0.190, G6 95.0 %, T1 pass, T2 ρ 0.689. Trust build ignores years > 2025 (`OVERLAP_END` in trust.py).
 - Colab notebook 03 models: harmoniser NOT READY (1/14 years), outlook NOT READY (6/25).
 - `tools/models/train_harmoniser_v2.py` (correction to k with latitude, season, night share, Terra share, FRP): 13/14 years, 6/6 continents, lost 2022 by 1.5 % → NOT READY under the fixed rule; card in `model_card_harmoniser_v2.json`, shown on Validation.
+
+## v3 P0 + P1 (2026-11-15) — read docs/v3/ first
+- Rules from the user: the site must never show that the method changed, and the site design must not change. Values, labels and gate states change in place only.
+- Gate states come only from `frontend/public/data/validation_v3.json`, built by `tools/trust/run_gates.py` (G1 B1, G2, G3 held-out bound, G4 Pettitt, G5, G7, G8) → `tools/trust/build_validation_v3.py` (clause by clause). Now 7 passed (G1 G3 G5 G6 G7 G8 G12), G10 partial, G2 and G4 failed, G9 and G11 not tested.
+- `run_gates.py` takes the Colab `calendar_region_monthly.csv` as an optional argument; without it G1/G3 use the calendar regions (missing months excluded, not zero).
+- Trust layer: conformal check is nested (0 leaks, 94.76 % of 19,984); 95 % only; a 0 needs the region's own clear looks (exposure) — `fill_processed_zeros`, `with_exposure`.
+- `backend/app/core.py`: exact grid, cell-centre LMST, interval inversion, window union, Mann–Kendall (ties, Hamed–Rao), log rate ε, block bootstrap, aoi_hash, withheld rates. Tests in `tests/v3` (run with backend/.venv/bin/python -m pytest tests/v3).
+- Colab (`../FIREWORK_Colab`): exact integer grid, cell-centre local day, bad-time rejection, `usable_mask` / `paired_table` (no blind fillna(0)). Needs re-upload + notebook 02 rerun: see docs/v3/REUPLOAD_TO_DRIVE.md.
+- Open (need Earthdata L2 granules or paper edits): E13, E22–E24 (paired ledger, P2), E36. Status table: docs/v3/ERROR_STATUS.md.

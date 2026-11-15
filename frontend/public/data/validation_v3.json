@@ -1,0 +1,272 @@
+{
+ "run_id": "gates-20261115-1244",
+ "generated_at_utc": "2026-11-15T12:44:59.324648+00:00",
+ "method_id": "k-ratio-of-totals-v1",
+ "data_vintage": "NASA FIRMS standard archive 2000–2025 (+2026 NRT, not used in tests)",
+ "gates_config_hash": "sha256:132a26712b5e3187681e55a87f8a4be6779ed1d0f3d6cce79d25685683305461",
+ "rules_fixed": "2026-10-27",
+ "counts": {
+  "passed": 7,
+  "partial": 1,
+  "failed": 2,
+  "not_tested": 2
+ },
+ "gates": [
+  {
+   "id": "G1",
+   "question": "Held-out years",
+   "state": "passed",
+   "clauses": [
+    {
+     "rule": "median relative error ≤ 15 %",
+     "state": "pass",
+     "value": 0.0965,
+     "n": null,
+     "note": ""
+    },
+    {
+     "rule": "better than baseline B1 (median of ratios) on identical rows",
+     "state": "pass",
+     "value": {
+      "k": 0.0693,
+      "b1": 0.0773
+     },
+     "n": 14,
+     "note": "k better in 13 of 14 held-out years"
+    }
+   ],
+   "scope": "every region with ≥ 100 VIIRS cell-days in the held-out year, 2012–2025",
+   "summary": "Median held-out error 9.7 % (limit 15 %). On identical rows k misses by 6.9 % and baseline B1 by 7.7 %.",
+   "evidence": "real"
+  },
+  {
+   "id": "G2",
+   "question": "Held-out geography",
+   "state": "failed",
+   "clauses": [
+    {
+     "rule": "error ≤ 1.5 × in-region error",
+     "state": "fail",
+     "value": 3.437,
+     "n": 2204,
+     "note": "k borrowed from the other countries of the same continent"
+    }
+   ],
+   "scope": "countries, k learned from the rest of the same continent (local scope)",
+   "summary": "Borrowed k is 3.44× the in-region error (limit 1.5×, local scope).",
+   "evidence": "real"
+  },
+  {
+   "id": "G3",
+   "question": "The 2012 seam",
+   "state": "passed",
+   "clauses": [
+    {
+     "rule": "median seam ratio ≤ 0.25",
+     "state": "pass",
+     "value": 0.1901,
+     "n": 190,
+     "note": ""
+    },
+    {
+     "rule": "upper 95 % bound ≤ 0.25 (held-out cut-overs, blocked bootstrap)",
+     "state": "pass",
+     "value": 0.1823,
+     "n": 190,
+     "note": "k learned from 2015–2025 only; whole countries resampled"
+    }
+   ],
+   "scope": "regions with all years 2009–2014 and a raw step > 0.1 (log)",
+   "summary": "Median seam ratio 0.19 over 3081 regions (limit 0.25). With the cut-over years held out of the fit, the upper 95 % bound is 0.18.",
+   "evidence": "real"
+  },
+  {
+   "id": "G4",
+   "question": "Placebo seams",
+   "state": "failed",
+   "clauses": [
+    {
+     "rule": "false-positive rate ≤ 10 % (Pettitt at fixed no-change years)",
+     "state": "fail",
+     "value": 0.1696,
+     "n": 3249,
+     "note": "Pettitt statistic at a fixed split (Mann–Whitney U) inside one sensor era, at all 19 years with at least 2 years on each side (20 were planned; only 19 exist)"
+    }
+   ],
+   "scope": "regions with ≥ 100 cell-days a year on average",
+   "summary": "Breaks found at 17.0 % of 3249 no-change tests (limit 10 %). Real fire trends inside one sensor era trip the test.",
+   "evidence": "real"
+  },
+  {
+   "id": "G5",
+   "question": "Platform seams",
+   "state": "passed",
+   "clauses": [
+    {
+     "rule": "no excess breaks at 2018 (NOAA-20)",
+     "state": "pass",
+     "value": 0.076,
+     "n": 171,
+     "note": ""
+    },
+    {
+     "rule": "no excess breaks at 2023 (NOAA-21)",
+     "state": "pass",
+     "value": 0.1053,
+     "n": 171,
+     "note": ""
+    }
+   ],
+   "scope": "harmonised annual series; the reference ruler stays VIIRS S-NPP",
+   "summary": "Break rate 7.6 % at 2018 and 10.5 % at 2023, no more than at years with no change (α = 0.05).",
+   "evidence": "real"
+  },
+  {
+   "id": "G6",
+   "question": "Band coverage",
+   "state": "passed",
+   "clauses": [
+    {
+     "rule": "achieved coverage 88–99 %",
+     "state": "pass",
+     "value": 0.9476,
+     "n": 19984,
+     "note": ""
+    },
+    {
+     "rule": "outer year removed before any score is made (nested)",
+     "state": "pass",
+     "value": 0,
+     "n": 19984,
+     "note": "calibration scores that saw the held-out year: 0"
+    }
+   ],
+   "scope": "pooled over all regions, months with MODIS ≥ 10 cell-days",
+   "summary": "94.76 % of 19,984 aggregate checks, pooled, MODIS ≥ 10 — not a per-month guarantee.",
+   "evidence": "real"
+  },
+  {
+   "id": "G7",
+   "question": "Agreement",
+   "state": "passed",
+   "clauses": [
+    {
+     "rule": "|bias| ≤ 0.1 (Bland–Altman, log scale)",
+     "state": "pass",
+     "value": -0.0123,
+     "n": 19725,
+     "note": ""
+    }
+   ],
+   "scope": "region-months 2012–2025 with ≥ 10 cell-days from each sensor, k learned without the held-out year",
+   "summary": "Bias -0.012 on the log scale over 19,725 region-months (limit ±0.1).",
+   "evidence": "real"
+  },
+  {
+   "id": "G8",
+   "question": "Zero and empty",
+   "state": "passed",
+   "clauses": [
+    {
+     "rule": "no crash on any region",
+     "state": "pass",
+     "value": 237,
+     "n": null,
+     "note": ""
+    },
+    {
+     "rule": "every value carries a status",
+     "state": "pass",
+     "value": 153576,
+     "n": null,
+     "note": ""
+    },
+    {
+     "rule": "never a made-up 0: a 0 only where the region had clear looks that month",
+     "state": "pass",
+     "value": 0,
+     "n": 153576,
+     "note": ""
+    }
+   ],
+   "scope": "all calendar regions through the API",
+   "summary": "No crash, every value has a status, and every 0 is backed by clear looks over that region that month; without them the month stays empty.",
+   "evidence": "real"
+  },
+  {
+   "id": "G9",
+   "question": "Negatives",
+   "state": "not_tested",
+   "clauses": [
+    {
+     "rule": "water and city-centre cells ≈ 0, with status",
+     "state": "pending",
+     "value": null,
+     "n": null,
+     "note": ""
+    }
+   ],
+   "scope": "needs per-cell land-cover masks",
+   "summary": "Not tested yet.",
+   "evidence": "real"
+  },
+  {
+   "id": "G10",
+   "question": "Persistent heat",
+   "state": "partial",
+   "clauses": [
+    {
+     "rule": "static, volcanic and offshore sources removed before counting",
+     "state": "pass",
+     "value": null,
+     "n": null,
+     "note": "FIRMS type 0 only in calibration years 2012–2025"
+    },
+    {
+     "rule": "checked against a list of known flares and kilns",
+     "state": "pending",
+     "value": null,
+     "n": null,
+     "note": ""
+    }
+   ],
+   "scope": "calibration years 2012–2025",
+   "summary": "Static sources are removed by FIRMS type before counting. Check against a known-site list: pending.",
+   "evidence": "real"
+  },
+  {
+   "id": "G11",
+   "question": "Source classifier",
+   "state": "not_tested",
+   "clauses": [
+    {
+     "rule": "macro-F1 and abstain rate on held-out sites",
+     "state": "pending",
+     "value": null,
+     "n": null,
+     "note": ""
+    }
+   ],
+   "scope": "only needed before a source label is shown; none is shown",
+   "summary": "Not tested yet. No source label is shown on the site.",
+   "evidence": "real"
+  },
+  {
+   "id": "G12",
+   "question": "API provenance",
+   "state": "passed",
+   "clauses": [
+    {
+     "rule": "meta.data_source, status and version on every answer",
+     "state": "pass",
+     "value": null,
+     "n": null,
+     "note": "1 passed, 1 warning in 13.99s"
+    }
+   ],
+   "scope": "every JSON endpoint of the API",
+   "summary": "Every API answer carries its data source, status and version.",
+   "evidence": "real"
+  }
+ ]
+}

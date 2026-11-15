@@ -21,20 +21,41 @@ const GATES = {
   G12: ["API provenance", "Every answer from the API must say where its data came from, its status and its version.", "Every response", "meta.data_source, status and version present"],
 };
 
-const GROUPS = [
-  ["Does it predict well?", "Accuracy on data the method was not fitted to.", ["G1", "G2", "G6", "G7"]],
-  ["Is the 2012 seam gone?", "The core promise: one ruler across the MODIS-only and VIIRS years.", ["G3", "G4", "G5"]],
-  ["Does it fail honestly?", "What happens with no data, no fire, or fake fire.", ["G8", "G9", "G10", "G12"]],
-  ["Source classifier", "Only needed before any “what is burning” label is shown.", ["G11"]],
-];
+const STATE_LABEL = { passed: "Passed", partial: "Partial", failed: "Failed", not_tested: "Not tested", inconclusive: "Inconclusive", simulated: "Simulated" };
 
-const PASSED = ["G1", "G3", "G6"];
+function gateOf(v3, id) {
+  if (!v3) {
+    return null;
+  }
+  const found = v3.gates.find((g) => g.id === id);
+  if (!found) {
+    return null;
+  }
+  return found;
+}
 
-const RESULTS = {
-  G1: "Result: 9.7% median error. The B1 comparison is not reported yet.",
-  G3: "Result: median ratio 0.19 over 3,081 regions. The bootstrap upper bound is not computed yet.",
-  G6: "Result: 95 % conformal bands held 95.0 % of the time on years the method never saw (19,924 checks).",
-};
+function stateOf(v3, id) {
+  const g = gateOf(v3, id);
+  if (!g) {
+    return "not_tested";
+  }
+  return g.state;
+}
+
+function clauseNote(v3, id, n) {
+  const g = gateOf(v3, id);
+  if (!g || !g.clauses[n]) {
+    return "";
+  }
+  const c = g.clauses[n];
+  const CLAUSE = { pass: "Passed", fail: "Failed", pending: "Pending" };
+  let text = CLAUSE[c.state] || c.state;
+  text = text + " — " + c.rule;
+  if (c.note) {
+    text = text + " (" + c.note + ")";
+  }
+  return text;
+}
 
 const ORDER = ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9", "G10", "G11", "G12"];
 
@@ -185,11 +206,13 @@ export default function Validation() {
   const navigate = useNavigate();
   const [card, setCard] = useState(null);
   const [ml, setMl] = useState(null);
+  const [v3, setV3] = useState(null);
   const [cards, setCards] = useState(null);
   const [cardsState, setCardsState] = useState("loading");
 
   useEffect(() => {
     fetch("/data/method_card.json").then((r) => r.json()).then((j) => setCard(j)).catch(() => setCard(null));
+    fetch("/data/validation_v3.json").then((r) => r.json()).then((j) => setV3(j)).catch(() => setV3(null));
     fetch("/data/model_card_harmoniser_v2.json").then((r) => r.json()).then((j) => setMl(j)).catch(() => setMl(null));
   }, []);
 
@@ -237,6 +260,33 @@ export default function Validation() {
     );
   }
 
+  let counts = { passed: 0, partial: 0, failed: 0, not_tested: 12 };
+  let g1v = null;
+  let g3v = null;
+  let g3n = null;
+  let g6v = null;
+  let g6n = "—";
+  if (v3) {
+    counts = v3.counts;
+    g1v = gateOf(v3, "G1").clauses[0].value;
+    g3v = gateOf(v3, "G3").clauses[0].value;
+    g3n = gateOf(v3, "G3").clauses[0].n;
+    g6v = gateOf(v3, "G6").clauses[0].value;
+    g6n = gateOf(v3, "G6").clauses[0].n.toLocaleString();
+  }
+  let g1Text = "—";
+  let g3Text = "—";
+  let g6Text = "—";
+  if (g1v !== null) {
+    g1Text = (100 * g1v).toFixed(1) + "%";
+  }
+  if (g3v !== null) {
+    g3Text = g3v.toFixed(2);
+  }
+  if (g6v !== null) {
+    g6Text = (100 * g6v).toFixed(2) + "%";
+  }
+
   return (
     <div className="pd va">
       <header className="pd-head ph" style={{ "--ph": "var(--good)" }}>
@@ -245,85 +295,86 @@ export default function Validation() {
           <h1 className="ph-title">Validation <em>gates</em></h1>
           <p className="ph-q">How far can each result be trusted?</p>
           <GuideCue selector=".pd-sec" />
-          <p className="pd-lead">Twelve tests — gates G1 to G12 — were written down on 27 October 2026, before any real-data run, with the score each must reach. A result is shown as passed only when a real run reaches it. Everything else stays pending.</p>
+          <p className="pd-lead">Twelve tests — gates G1 to G12 — were written down on 27 October 2026, before any real-data run, with the score each must reach. Each gate shows Passed, Partial, Failed or Not tested, worked out rule by rule from the run results.</p>
         </div>
       </header>
 
       <section className="va-board" aria-label="Gate status overview">
         <div className="va-board-text">
-          <b><em>3</em> of 12 gates</b>
-          <span>tested on real NASA FIRMS data — all three passed. Nine are still pending a run.</span>
+          <b><em>{counts.passed}</em> of 12 gates passed</b>
+          <span>on real NASA FIRMS data · {counts.partial} partial · {counts.failed} failed · {counts.not_tested} not tested yet</span>
         </div>
         <ol className="va-strip">
           {ORDER.map((g, i) => {
-            let cls = "va-cell";
-            let state = "Pending";
-            if (PASSED.indexOf(g) >= 0) {
+            const st = stateOf(v3, g);
+            let cls = "va-cell " + st;
+            if (st === "passed") {
               cls = "va-cell pass";
-              state = "Passed";
             }
+            const state = STATE_LABEL[st];
             return (
-              <li key={g} className={cls} style={{ animationDelay: i * 40 + "ms" }}>
-                <a className="va-cell-link" href={"#validation-" + g}>
-                  <b>{g} · {state}</b>
-                  <span>{GATES[g][0]}</span>
-                </a>
+              <li key={g} className={cls} style={{ animationDelay: i * 40 + "ms" }} title={g + " · " + GATES[g][0] + " · " + state}>
+                <b>{g}</b>
+                <span>{GATES[g][0]}</span>
               </li>
             );
           })}
         </ol>
+        <div className="va-key"><span><i className="va-dot on" />Passed</span><span><i className="va-dot partial" />Partial</span><span><i className="va-dot failed" />Failed</span><span><i className="va-dot" />Not tested</span></div>
       </section>
 
       <section className="va-paper va-spot" aria-label="Research paper" onMouseMove={spot}>
+        <div className="va-paper-doc" aria-hidden="true"><i /><i /><i /><i /><b>PDF</b></div>
         <div className="va-paper-text">
-          <h2>FIREWORK CHRONOS research paper</h2>
+          <span className="va-paper-tag">Research paper</span>
+          <h2>FIREWORK CHRONOS — the full method, tests and results</h2>
           <p>The written paper behind this page: how MODIS and VIIRS are put on one scale, the twelve gates, the trust layer and every number they produced.</p>
         </div>
         <div className="va-paper-acts">
-          <a className="va-paper-btn" href="/learn/pdf/FIREWORK_CHRONOS_Research_Paper.pdf" target="_blank" rel="noreferrer">Read paper<Arrow /></a>
-          <a className="va-paper-btn ghost" href="/learn/pdf/FIREWORK_CHRONOS_Research_Paper.pdf" download>Download PDF<Arrow down={true} /></a>
+          <a className="va-paper-btn" href="https://drive.google.com/file/d/1dFap59BAyAP0a3Xy0kIKipTwWrvRsctm/view?usp=drive_link" target="_blank" rel="noreferrer">Read paper<Arrow /></a>
+          <a className="va-paper-btn ghost" href="https://drive.google.com/uc?export=download&id=1dFap59BAyAP0a3Xy0kIKipTwWrvRsctm" target="_blank" rel="noreferrer">Download PDF<Arrow down={true} /></a>
         </div>
       </section>
 
       <section className="pd-sec">
         <div className="pd-margin"><b>Results</b><span>Notebook 02 · real data</span></div>
         <div className="pd-col">
-          <h2>Three gates passed on the 2000–2025 archive</h2>
+          <h2>Results on the 2000–2025 archive</h2>
           <p>Both were computed in Google Colab on the whole-Earth calendar: every MODIS and VIIRS S-NPP fire pixel from the NASA FIRMS standard archive, binned into cell-days, with 2012–2025 as the overlap years.</p>
 
           <div className="va-results">
             <article className="va-result">
               <div className="va-result-top">
                 <span className="va-gate">G1 · Held-out years</span>
-                <span className="va-pass">Passed</span>
+                <span className={"va-pass " + stateOf(v3, "G1")}>{STATE_LABEL[stateOf(v3, "G1")]}</span>
               </div>
-              <div className="va-figure"><b>9.7%</b><span>median error</span></div>
-              <p>Each year from 2012 to 2025 was hidden in turn. The exchange rate learned from the other years turned that year’s MODIS cell-days into a VIIRS estimate. Across regions with at least 100 VIIRS cell-days, the typical miss was <b>9.7%</b>.</p>
-              <Gauge value={0.097} limit={0.15} max={0.3} limitText="15% limit" maxText="30%" label="Median error 9.7 percent against a 15 percent limit" />
-              <p className="va-fine">Pass rule: median relative error ≤ 15%. The notebook checks the 15% limit; the comparison with baseline B1 named in the rule is not reported yet.</p>
+              <div className="va-figure"><b>{g1Text}</b><span>median error</span></div>
+              <p>Each year from 2012 to 2025 was hidden in turn. The exchange rate learned from the other years turned that year’s MODIS cell-days into a VIIRS estimate. Across regions with at least 100 VIIRS cell-days, the typical miss was <b>{g1Text}</b>.</p>
+              {g1v !== null && <Gauge value={g1v} limit={0.15} max={0.3} limitText="15% limit" maxText="30%" label={"Median error " + g1Text + " against a 15 percent limit"} />}
+              <p className="va-fine">Pass rule: median relative error ≤ 15% and better than baseline B1. {clauseNote(v3, "G1", 1)}.</p>
             </article>
 
             <article className="va-result">
               <div className="va-result-top">
                 <span className="va-gate">G3 · The 2012 seam</span>
-                <span className="va-pass">Passed</span>
+                <span className={"va-pass " + stateOf(v3, "G3")}>{STATE_LABEL[stateOf(v3, "G3")]}</span>
               </div>
-              <div className="va-figure"><b>0.19</b><span>median seam ratio · 3,081 regions</span></div>
-              <p>For each region, the step between 2009–2011 (MODIS only) and 2012–2014 (VIIRS) was measured before and after harmonisation. A ratio of <b>0.19</b> means about <b>four-fifths of the fake jump is removed</b>; 0 would be perfect, 1 would mean no change.</p>
-              <Gauge value={0.19} limit={0.25} max={0.5} limitText="0.25 limit" maxText="0.5" label="Median seam ratio 0.19 against a 0.25 limit" />
-              <p className="va-fine">Pass rule: seam ratio ≤ 0.25. The notebook checks the median across regions; the bootstrap upper bound named in the rule is not computed yet.</p>
+              <div className="va-figure"><b>{g3Text}</b><span>median seam ratio · {g3n && g3n.toLocaleString()} regions</span></div>
+              <p>For each region, the step between 2009–2011 (MODIS only) and 2012–2014 (VIIRS) was measured before and after harmonisation. A ratio of <b>{g3Text}</b> means about <b>four-fifths of the 2012 step is removed</b>; the step is mainly instrumental; 0 would be perfect, 1 would mean no change.</p>
+              {g3v !== null && <Gauge value={g3v} limit={0.25} max={0.5} limitText="0.25 limit" maxText="0.5" label={"Median seam ratio " + g3Text + " against a 0.25 limit"} />}
+              <p className="va-fine">Pass rule: seam ratio upper bound ≤ 0.25. {clauseNote(v3, "G3", 1)}.</p>
             </article>
           </div>
           <article className="va-result va-wide">
             <div className="va-result-top">
               <span className="va-gate">G6 · Band coverage</span>
-              <span className="va-pass">Passed</span>
+              <span className={"va-pass " + stateOf(v3, "G6")}>{STATE_LABEL[stateOf(v3, "G6")]}</span>
             </div>
-            <div className="va-figure"><b>95.0%</b><span>of 95 % bands held on unseen years · pass range 88–99 %</span></div>
-            <p>Every harmonised MODIS month now carries a <b>conformal interval</b>: a range that should contain what VIIRS would have counted 95 % of the time. To test the promise honestly, each year from 2012 to 2025 was hidden in turn, the interval was built from the other years only, and we counted how often the hidden year fell inside. Small months get wide intervals, busy months narrow ones — and each size class keeps its promise:</p>
+            <div className="va-figure"><b>{g6Text}</b><span>of {g6n} aggregate checks, pooled, MODIS ≥ 10 — not a per-month guarantee · pass range 88–99 %</span></div>
+            <p>Every harmonised MODIS month now carries a <b>conformal interval</b>: a range that should contain what VIIRS would have counted 95 % of the time. Each year from 2012 to 2025 was checked against its interval, and we counted how often what VIIRS counted fell inside. {clauseNote(v3, "G6", 1)}. Small months get wide intervals, busy months narrow ones — and each size class keeps its promise:</p>
             {card && (
               <table className="va-table">
-                <thead><tr><th>MODIS cell-days in the month</th><th>Interval</th><th>Held on unseen years</th><th>Checks</th></tr></thead>
+                <thead><tr><th>MODIS cell-days in the month</th><th>Interval</th><th>Held, pooled</th><th>Checks</th></tr></thead>
                 <tbody>
                   {card.conformal.results.classes.map((c) => {
                     let range = c.from + "+";
@@ -361,12 +412,12 @@ export default function Validation() {
               <article className="va-guard va-spot" onMouseMove={spot}>
                 <span className="va-guard-k">02 · Conformal interval</span>
                 <b>{(100 * card.conformal.results.achieved_on_unseen_years["95"]).toFixed(1)} % held at 95 %</b>
-                <p>A range with a tested guarantee on every harmonised month, narrower when there are more fires (gate G6 above).</p>
+                <p>A range on every harmonised month, narrower when there are more fires. Coverage is pooled over all checks, not a per-month guarantee (gate G6 above).</p>
                 <div className="va-meter" aria-hidden="true">
                   <i style={{ width: (100 * card.conformal.results.achieved_on_unseen_years["95"]) + "%" }} />
                   <em style={{ left: "95%" }} />
                 </div>
-                <span className="va-meter-k">achieved on unseen years · the mark is the 95 % target</span>
+                <span className="va-meter-k">pooled coverage · the mark is the 95 % target</span>
               </article>
               <article className="va-guard va-spot" onMouseMove={spot}>
                 <span className="va-guard-k">03 · Physics and sanity checks</span>
@@ -421,51 +472,6 @@ export default function Validation() {
             </article>
           </div>
           {registry}
-        </div>
-      </section>
-
-      <section className="pd-sec">
-        <div className="pd-margin"><b>All twelve gates</b><span>In plain words</span></div>
-        <div className="pd-col">
-          <h2>What each gate checks</h2>
-          <p>The pass rules are fixed. They can be made stricter, but never looser after a result is seen.</p>
-          {GROUPS.map((group) => (
-            <div key={group[0]} className="va-group">
-              <div className="va-group-head">
-                <h3>{group[0]}</h3>
-                <span>{group[1]}</span>
-              </div>
-              <ul className="va-gates">
-                {group[2].map((id) => {
-                  const g = GATES[id];
-                  let pill = <span className="va-state">Pending</span>;
-                  if (PASSED.indexOf(id) >= 0) {
-                    pill = <span className="va-state pass">Passed</span>;
-                  }
-                  let result = null;
-                  if (RESULTS[id]) {
-                    result = <em className="va-res">{RESULTS[id]}</em>;
-                  }
-                  return (
-                    <li key={id} id={"validation-" + id} tabIndex={-1} className="va-spot" onMouseMove={spot}>
-                      <span className="va-id">{id}</span>
-                      <div className="va-what">
-                        <b>{g[0]}</b>
-                        <span>{g[1]}</span>
-                      </div>
-                      <div className="va-rule">
-                        <span>Pass if</span>
-                        <b>{g[3]}</b>
-                        <small>{g[2]}</small>
-                        {result}
-                      </div>
-                      {pill}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
         </div>
       </section>
 

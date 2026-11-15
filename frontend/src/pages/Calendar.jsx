@@ -480,12 +480,12 @@ export default function Calendar() {
       });
     }
     if (selected.year < 2012 && hv !== null && cls) {
-      confText = Math.round(hv / cls.factor95).toLocaleString() + " – " + Math.round(hv * cls.factor95).toLocaleString();
+      confText = Math.round(Math.max(0, (hv + 0.5) / cls.factor95 - 0.5)).toLocaleString() + " – " + Math.round((hv + 0.5) * cls.factor95 - 0.5).toLocaleString();
       let classTo = "+";
       if (cls.to) {
         classTo = "–" + cls.to;
       }
-      confNote = "Conformal 95 % interval for what VIIRS would have counted: ×÷ " + cls.factor95.toFixed(2) + " for months with " + cls.from + classTo + " MODIS cell-days. On years the method never saw, it held " + (100 * cls.achieved95).toFixed(1) + " % of the time.";
+      confNote = "Conformal 95 % interval for what VIIRS would have counted: ×÷ " + cls.factor95.toFixed(2) + " for months with " + cls.from + classTo + " MODIS cell-days. Pooled over all checks in this size class it held " + (100 * cls.achieved95).toFixed(1) + " % of the time; not a per-month guarantee.";
     } else if (selected.year < 2012 && hv !== null) {
       confText = "too few fires";
       confNote = "Fewer than 10 MODIS cell-days: too little signal for a calibrated interval.";
@@ -549,9 +549,9 @@ export default function Calendar() {
         <div className="kv"><span>Exposure (valid cell-days)</span><b>{exposureText}</b></div>
         {statusLine && <div className="kv"><span>Status</span><b>{statusLine}</b></div>}
         <div className="kv"><span>Median, same month other years</span><b>{medianText}</b></div>
-        <div className="kv"><span>k used</span><b>{kText}</b></div>
+        <div className="kv"><span>k used · parameter band (k)</span><b>{kText}</b></div>
         <div className="kv"><span>Coverage of k</span><b className={coverCls}>{coverText}</b></div>
-        <div className="kv"><span>95 % interval</span><b>{confText}</b></div>
+        <div className="kv"><span>95 % interval · predictive (conformal)</span><b>{confText}</b></div>
         {confNote && <p className="hint-mono" style={{ marginTop: 6 }}>{confNote}</p>}
         {distRow}
         {whyK}
@@ -727,8 +727,8 @@ export default function Calendar() {
 
       <section className="chart-card" style={{ marginTop: 20 }}>
         <h3>The record, season by season · {seasonLabel}</h3>
-        <p className="sub">Total fire cell-days per {seasonLabel} season. Dashed amber = MODIS raw; cyan = VIIRS S-NPP raw; white = harmonised (MODIS × k before 2012, VIIRS after) with its 95% band.</p>
-        <div className="legend-row"><span><i style={{ background: "#c98418" }} />MODIS raw</span><span><i style={{ background: "#1a9dba" }} />VIIRS raw</span><span><i style={{ background: "var(--text)" }} />Harmonised</span><span><i style={{ background: "rgba(230,237,243,0.25)" }} />95% band (from k)</span></div>
+        <p className="sub">Total fire cell-days per {seasonLabel} season. Dashed amber = MODIS raw; cyan = VIIRS S-NPP raw; white = harmonised (MODIS × k before 2012, VIIRS after) with its 95% parameter band (k).</p>
+        <div className="legend-row"><span><i style={{ background: "#c98418" }} />MODIS raw</span><span><i style={{ background: "#1a9dba" }} />VIIRS raw</span><span><i style={{ background: "var(--text)" }} />Harmonised</span><span><i style={{ background: "rgba(230,237,243,0.25)" }} />95% band · parameter (k)</span></div>
         <SeasonChart data={data} months={seasonMonths} />
       </section>
       <PageGuide id="guide-calendar" {...CAL_GUIDE} />

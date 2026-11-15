@@ -49,4 +49,6 @@ tools/record_clips.mjs    re-records the 4 Home clips from the running site (hea
 Globe dots and calendar values in `frontend/public/data/*_demo.json` are **SIMULATED** and always show the SIMULATED DEMO chip. Add `FIRMS_MAP_KEY` to `backend/.env` and the globe switches to real NASA FIRMS detections (LIVE NRT).
 Research decision support — not a life-safety alert system.
 
+Validation: reported 9.7% median held-out error and 0.19 median seam ratio on the stated sample; baseline comparison and seam upper bound pending. Every gate's state is computed clause by clause in `frontend/public/data/validation_v3.json` (`tools/trust/build_validation_v3.py`).
+
 Credits: Earth textures NASA Blue Marble / Black Marble (via three-globe examples, MIT), borders Natural Earth, fire data NASA FIRMS.

@@ -42,7 +42,7 @@ def test_build_and_harmonise_end_to_end(tmp_path):
     subprocess.check_call([sys.executable, "s06_harmonise.py", "--regions", "punjab"], cwd=HERE, env=env)
     rm = pd.read_csv(tmp_path / "processed" / "punjab" / "region_month.csv")
     assert set(rm["family"]) == {"MODIS", "VIIRS_SNPP"}
-    assert set(rm["status"]) <= {"ok", "partial", "not_downloaded"}
+    assert set(rm["status"]) <= {"ok", "partial", "not_downloaded", "no_detection"}
     cal = json.load(open(tmp_path / "processed" / "punjab" / "calendar_punjab.json"))
     assert cal["meta"]["demo"] is False and len(cal["data"]["hotspots"]["harmonised"]) == len(cal["data"]["years"])
     years = cal["data"]["years"]

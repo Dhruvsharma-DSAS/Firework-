@@ -100,4 +100,4 @@ def cards() -> dict:
         card = read_card(name)
         if card is not None:
             found.append(card)
-    return {"data": found, "meta": {"status": "OK", "count": len(found)}}
+    return {"data": found, "meta": {"data_source": "FIREWORK model cards (ml/models)", "status": "OK", "count": len(found)}}

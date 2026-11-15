@@ -150,11 +150,17 @@ export default function BlindSpot() {
     curve.push(p[0].toFixed(1) + "," + p[1].toFixed(1));
   }
   let seen = 0;
-  [[10.0, 10.8], [13.0, 14.0]].forEach((w) => {
-    for (let h = w[0]; h < w[1]; h = h + 0.01) {
-      seen = seen + Math.exp(-0.5 * Math.pow((h - peak) / 1.6, 2)) * 0.01;
+  const windows = [[10.0, 10.8], [13.0, 14.0]];
+  for (let h = 0; h < 24; h = h + 0.01) {
+    const inside = windows.filter((w) => h >= w[0] && h < w[1]).length > 0;
+    if (inside) {
+      let d = Math.abs(h - peak);
+      if (d > 12) {
+        d = 24 - d;
+      }
+      seen = seen + Math.exp(-0.5 * Math.pow(d / 1.6, 2)) * 0.01;
     }
-  });
+  }
   const share = (100 * seen) / (1.6 * Math.sqrt(2 * Math.PI));
   const peakDot = polar(cx, cy, 186, peak);
 

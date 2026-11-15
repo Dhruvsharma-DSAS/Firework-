@@ -185,6 +185,7 @@ function describeProbe(probe, points, countries) {
     lat: probe.lat,
     lon: probe.lon,
     place: place,
+    iso3: (props && props.iso3) || "",
     lst: lst,
     daylight: daylight,
     ground: landCoverAt(probe.lat, probe.lon),
@@ -428,6 +429,9 @@ export default function Explorer() {
   }
   if (day !== "all") {
     period = day;
+  }
+  if (getMode() === "archive" && day === "all") {
+    period = "Archive points: 5–6 Nov 2025 only";
   }
 
   let highlight = "";

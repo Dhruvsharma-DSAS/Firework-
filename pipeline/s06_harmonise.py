@@ -24,10 +24,9 @@ OVERLAP_START = 2012
 
 
 def k_for(month_df: pd.DataFrame, value: str, b: int = 2000) -> tuple:
-    """Ratio of totals over overlap years + year-block bootstrap (95 %)."""
+    """Ratio of totals over overlap years, usable zeros kept (a month with MODIS 0 and VIIRS > 0 counts) + year-block bootstrap (95 %)."""
     d = month_df.dropna(subset=[value + "_m", value + "_v"])
-    d = d[d[value + "_m"] > 0]
-    if len(d) < 3:
+    if len(d) < 3 or d[value + "_m"].sum() <= 0:
         return (np.nan, np.nan, np.nan, len(d))
     k = d[value + "_v"].sum() / d[value + "_m"].sum()
     idx = np.arange(len(d))

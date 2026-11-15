@@ -13,7 +13,7 @@ COVERAGE_RULES = {
     "high": {"min_years": 10, "min_modis": 300, "max_rel_band": 0.30},
     "medium": {"min_years": 6, "min_modis": 50, "max_rel_band": 0.75},
 }
-ALPHAS = {"90": 0.10, "95": 0.05}
+ALPHAS = {"95": 0.05}
 G6_RANGE = (0.88, 0.99)
 BINS = [10, 30, 100, 300, 1000, 3000]
 
@@ -28,18 +28,41 @@ def bin_of(modis: float) -> int:
 SEAM_BAR = 0.25
 
 
-def fill_processed_zeros(region: dict, world: dict) -> dict:
-    """A month the archive processed (Whole Earth has a value) but where this region has no fire point is a true 0 with status 'none';
-    months the archive never processed stay null. Returns a copy; the input is not changed."""
+def has_values(grid) -> bool:
+    return any(v is not None for row in (grid or []) for v in (row or []))
+
+
+def with_exposure(region: dict, extra: dict) -> dict:
+    """The region's own clear-look exposure, or the per-country exposure table when the calendar has none."""
+    out = dict(region)
+    if extra and not has_values(region.get("exposure_modis")) and not has_values(region.get("exposure_viirs")):
+        out["exposure_modis"] = extra.get("exposure_modis")
+        out["exposure_viirs"] = extra.get("exposure_viirs")
+    return out
+
+
+def fill_processed_zeros(region: dict, world: dict, exposure: dict = None) -> dict:
+    """A month becomes a true 0 (status 'none') only when the archive processed it AND this region had clear looks
+    that month (exposure > 0 for that sensor). With no clear-look record the month stays null, never 0.
+    exposure: {"exposure_modis": grid, "exposure_viirs": grid}; defaults to the region's own exposure fields."""
     out = dict(region)
     if world is None or world.get("years") != region.get("years"):
         return out
+    src = exposure
+    if src is None:
+        src = region
     for kind in ["modis", "viirs"]:
         values = [list(row) for row in region[kind]]
         status = [list(row or [None] * 12) for row in (region.get("status_" + kind) or [[None] * 12 for _ in region["years"]])]
+        expo = src.get("exposure_" + kind) or []
         for i in range(len(region["years"])):
             for m in range(12):
-                if values[i][m] is None and world[kind][i][m] is not None:
+                if values[i][m] is not None or world[kind][i][m] is None:
+                    continue
+                e = None
+                if i < len(expo) and expo[i]:
+                    e = expo[i][m]
+                if e is not None and e > 0:
                     values[i][m] = 0
                     status[i][m] = "none"
         out[kind] = values
@@ -152,6 +175,54 @@ def cross_conformal_coverage(rows: list, alpha: float) -> dict:
                 hits += 1
                 per_bin[r["bin"]][0] += 1
     return {"hits": hits, "total": total, "per_bin": per_bin}
+
+
+def nested_rows(region: dict) -> list:
+    """Nested scores: for each outer (held-out) year y, the calibration scores of every other year t use k fitted
+    without both t and y, so no calibration score comes from a model that saw y. Each row records its fit_years."""
+    out = []
+    for month in range(12):
+        pairs = overlap_pairs(region, month)
+        for outer in pairs:
+            if outer[1] < MIN_MODIS:
+                continue
+            rest = [q for q in pairs if q[0] != outer[0]]
+            k = ratio_of_totals(rest)
+            if k is None:
+                continue
+            out.append({"role": "test", "outer": outer[0], "year": outer[0], "bin": bin_of(outer[1]), "fit_years": [q[0] for q in rest],
+                        "score": abs(math.log((outer[2] + 0.5) / (k * outer[1] + 0.5)))})
+            for t in rest:
+                if t[1] < MIN_MODIS:
+                    continue
+                fit = [q for q in rest if q[0] != t[0]]
+                kt = ratio_of_totals(fit)
+                if kt is None:
+                    continue
+                out.append({"role": "cal", "outer": outer[0], "year": t[0], "bin": bin_of(t[1]), "fit_years": [q[0] for q in fit],
+                            "score": abs(math.log((t[2] + 0.5) / (kt * t[1] + 0.5)))})
+    return out
+
+
+def nested_coverage(rows: list, alpha: float) -> dict:
+    """Coverage on held-out years with the outer year removed before any calibration score was made."""
+    hits = 0
+    total = 0
+    per_bin = [[0, 0] for _ in BINS]
+    leaks = 0
+    for year in sorted(set(r["outer"] for r in rows)):
+        cal = [r for r in rows if r["role"] == "cal" and r["outer"] == year]
+        leaks += sum(1 for r in cal if year in r["fit_years"])
+        q = mondrian_quantiles(cal, alpha)
+        for r in rows:
+            if r["role"] != "test" or r["outer"] != year or q[r["bin"]] is None:
+                continue
+            total += 1
+            per_bin[r["bin"]][1] += 1
+            if r["score"] <= q[r["bin"]]:
+                hits += 1
+                per_bin[r["bin"]][0] += 1
+    return {"hits": hits, "total": total, "per_bin": per_bin, "leaks": leaks}
 
 
 def harmonised_series(region: dict) -> list:
@@ -278,16 +349,20 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def build(calendar: dict) -> dict:
+def build(calendar: dict, exposure: dict = None) -> dict:
     """Per-region trust record plus a global summary (coverage counts, conformal coverage on unseen years, check pass rates)."""
     regions = {}
     all_scores = []
     world = calendar["regions"].get("world")
-    calendar = {"meta": calendar["meta"], "regions": {rid: fill_processed_zeros(r, world) for rid, r in calendar["regions"].items()}}
+    extra = (exposure or {}).get("regions", {})
+    calendar = {"meta": calendar["meta"], "regions": {rid: fill_processed_zeros(with_exposure(r, extra.get(rid)), world) for rid, r in calendar["regions"].items()}}
     for rid, region in calendar["regions"].items():
         all_scores.extend(loyo_scores(region))
+    nested = []
+    for rid, region in calendar["regions"].items():
+        nested.extend(nested_rows(region))
     q = {key: mondrian_quantiles(all_scores, alpha) for key, alpha in ALPHAS.items()}
-    evals = {key: cross_conformal_coverage(all_scores, alpha) for key, alpha in ALPHAS.items()}
+    evals = {key: nested_coverage(nested, alpha) for key, alpha in ALPHAS.items()}
     coverage_counts = {"high": 0, "medium": 0, "low": 0}
     check_pass = {"P1": [0, 0], "P2": [0, 0], "P3": [0, 0], "P4": [0, 0]}
     for rid, region in calendar["regions"].items():
@@ -315,11 +390,16 @@ def build(calendar: dict) -> dict:
         if pb[1]:
             cov95 = round(pb[0] / pb[1], 4)
         qv = q["95"][i]
-        classes.append({"from": edge, "to": hi, "q95": round(qv, 4) if qv is not None else None, "factor95": round(math.exp(qv), 3) if qv is not None else None, "q90": round(q["90"][i], 4) if q["90"][i] is not None else None, "n": len([r for r in all_scores if r["bin"] == i]), "achieved95": cov95})
+        q95 = None
+        f95 = None
+        if qv is not None:
+            q95 = round(qv, 4)
+            f95 = round(math.exp(qv), 3)
+        classes.append({"from": edge, "to": hi, "q95": q95, "factor95": f95, "n": pb[1], "achieved95": cov95})
     g6_pass = achieved.get("95") is not None and G6_RANGE[0] <= achieved["95"] <= G6_RANGE[1]
     summary = {
         "coverage_counts": coverage_counts,
-        "conformal": {"method": "Mondrian split conformal by MODIS size class", "nominal": {"90": 0.90, "95": 0.95}, "achieved_on_unseen_years": achieved, "scores": len(all_scores), "classes": classes},
+        "conformal": {"method": "Mondrian split conformal by MODIS size class, nested: the held-out year is removed before any calibration score is made", "nominal": {"95": 0.95}, "achieved_on_unseen_years": achieved, "scores": len(all_scores), "checks": evals["95"]["total"], "leaks": evals["95"]["leaks"], "nested": True, "classes": classes},
         "g6": {"rule": "achieved coverage of 95 % bands on unseen years within 88–99 %", "value": achieved.get("95"), "pass": g6_pass},
         "checks": {cid: {"pass": v[0], "of": v[1]} for cid, v in check_pass.items()},
     }
@@ -354,7 +434,12 @@ def run(calendar_path: Path, out_dir: Path, registry_files: list, root: Path) ->
     """Build trust_global.json, method_card.json and registry.json from the calendar file."""
     with open(calendar_path, encoding="utf-8") as handle:
         calendar = json.load(handle)
-    trust = build(calendar)
+    exposure = None
+    expo_path = calendar_path.parent / "exposure_countries.json"
+    if expo_path.exists():
+        with open(expo_path, encoding="utf-8") as handle:
+            exposure = json.load(handle)
+    trust = build(calendar, exposure)
     inputs = []
     for path in registry_files:
         if path.exists():

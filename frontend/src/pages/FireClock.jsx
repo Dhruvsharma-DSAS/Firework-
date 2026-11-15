@@ -275,7 +275,7 @@ export default function FireClock() {
         <section className="pd-sec">
           <div className="pd-margin"><b>Evidence 1</b><span>FC2 · night share</span></div>
           <div className="pd-col">
-            <h2>The share of burning seen at night rose 27-fold</h2>
+            <h2>The night share of detections rose 27-fold</h2>
             <p>Bars show night detections as a share of all VIIRS S-NPP detections in October–November, with 95% intervals. The dashed line is twice the 2012–2020 reference of <b>{pct(d.night_share_ref, 2)}</b>. Amber bars mark a timing shift; red bars mark years where the season is also at most half of normal.</p>
             <NightChart rows={rows} base={d.night_share_ref} />
           </div>

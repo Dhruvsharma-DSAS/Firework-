@@ -149,9 +149,7 @@ def region_month(use: pd.DataFrame, gee: pd.DataFrame, cov: pd.DataFrame, region
     full = rm["covered_days"] >= rm["days_in_month"]
     if cov.empty:
         full = pd.Series(True, index=rm.index)
-    for col in ["hotspots", "night_hotspots", "fire_cell_days"]:
-        rm[col] = np.where(full, rm[col].fillna(0), rm[col])
-        rm.loc[~full & rm[col].isna(), col] = np.nan
+    no_row = rm["fire_cell_days"].isna()
     rm["status"] = np.where(full, "ok", np.where(rm["covered_days"] > 0, "partial", "not_downloaded"))
     if cov.empty:
         rm["status"] = "coverage_unknown"
@@ -166,9 +164,16 @@ def region_month(use: pd.DataFrame, gee: pd.DataFrame, cov: pd.DataFrame, region
             if present:
                 v = g.groupby("month")[present].sum(min_count=1).max(axis=1, skipna=True).rename("valid_cell_days").reset_index()
                 v["family"] = fam
+                v["exposure_kind"] = "daily_composite_proxy"
+                if len(present) > 1:
+                    v["exposure_kind"] = "daily_composite_proxy_max_platform (not the union of usable looks; use the pass-level ledger for rates)"
                 rows.append(v)
         if rows:
             rm = rm.merge(pd.concat(rows), on=["month", "family"], how="left")
+            looked = full & no_row & (rm["valid_cell_days"] > 0)
+            for col in ["hotspots", "night_hotspots", "fire_cell_days"]:
+                rm.loc[looked, col] = 0
+            rm.loc[looked, "status"] = "no_detection"
             rm["rate_per_valid_day"] = np.where(rm["valid_cell_days"] > 0, rm["fire_cell_days"] / rm["valid_cell_days"], np.nan)
         rm = rm.merge(wx, on="month", how="left")
     rm["region_id"] = rid

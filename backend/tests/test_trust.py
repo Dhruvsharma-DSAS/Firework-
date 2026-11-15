@@ -88,10 +88,14 @@ def test_country_exposure_missing_years_are_null_and_join_is_sane():
 def test_processed_months_without_fire_become_zero_unprocessed_stay_null():
     from app.trust import fill_processed_zeros
     world = {"years": [2000, 2001], "modis": [[None] * 12, [5.0] * 12], "viirs": [[None] * 12, [None] * 12]}
-    r = {"years": [2000, 2001], "modis": [[None] * 12, [None] * 11 + [3.0]], "viirs": [[None] * 12, [None] * 12], "status_modis": None, "status_viirs": None}
+    clear = [[None] * 12, [40.0] * 6 + [None] * 6]
+    r = {"years": [2000, 2001], "modis": [[None] * 12, [None] * 11 + [3.0]], "viirs": [[None] * 12, [None] * 12], "status_modis": None, "status_viirs": None, "exposure_modis": clear}
     out = fill_processed_zeros(r, world)
     assert out["modis"][0][0] is None
     assert out["modis"][1][0] == 0 and out["status_modis"][1][0] == "none"
+    assert out["modis"][1][7] is None
     assert out["modis"][1][11] == 3.0
     assert out["viirs"][1][0] is None
     assert r["modis"][1][0] is None
+    no_looks = dict(r, exposure_modis=None)
+    assert fill_processed_zeros(no_looks, world)["modis"][1][0] is None

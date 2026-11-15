@@ -14,6 +14,7 @@ from datetime import date
 
 from app import cells as cellmod
 from app import config
+from app import core
 from app import ml
 from app import store
 from app import supa
@@ -80,7 +81,7 @@ def health() -> dict:
             source["status"] = "NO_KEY_NEEDED"
         else:
             source["status"] = "NOT_CHECKED"
-    return {"data": {"sources": sources}, "meta": {"data_source": "backend config", "firms_live": bool(config.FIRMS_MAP_KEY), "generated_at_utc": now_utc(), "demo": False}}
+    return {"data": {"sources": sources}, "meta": {"data_source": "backend config", "status": "OK", "firms_live": bool(config.FIRMS_MAP_KEY), "generated_at_utc": now_utc(), "demo": False}}
 
 
 @app.get("/api/detections")
@@ -131,6 +132,7 @@ def satellites() -> dict:
     result["meta"]["tle_source"] = "CelesTrak GP"
     result["meta"]["tle_fetched"] = fetched
     result["meta"]["generated_at_utc"] = now_utc()
+    result["meta"].setdefault("status", "SOURCE_DERIVED")
     return result
 
 
@@ -165,6 +167,7 @@ def regions() -> dict:
     for r in result["data"]:
         has = pipeline_file(r["id"], "region_month.csv") is not None or (config.PROCESSED_DIR / ("calendar_" + r["id"] + ".json")).exists() or r["id"] in remote
         r["has_calendar"] = has
+    result.setdefault("meta", {}).setdefault("status", "SOURCE_DERIVED")
     return result
 
 
@@ -176,7 +179,7 @@ def formulas() -> dict:
     """The 46-formula method reference (docs/formula_pdfs/formulas_content.json) in the usual {data, meta} shape."""
     with open(FORMULAS_FILE, encoding="utf-8") as handle:
         payload = json.load(handle)
-    return {"data": payload["formulas"], "meta": {"status": "SOURCE_DERIVED", "provenance": "SOURCE_DERIVED", "demo": False, "count": len(payload["formulas"]), "generated": payload.get("generated"), "generated_at_utc": now_utc()}}
+    return {"data": payload["formulas"], "meta": {"data_source": "FIREWORK formula registry (formulas_content.json)", "status": "SOURCE_DERIVED", "provenance": "SOURCE_DERIVED", "demo": False, "count": len(payload["formulas"]), "generated": payload.get("generated"), "generated_at_utc": now_utc()}}
 
 
 def region_name(region: str) -> str:
@@ -311,14 +314,14 @@ def method_card() -> dict:
         raise HTTPException(status_code=404, detail={"status": "UNAVAILABLE", "reason": "run tools/trust/build_trust.py"})
     with open(path, encoding="utf-8") as handle:
         card = json.load(handle)
-    return {"data": card, "meta": {"provenance": "RUN_TESTED_LOCALLY", "generated_at_utc": card.get("generated_at_utc")}}
+    return {"data": card, "meta": {"data_source": "method card built from the FIREWORK calendar (tools/trust/build_trust.py)", "status": "SOURCE_DERIVED", "provenance": "RUN_TESTED_LOCALLY", "generated_at_utc": card.get("generated_at_utc")}}
 
 
 def calendar_from_global(region: str):
     payload = global_calendar()
     if payload is None or region not in payload["regions"]:
         return None
-    data = fill_processed_zeros(payload["regions"][region], payload["regions"].get("world"))
+    data = dict(payload["regions"][region])
     exposure = exposure_countries()
     exposure_added = False
     if exposure and region in exposure["regions"] and not any(v is not None for row in (data.get("exposure_modis") or []) for v in row):
@@ -327,6 +330,7 @@ def calendar_from_global(region: str):
         data["exposure_viirs"] = extra["exposure_viirs"]
         data["exposure_flag"] = extra.get("flag")
         exposure_added = True
+    data = fill_processed_zeros(data, payload["regions"].get("world"))
     trust = trust_global()
     if trust and region in trust["regions"]:
         data["trust"] = trust["regions"][region]
@@ -359,6 +363,9 @@ def calendar_from_global(region: str):
         meta["unit"] = "fire cell-days (0.1° cell × local solar day with at least one qualifying fire point)"
         meta["rule"] = "MODIS confidence ≥ 30; VIIRS confidence nominal or high; FIRMS type 0 (vegetation fire); local solar day = UTC + longitude / 15 h"
         meta["boundary"] = "Natural Earth 10 m admin-0 countries (cell centre); custom boxes b_*"
+    meta["aoi_hash"] = core.aoi_hash({"region": region, "boundary": meta.get("boundary")})
+    meta["grid_version"] = "0.1deg-decimal-v1"
+    meta["interval_kind"] = {"k_band": "parameter (k)", "conformal": "predictive (nested conformal 95%)"}
     if exposure_added:
         meta["exposure_source"] = exposure["meta"]["source"] + " · " + exposure["meta"]["missing"]
     return {"data": data, "meta": meta}
@@ -379,7 +386,7 @@ def calendar_regions() -> dict:
                     total = total + v
         rows.append({"id": rid, "name": r["region_name"], "fips": r.get("iso2", ""), "modis_cell_days_total": round(total)})
     rows.sort(key=lambda x: (x["id"] != "world", -x["modis_cell_days_total"]))
-    return {"data": rows, "meta": {"provenance": "SOURCE_DERIVED", "count": len(rows), "generated_at_utc": payload["meta"].get("generated_at_utc")}}
+    return {"data": rows, "meta": {"data_source": "FIREWORK calendar built from the NASA FIRMS standard archive", "status": "ARCHIVE_STANDARD", "provenance": "SOURCE_DERIVED", "count": len(rows), "generated_at_utc": payload["meta"].get("generated_at_utc")}}
 
 
 @app.get("/api/calendar/{region}")
@@ -427,7 +434,7 @@ def anomaly(region: str, month: str = Query(None, pattern=r"^\d{4}-\d{2}$")) -> 
             out[k] = v
         else:
             out[k] = number_or_none(v)
-    return {"data": out, "meta": {"status": "ARCHIVE_STANDARD", "provenance": "SOURCE_DERIVED", "unit": "hot spots (harmonised to VIIRS S-NPP)", "method": "F27 robust z, leave-target-out, n ≥ 8 = ok", "generated_at_utc": now_utc()}}
+    return {"data": out, "meta": {"data_source": "NASA FIRMS standard archive via the FIREWORK regional pipeline", "status": "ARCHIVE_STANDARD", "provenance": "SOURCE_DERIVED", "unit": "hot spots (harmonised to VIIRS S-NPP)", "method": "F27 robust z, leave-target-out, n ≥ 8 = ok", "generated_at_utc": now_utc()}}
 
 
 @app.get("/api/export/hotspots.csv")
@@ -488,6 +495,9 @@ def ml_harmonised(region: str) -> dict:
     result = ml.harmonised(region)
     if result is None:
         raise HTTPException(status_code=404, detail={"status": "UNAVAILABLE", "reason": "no harmonised calendar yet for " + region})
+    meta = result.setdefault("meta", {})
+    meta.setdefault("data_source", "FIREWORK harmonisation model output (ml/train_harmonise.py)")
+    meta.setdefault("status", "MODEL_ESTIMATE")
     return result
 
 
@@ -683,7 +693,7 @@ def cells_month(start: str = Query(..., pattern=r"^\d{4}-\d{2}$"), end: str = Qu
 def chat_models() -> dict:
     """AI models the assistant can use (only those with a key in backend/.env). 'auto' tries them in order."""
     from app import llm
-    return {"data": [{"id": "auto", "label": "Auto · best available"}] + llm.available(), "meta": {"status": "OK"}}
+    return {"data": [{"id": "auto", "label": "Auto · best available"}] + llm.available(), "meta": {"data_source": "configured AI providers (keys in server environment)", "status": "OK"}}
 
 
 @app.post("/api/chat")
