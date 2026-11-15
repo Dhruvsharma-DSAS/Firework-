@@ -257,27 +257,26 @@ export default function Validation() {
         <ol className="va-strip">
           {ORDER.map((g, i) => {
             let cls = "va-cell";
-            let state = "pending";
+            let state = "Pending";
             if (PASSED.indexOf(g) >= 0) {
               cls = "va-cell pass";
-              state = "passed";
+              state = "Passed";
             }
             return (
-              <li key={g} className={cls} style={{ animationDelay: i * 40 + "ms" }} title={g + " · " + GATES[g][0] + " · " + state}>
-                <b>{g}</b>
-                <span>{GATES[g][0]}</span>
+              <li key={g} className={cls} style={{ animationDelay: i * 40 + "ms" }}>
+                <a className="va-cell-link" href={"#validation-" + g}>
+                  <b>{g} · {state}</b>
+                  <span>{GATES[g][0]}</span>
+                </a>
               </li>
             );
           })}
         </ol>
-        <div className="va-key"><span><i className="va-dot on" />Passed on real data</span><span><i className="va-dot" />Pending</span></div>
       </section>
 
       <section className="va-paper va-spot" aria-label="Research paper" onMouseMove={spot}>
-        <div className="va-paper-doc" aria-hidden="true"><i /><i /><i /><i /><b>PDF</b></div>
         <div className="va-paper-text">
-          <span className="va-paper-tag">Research paper</span>
-          <h2>FIREWORK CHRONOS — the full method, tests and results</h2>
+          <h2>FIREWORK CHRONOS research paper</h2>
           <p>The written paper behind this page: how MODIS and VIIRS are put on one scale, the twelve gates, the trust layer and every number they produced.</p>
         </div>
         <div className="va-paper-acts">
@@ -448,7 +447,7 @@ export default function Validation() {
                     result = <em className="va-res">{RESULTS[id]}</em>;
                   }
                   return (
-                    <li key={id} className="va-spot" onMouseMove={spot}>
+                    <li key={id} id={"validation-" + id} tabIndex={-1} className="va-spot" onMouseMove={spot}>
                       <span className="va-id">{id}</span>
                       <div className="va-what">
                         <b>{g[0]}</b>
