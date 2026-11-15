@@ -148,7 +148,18 @@ An assistant that answers only from the project's own data and says so when it d
 
 </div>
 
-> Being honest about limits is part of the method. Full details are on the **[Validation page](https://firework-nasa.vercel.app)**.
+### 💡 Did you know?
+
+- 🔍 A VIIRS pixel (375 m) covers about **16× less ground** than a MODIS pixel (1 km), so it can spot a fire the size of a small farm field.
+- ☀️ Fires follow the sun: most burn in the afternoon, so **when** a satellite passes changes **how much** fire it sees.
+- 🛰️ Five satellites, 26 years, about **658 million** fire points: all on one ruler for the first time on this site.
+- 🧭 Every number on the site comes with a **range** and a **status**, so you always know how sure it is.
+
+### 🌱 Why it matters
+
+Scientists, forest services and climate researchers can finally ask *"is fire really rising here?"* across 2000 → today without being fooled by a change of camera.
+
+> See it all live at **[firework-nasa.vercel.app](https://firework-nasa.vercel.app)**.
 
 ---
 
