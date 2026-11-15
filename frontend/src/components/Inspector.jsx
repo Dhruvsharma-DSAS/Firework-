@@ -4,6 +4,7 @@ import StatusChip from "./StatusChip.jsx";
 import { CLASS_LABELS, CLASS_COLORS, SENSOR_COLORS } from "../lib/colors.js";
 import { formatHour } from "../lib/geo.js";
 import { classifySource, loadCalendar } from "../api/data.js";
+import "../styles/explorer-inspector.css";
 
 const OVERPASSES = [
   ["Terra MODIS", SENSOR_COLORS.MODIS, "~10:30", "~22:30", "terra"],
@@ -100,8 +101,7 @@ function Summary(props) {
       <Sec>How to read the globe</Sec>
       <Row k="Column height" v="log(1 + FRP)" />
       <Row k="Hex column" v="pixels per H3 cell" />
-      <Row k="Click anywhere" v="location card" />
-      <div className="note info small" style={{ marginTop: 14 }}>Click any column, hex or place on the Earth. A card pins to that spot and this panel fills with its numbers.</div>
+      <p className="insp-observation-note">Select a column, hex or location on the globe to inspect the area.</p>
     </div>
   );
 }
@@ -259,9 +259,9 @@ function ProbeDetail(props) {
   if (info.daylight) {
     daylight = "Day now";
   }
-  let nearest = <Row k="Nearest hot pixel" v="none within 150 km" />;
+  let nearest = <Row k="Nearest loaded hot pixel" v="None within 150 km" />;
   if (info.nearest) {
-    nearest = <Row k="Nearest hot pixel" v={info.nearest.km.toFixed(1) + " km · " + info.nearest.sensor} />;
+    nearest = <Row k="Nearest loaded hot pixel" v={info.nearest.km.toFixed(1) + " km · " + info.nearest.sensor} />;
   }
   let maxFrp = "—";
   if (info.cell.n > 0) {
@@ -274,15 +274,15 @@ function ProbeDetail(props) {
   let hexRows = null;
   if (info.hex) {
     hexRows = (
-      <div>
-        <Sec>Density hex (H3 res 3)</Sec>
+      <details className="insp-density-details">
+        <summary>Density hex details (H3 res 3)</summary>
         <p className="insp-cap">The column you clicked: all hot pixels that fell inside this hexagon in the period.</p>
         <Row k="Hot pixels in hex" v={info.hex.n.toLocaleString()} />
         <Row k="MODIS · VIIRS" v={info.hex.m + " · " + info.hex.v} />
         <Row k="Mean FRP" v={info.hex.meanFrp.toFixed(1) + " MW"} />
         <Row k="Max FRP" v={info.hex.maxFrp.toFixed(1) + " MW"} />
-        <Row k="Day passes" v={info.hex.dayShare + " %"} />
-      </div>
+        <Row k="Daytime detection share" v={info.hex.dayShare + " %"} />
+      </details>
     );
   }
 
@@ -490,9 +490,9 @@ export default function Inspector(props) {
     title = "Location inspector";
   }
 
-  let lastRow = <Row k="Burning often peaks" v="after 15:00" style={{ color: "var(--modis)" }} />;
+  let lastRow = null;
   if (props.info && props.info.cellTimes.length > 0) {
-    lastRow = <Row k="Seen here at (local)" v={props.info.cellTimes.slice(0, 4).map(formatHour).join(" · ")} style={{ color: "var(--modis)" }} />;
+    lastRow = <Row k="Loaded detection times (solar)" v={props.info.cellTimes.slice(0, 4).map(formatHour).join(" · ")} style={{ color: "var(--modis)" }} />;
   }
 
   return (
@@ -505,17 +505,20 @@ export default function Inspector(props) {
         </div>
         <div className="panel-b">{body}</div>
       </section>
-      <section className="panel" aria-label="Sensors over this place">
+      <section className="panel" aria-label="Typical satellite overpasses">
         <div className="panel-h">
-          <span className="caps" style={{ color: "var(--text)" }}>Sensors over this place</span>
-          <span className="mono small faint">point at a row for its satellite</span>
+          <span className="caps" style={{ color: "var(--text)" }}>Typical satellite overpasses</span>
         </div>
         <div className="panel-b">
           {OVERPASSES.map((row) => (
-            <div className="srow srow-sat" key={row[0]} tabIndex={0} onMouseEnter={() => props.onSat && props.onSat(row[4])} onFocus={() => props.onSat && props.onSat(row[4])}>
+            <button className="srow srow-sat insp-satellite-button" type="button" key={row[0]}
+              onMouseEnter={() => props.onSat && props.onSat(row[4])}
+              onFocus={() => props.onSat && props.onSat(row[4])}
+              onClick={() => props.onSat && props.onSat(row[4])}
+              disabled={!props.onSat}>
               <span className="nm"><i style={{ background: row[1] }} />{row[0]}</span>
               <b>{row[2]} <span className="faint">· {row[3]}</span></b>
-            </div>
+            </button>
           ))}
           {lastRow}
         </div>
