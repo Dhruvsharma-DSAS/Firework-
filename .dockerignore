@@ -1,0 +1,21 @@
+**/.env
+**/.venv
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/.DS_Store
+frontend/dist
+frontend/public/vid
+frontend/public/img
+frontend/public/textures
+frontend/public/satellites
+pipeline/data
+data/raw
+data/cache
+ml/data
+ml/models/*.joblib
+ml/models/persistence_table.csv
+archive
+design
+docs
+supabase data enter

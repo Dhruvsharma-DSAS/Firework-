@@ -1,0 +1,60 @@
+{
+  "id": "F28",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Aqua · Punjab and Haryana · 4 Nov 2020",
+      "question": "What does a normal November look like?",
+      "beats": [
+        { "say": "When a doctor says your height is normal for your age, there is a hidden number behind it: the typical height of children your age, and how much they usually vary. Without that yardstick, the word normal means nothing." },
+        { "say": "Formula twenty-eight, the month baseline and spread, is FIREWORK's yardstick. Normal for November is the median of all the other Novembers, with a robust band around it. It is the very number every anomaly on the site is measured against." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\mathrm{base}_{m,-t} =", "say": "On the left is the baseline for calendar month m. The minus t means the month being judged is left out of its own baseline, so it cannot pull normal towards itself." },
+        { "tex": " \\operatorname*{med}_{y\\in\\mathcal{B}\\setminus t}", "say": "We take the median over the reference years, B, minus the target year. The median is the middle value, so one wild year barely moves it." },
+        { "tex": "\\ y_{y,m}", "say": "What we take the median of is y, the value of that calendar month in each reference year." },
+        { "tex": ",\\qquad y = \\ln(x+0.5)", "say": "And y is the log of the harmonised value plus a half: exactly the same scale, floor and leave-out rule as the z-score. The calendar and the data interface call the same function, so the normal you read is the normal z was measured against." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "Normal months in Punjab and Haryana, 2001–2025",
+      "steps": [
+        { "label": "Normal October", "value": 31682, "unit": "hot spots, harmonised", "say": "On the harmonised scale, from 2001 to 2025, a normal October in Punjab and Haryana has 31,682 hot spots, with a band from 21,788 to 46,068." },
+        { "label": "Normal August", "value": 16, "unit": "hot spots, harmonised", "say": "The quietest month is August, with a normal of just 16. A normal May, in the wheat season, has 13,907." },
+        { "label": "Normal November", "value": 28101, "unit": "hot spots, harmonised", "result": true, "band": [13670, 57767], "say": "A normal November has 28,101 hot spots, with a band from 13,670 to 57,767. That band is wide. November's spread is 0.72 log units, about twice October's 0.37, because the end of the rice harvest, and so of burning, varies more from year to year than its start." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F28_a.svg",
+      "title": "What a normal month looks like",
+      "beats": [
+        { "say": "For each calendar month, the line is the median from 2001 to 2025, and the band is plus or minus one robust spread, on a log scale. You can see the two burning seasons: spring and late autumn." },
+        { "say": "The red points are the 2025 values. In the autumn they fall well below the band: that is what an anomaly looks like against its baseline." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "beats": [
+        { "target": "[data-film=cal-grid]", "label": "Month × year grid", "say": "On the FIREWORK website, open the Calendar and choose any month in the grid." },
+        { "target": "[data-film=cal-inspector]", "label": "Normal for this month", "say": "The inspector prints the normal for that calendar month. It is computed exactly as in formula twenty-eight. With fewer than eight reference years, the baseline is marked indicative." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Normal = median of the same month in other years, on a log scale", "The judged month is left out of its own baseline", "Normal November 28,101; normal October 31,682"],
+      "next": "F29 · Season start, peak and end (10 / 90%)",
+      "beats": [
+        { "say": "So, to remember: an anomaly is only as trustworthy as its baseline. FIREWORK builds the baseline from the median of the other years, shows its spread, and uses the very same number for every z-score." },
+        { "say": "Next, formula twenty-nine: season start, peak and end." }
+      ]
+    }
+  ]
+}

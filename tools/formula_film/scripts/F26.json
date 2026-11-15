@@ -1,0 +1,59 @@
+{
+  "id": "F26",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_cloudy_2023-07-10.webp",
+      "imageLabel": "Monsoon cloud · Punjab and Haryana · 10 Jul 2023",
+      "question": "If you saw no fires, can you be sure there were none?",
+      "beats": [
+        { "say": "Imagine standing at a quiet road for five minutes and seeing no cars. Can you say the road never has cars? Of course not. You can only say the traffic is probably low, somewhere between zero and a few cars every five minutes." },
+        { "say": "Fire counts in quiet months are like that. The usual shortcut, plus or minus 1.96 square roots, breaks down: it goes below zero, and gives no interval at all for zero. Formula twenty-six, the exact Poisson interval by Garwood, stays correct all the way down to zero." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\Big[\\ \\tfrac12\\,\\chi^2_{2n,\\ \\alpha/2}", "say": "The square bracket opens the interval. The lower end is half of a chi-square quantile, a value we look up in a standard table, using two times n degrees of freedom, where n is the count we saw." },
+        { "tex": "\\ ,\\ \\ \\tfrac12\\,\\chi^2_{2(n+1),\\ 1-\\alpha/2}\\ \\Big]", "say": "The upper end is also half a chi-square quantile, this time with two times n plus one degrees of freedom. Adding one to the count pushes the upper end higher, because a small count could easily have been larger." },
+        { "tex": ",\\qquad \\text{lower bound} = 0 \\text{ when } n = 0", "say": "And when the count is zero, the lower end is simply zero. The upper end is then 3.69, so an empty month says: the true rate is somewhere between 0 and 3.69. The interval is slightly cautious, and covers the truth at least ninety-five percent of the time." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · three fire cell-days",
+      "steps": [
+        { "label": "Count observed", "value": 3, "unit": "fire cell-days", "say": "Suppose a month has just 3 fire cell-days." },
+        { "label": "Normal shortcut, lower end", "value": -0.40, "unit": "cell-days", "say": "The normal shortcut gives an interval from minus 0.40 to 6.39. A negative number of fires makes no sense at all." },
+        { "label": "Garwood lower end", "value": 0.62, "unit": "cell-days", "result": true, "band": [0.62, 8.77], "say": "The Garwood interval runs from 0.62 to 8.77. It never goes below zero, and it is wider on the upper side, as small counts really are. For 10 cell-days it gives 4.79 to 18.39." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F26_a.svg",
+      "title": "Small counts done right",
+      "beats": [
+        { "say": "For counts from zero to ten, the black bars are the exact Garwood intervals, and the grey bars are the normal shortcut." },
+        { "say": "For small counts the grey bars dip below zero, or vanish at zero. The black bars stay honest, and lean upward, because a small count can be much larger by chance, but never smaller than zero." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/formulas/F26",
+      "beats": [
+        { "target": ".fp-formula", "label": "The Garwood interval", "say": "On the FIREWORK website, the formula page for formula twenty-six shows the interval. Small counts are everywhere: quiet months, small regions, single cells, and the summer months of the Terra-only years." },
+        { "target": ".fp-keys", "label": "Key numbers", "say": "The key numbers sum it up. Zero gives 0 to 3.69. And in Punjab and Haryana, 9 percent of MODIS months have 10 or fewer fire cell-days, so this matters." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Garwood: half of two chi-square quantiles", "n = 0 → [0, 3.69], never 0 ± 0", "n = 3 → [0.62, 8.77]; the shortcut goes negative"],
+      "next": "F27 · Robust anomaly z-score",
+      "beats": [
+        { "say": "So, to remember: for small counts, use the exact interval. It never goes below zero, and an empty month never claims certainty that no fire happened." },
+        { "say": "Next, formula twenty-seven: the robust anomaly z-score." }
+      ]
+    }
+  ]
+}

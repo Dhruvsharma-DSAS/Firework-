@@ -1,0 +1,65 @@
+{
+ "model": "source_classifier",
+ "version": "0.1",
+ "trained_at_utc": "2026-11-02T01:02:01.345528+00:00",
+ "provenance": "RUN_TESTED_LOCALLY",
+ "task": "vegetation fire (0) vs static / non-vegetation source (1)",
+ "label_source": "FIRMS archive 'type' column (0 veg, 1 volcano, 2 static land, 3 offshore)",
+ "algorithm": "sklearn HistGradientBoostingClassifier, class_weight=balanced",
+ "features": [
+  "days_other_years",
+  "years_other",
+  "night_share",
+  "frp_log",
+  "is_night",
+  "lmst",
+  "month",
+  "abs_lat"
+ ],
+ "split": "GroupShuffleSplit by 1-degree tile, 25% test",
+ "n_train": 208856,
+ "n_test": 300792,
+ "positive_share_test": 0.014937232373201414,
+ "threshold": 0.5,
+ "model_test": {
+  "precision": 0.0276701380479535,
+  "recall": 0.4068551079456933,
+  "f1": 0.05181626202928129,
+  "confusion_matrix_[[tn,fp],[fn,tp]]": [
+   [
+    232063,
+    64236
+   ],
+   [
+    2665,
+    1828
+   ]
+  ],
+  "pr_auc": 0.051957106510882464
+ },
+ "baseline_rule_test": {
+  "rule": "days_other_years >= 10",
+  "precision": 0.011040825830487426,
+  "recall": 0.3799243267304696,
+  "f1": 0.02145806751686036,
+  "confusion_matrix_[[tn,fp],[fn,tp]]": [
+   [
+    143398,
+    152901
+   ],
+   [
+    2786,
+    1707
+   ]
+  ]
+ },
+ "inputs": [
+  "/Users/dhruvsharma/Desktop/Dhruv Work/competition/NASA hac/Code /Spacecode 3 /FIREWORK/pipeline/data/processed/train/MODIS_SP.csv"
+ ],
+ "inference": "for a new (NRT) point: days_other_years = days_total and years_other = years_active from persistence_table.csv; unseen micro-cell -> 0, 0 and night_share = is_night",
+ "limits": [
+  "Persistence features need the archive history around a point.",
+  "Trained on MODIS; check VIIRS before reuse.",
+  "A hotspot is a pixel, not a fire."
+ ]
+}

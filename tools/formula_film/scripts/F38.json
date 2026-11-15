@@ -1,0 +1,58 @@
+{
+  "id": "F38",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "Which of two witnesses should we believe?",
+      "beats": [
+        { "say": "Imagine two friends guessing the temperature outside. One has a cheap thermometer that wobbles a lot. The other has a precise one. You would not ignore either of them, but you would trust the precise one more, and the wobbly one only a little. And if the precise friend is away one day, you still have a sensible guess." },
+        { "say": "Since 2012, MODIS and VIIRS both report on the same farms. Formula thirty-eight, Kalman fusion with a local-level model, blends them month by month, trusting each in proportion to its precision. It is an experimental layer, and it is always labelled as a model estimate." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "x_t = x_{t-1} + w_t", "say": "First, the hidden truth. x t is the underlying fire activity in month t. It is last month's level, plus a small random step, w t." },
+        { "tex": ",\\quad w_t\\sim\\mathcal N(0,Q);", "say": "That step is drawn from a normal curve with spread Q. A small Q means the true level changes slowly." },
+        { "tex": "\\qquad z_{s,t} = x_t + v_{s,t}", "say": "Then the measurements. Each sensor s reports z, which is the true level plus its own error, v." },
+        { "tex": ",\\quad v_{s,t}\\sim\\mathcal N(0,R_s)", "say": "Each sensor's error has its own spread, R s. A precise sensor has a small R, and the filter listens to it more. Missing months are simply skipped, and the estimate carries on smoothly through the gap." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "How much each sensor is trusted",
+      "steps": [
+        { "label": "Harmonised MODIS error", "value": 0.40, "unit": "SD, log units", "say": "The measurement noise comes from validation. Harmonised MODIS has a standard deviation of 0.40, from the Bland-Altman test, formula twenty-three." },
+        { "label": "VIIRS error", "value": 0.12, "unit": "SD, log units", "say": "VIIRS is much more precise, with 0.12. The step size Q is 0.02." },
+        { "label": "Steady gain on MODIS", "value": 0.23, "unit": "share of each surprise", "result": true, "say": "Before 2012, the gain on harmonised MODIS settles at about 0.23. Each new MODIS month moves the estimate by about a fifth of its surprise. After 2012, VIIRS dominates because it is much more precise, while MODIS still pulls slightly." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F38_a.svg",
+      "title": "Two sensors, one level",
+      "beats": [
+        { "say": "Here are the deseasonalised log monthly cell-days from harmonised MODIS and from VIIRS S-NPP, as two clouds of points." },
+        { "say": "The line is the fused level, with its ninety-five percent band. Before 2012, the line is steered by harmonised MODIS alone, a fifth of each surprise at a time. After 2012 the line follows VIIRS closely, while MODIS still pulls slightly." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/formulas/F38",
+      "beats": [
+        { "target": ".fp-formula", "label": "The local-level model", "say": "On the FIREWORK website, the formula page for formula thirty-eight shows the model. Fusion is an optional layer, showing how a single best estimate could combine all instruments." },
+        { "target": ".fp-keys", "label": "Key numbers · status experimental", "say": "The key numbers include its status: experimental. Its result is a model estimate, so it is labelled as such and never shown as an observation." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Hidden level drifts slowly; each sensor sees it with its own noise", "Trust ∝ precision: VIIRS 0.12, harmonised MODIS 0.40", "Experimental: a model estimate, never an observation"],
+      "next": "F39 · Split conformal prediction sets",
+      "beats": [
+        { "say": "So, to remember: the Kalman filter blends two witnesses, giving more weight to the precise one, and carries the level smoothly through gaps. It is a model, and FIREWORK always says so." },
+        { "say": "Next, formula thirty-nine: split conformal prediction sets." }
+      ]
+    }
+  ]
+}

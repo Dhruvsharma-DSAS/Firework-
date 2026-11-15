@@ -1,0 +1,110 @@
+{
+  "id": "F16",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "How sure can a quick formula make us?",
+      "beats": [
+        {
+          "say": "Imagine weighing yourself on a bathroom scale that always shows the same number to the gram. It looks very precise. But if you step off and on, and the number jumps around, the true uncertainty is much bigger than the display suggests."
+        },
+        {
+          "say": "Formula sixteen, the delta-method interval for a ratio, is the quick textbook way to say how sure we are about k. FIREWORK keeps it, labelled approximate, because seeing why it fails is so instructive."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "\\operatorname{Var}\\big(\\log \\hat k\\big) \\;\\approx\\;",
+          "say": "On the left is the variance of log k, our measure of how uncertain the exchange rate is. The wavy equals sign says this is only an approximation."
+        },
+        {
+          "tex": " \\frac{1}{V}",
+          "say": "The first piece is one over V, the total VIIRS count. Big counts make this piece tiny."
+        },
+        {
+          "tex": " + \\frac{1}{M}",
+          "say": "The second piece is one over M, the total MODIS count. Again, big totals mean a small number."
+        },
+        {
+          "tex": " - \\frac{2\\,\\operatorname{Cov}(V,M)}{V\\,M}",
+          "say": "The last piece subtracts the covariance. Both sensors watch the same fires, so their counts move together, and that narrows the interval. The textbook version simply assumes the counts are independent and leaves this piece out."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · November",
+      "steps": [
+        {
+          "label": "Total VIIRS V",
+          "value": 89005,
+          "unit": "fire cell-days",
+          "say": "For November, VIIRS recorded 89,005 fire cell-days over the overlap years."
+        },
+        {
+          "label": "Total MODIS M",
+          "value": 42464,
+          "unit": "fire cell-days",
+          "say": "MODIS recorded 42,464. Together they give k equal to 2.096. Those are big totals, so the quick formula will promise a very tight interval."
+        },
+        {
+          "label": "Standard error of log k",
+          "value": 0.0059,
+          "unit": "log units",
+          "result": true,
+          "say": "One over each total, added, and square-rooted, gives a standard error of 0.0059. So the quick interval is 2.072 to 2.120, very narrow. But the year-block bootstrap gives 1.991 to 2.198, about 4 times wider. The years differ far more than simple counting noise allows."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F16_a.svg",
+      "title": "Quick interval against the published band",
+      "beats": [
+        {
+          "say": "For every calendar month, the teal bar is the delta-method ninety-five percent interval. The red bar is the year-block bootstrap interval, which is the one used on the site. Both are drawn around the same k."
+        },
+        {
+          "say": "In every month, the red bar is much wider. Big totals make the quick formula look extremely precise, while the real year-to-year differences tell a more honest story."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sensors",
+      "beats": [
+        {
+          "target": ".sl-side",
+          "label": "Exchange-rate panel",
+          "say": "On the FIREWORK website, open Sensor Lab. The exchange-rate panel shows k with its band, and that band comes from the year-block bootstrap, not from this quick formula."
+        },
+        {
+          "target": ".sl-globe",
+          "label": "Same fires, two sensors",
+          "say": "Why does the quick formula fail? Two reasons. The sensors share fires, which narrows it a little, and fire counts are bursty, which widens it far more. The bootstrap captures both without assuming either."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "Var(log k) ≈ 1/V + 1/M − covariance term",
+        "November: delta [2.07, 2.12] vs bootstrap [1.99, 2.20]",
+        "Shown as approx.; the bootstrap band is published"
+      ],
+      "next": "F17 · Shrink local factor toward global",
+      "beats": [
+        {
+          "say": "So, to remember: the delta method is quick, and a good first sense of precision, but it assumes independent Poisson counts. Real fire counts are neither, so FIREWORK publishes the wider bootstrap band instead."
+        },
+        {
+          "say": "Next, formula seventeen: shrink the local factor toward the global one."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+ "id": "F15",
+ "scenes": [
+  {
+   "type": "hook",
+   "image": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+   "imageLabel": "NASA MODIS Aqua · Punjab and Haryana · 4 Nov 2020",
+   "question": "Why do fires come in bursts?",
+   "beats": [
+    {
+     "say": "Have you ever waited for a bus, and then three arrived together? Buses bunch up. Fires do too. A dry week, a harvest deadline or a lifted ban changes thousands of fields at once."
+    },
+    {
+     "say": "A simple Poisson model assumes that the spread of a count equals its mean. Real fire counts break that rule badly. Formula fifteen, the negative-binomial variance, adds a second term that grows with the square of the mean."
+    }
+   ]
+  },
+  {
+   "type": "build",
+   "title": "Building the formula",
+   "parts": [
+    {
+     "tex": "\\operatorname{Var}(Y) \\;=\\;",
+     "say": "On the left is the variance of the count Y: how much it spreads around its average."
+    },
+    {
+     "tex": " \\mu",
+     "say": "The first term is mu, the mean. On its own, that is the Poisson rule: variance equals the mean."
+    },
+    {
+     "tex": " + \\frac{\\mu^2}{\\theta}",
+     "say": "The second term is the mean squared, divided by theta. Theta measures how bursty the counts are. A small theta means big bursts and a much wider spread. A huge theta brings us back to Poisson. FIREWORK can estimate theta by moments, comparing how far each count falls from its fitted mean."
+    }
+   ]
+  },
+  {
+   "type": "example",
+   "title": "A worked example · one month of 2,332 cell-days",
+   "steps": [
+    {
+     "label": "Mean count μ",
+     "value": 2332,
+     "unit": "fire cell-days",
+     "say": "Take a month with a mean of 2,332 fire cell-days. Under Poisson, its standard deviation would be only 48."
+    },
+    {
+     "label": "Burstiness θ",
+     "value": 188,
+     "unit": "moment estimate",
+     "say": "From the paired MODIS and VIIRS fit for Punjab and Haryana, theta is about 188. A smaller theta would mean even bigger bursts."
+    },
+    {
+     "label": "Negative-binomial SD",
+     "value": 177,
+     "unit": "fire cell-days",
+     "result": true,
+     "say": "Put them into the formula and take the square root: the standard deviation becomes 177, not 48. That is a much wider spread. Pretend the counts are Poisson, and every band would look far too certain."
+    }
+   ]
+  },
+  {
+   "type": "figure",
+   "file": "figures/F15_a.svg",
+   "title": "Real counts are burstier than Poisson",
+   "beats": [
+    {
+     "say": "On the left, the squared residuals of the paired model against the fitted mean. The Poisson line sits far below the cloud of points, while the negative-binomial curve follows them."
+    },
+    {
+     "say": "On the right, a Poisson and a negative-binomial distribution with the same mean of 100. With theta equal to 10, the spread is 33 instead of 10. Same average, much wider spread. The variance there is 1,100 instead of 100."
+    }
+   ]
+  },
+  {
+   "type": "site",
+   "page": "/formulas/F15",
+   "beats": [
+    {
+     "target": ".fp-formula",
+     "label": "The formula, numbered F15",
+     "say": "On the FIREWORK website, this method lives in the Formulas section. Its page shows the equation, numbered as formula 15, with every symbol explained."
+    },
+    {
+     "target": ".fl-cards",
+     "label": "Where it comes from · why · how · example",
+     "say": "Below it, four short cards explain where the method comes from, why FIREWORK needs it, how it works step by step, and a worked example. The full derivation is in the PDF on the same page."
+    }
+   ]
+  },
+  {
+   "type": "recap",
+   "points": [
+    "Var = μ + μ²/θ",
+    "Fire counts are far burstier than Poisson",
+    "Dispersion above 1.5 → negative binomial, wider honest bands"
+   ],
+   "next": "F16 · Delta-method interval for a ratio",
+   "beats": [
+    {
+     "say": "So, to remember: real fire counts come in bursts, and the negative binomial adds a term for that. Measuring the burstiness on real data, and widening the bands to match, keeps every interval on the site honest."
+    },
+    {
+     "say": "Next, formula sixteen: the delta-method interval for a ratio."
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,57 @@
+{
+  "id": "F31",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "What if neighbouring years copy each other?",
+      "beats": [
+        { "say": "Imagine asking twenty people for their opinion, but half of them are twins who always agree with each other. You think you have twenty independent voices, but really you have fewer. Your survey looks more certain than it is." },
+        { "say": "Years can behave like twins. A wet year follows a wet year, a policy lasts several seasons. Formula thirty-one, the Hamed-Rao autocorrelation correction, inflates the uncertainty of the Mann-Kendall score by the effective loss of independent years." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\operatorname{Var}^*(S) =", "say": "On the left is the corrected variance of the Kendall score S. The star marks it as corrected." },
+        { "tex": " \\operatorname{Var}(S)", "say": "We start from the ordinary variance of S, from formula thirty, which assumes every year is independent." },
+        { "tex": "\\cdot\\frac{n}{n^*}", "say": "Then we multiply by n over n star. n is the number of years we have. n star is the effective number of independent years. If neighbouring years copy each other, n star is smaller than n, the fraction is bigger than one, and the variance grows. To find it, we remove the trend with Sen's slope, rank what is left, and measure how strongly each year resembles the years just before it." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "The 25-season series",
+      "steps": [
+        { "label": "Lag-1 autocorrelation", "value": 0.18, "unit": "detrended ranks", "say": "For the 25-season burning series, the resemblance between each year and the next, the lag-one autocorrelation, is 0.18. At lag two it is 0.29." },
+        { "label": "Significance bound", "value": 0.39, "unit": "plus or minus", "say": "But with only 25 years, an autocorrelation must pass plus or minus 0.39 to count as real. Neither does." },
+        { "label": "Variance inflation n/n*", "value": 1.00, "unit": "no inflation", "result": true, "say": "So no lag is kept, n over n star is 1.00, and the corrected p-value equals the raw one, 0.272. Here, persistence between years does not change the verdict." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F31_a.svg",
+      "title": "Persistence in the season series",
+      "beats": [
+        { "say": "This figure shows the autocorrelation of the detrended ranks of the October and November series, at lags one to eight years." },
+        { "say": "The bounds mark the level needed to count as significant. Every bar stays inside them. With only 25 years, these values are noisy, which is why the correction keeps only significant lags." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/formulas/F31",
+      "beats": [
+        { "target": ".fp-formula", "label": "The correction", "say": "On the FIREWORK website, the formula page for formula thirty-one shows the correction. FIREWORK reports the raw and the corrected p-values together, so you can see when persistence matters." },
+        { "target": ".fp-keys", "label": "Key numbers", "say": "The key numbers tell the story for Punjab and Haryana: lag-one autocorrelation 0.18, bound 0.39, inflation 1.00, and a corrected p of 0.272. Without such a check, a short, persistent series can show a significant trend that is really just a few long swings." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Var*(S) = Var(S) × n / n*", "Only significant lags of detrended ranks count", "Here n/n* = 1.00: corrected p = raw p = 0.272"],
+      "next": "F32 · Sen's slope",
+      "beats": [
+        { "say": "So, to remember: when years resemble their neighbours, we have fewer independent voices than it seems, so the variance must grow. For this region the correction changes nothing, and both p-values are shown." },
+        { "say": "Next, formula thirty-two: Sen's slope." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "F13",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Aqua · Punjab and Haryana · 4 Nov 2020",
+      "question": "Do satellites see the same at night as by day?",
+      "beats": [
+        { "say": "Think of a candle. In a sunny room you hardly notice it. In a dark room it shines out clearly. Fires seen from space behave the same way: at night the ground is cool, so even small fires stand out." },
+        { "say": "And at night, VIIRS, with its finer pixels, sees far more of those small fires than MODIS. Mixing day and night into one exchange rate would hide that. Formula thirteen, separate day and night factors, computes k for each pass on its own." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\hat k_{r,m,\\delta} \\;=\\;", "say": "On the left is k for region r, calendar month m, and a new label, delta, which says day pass or night pass." },
+        { "tex": " \\frac{\\sum_y V_{r,m,y,\\delta}}{\\sum_y M_{r,m,y,\\delta}}", "say": "On top, we add up the VIIRS cell-days over all overlap years, for that month and that pass. Underneath, we add up the MODIS cell-days in the same way. Summing first, then dividing, gives the ratio of totals." },
+        { "tex": ",\\qquad \\delta\\in\\{\\mathrm{D},\\mathrm{N}\\}", "say": "Delta takes two values: D for day and N for night. So every calendar month gets two exchange rates. Day and night are defined by the real acquisition times, not by the nominal 10:30 and 13:30, because the orbits have drifted." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · October, day passes",
+      "steps": [
+        { "label": "VIIRS day cell-days", "value": 86575, "unit": "fire cell-days, 2012–2025", "say": "Let's take October in Punjab and Haryana, from 2012 to 2025, day passes only. VIIRS recorded 86,575 day cell-days." },
+        { "label": "MODIS day cell-days", "value": 36045, "unit": "fire cell-days, 2012–2025", "say": "MODIS recorded 36,045 day cell-days over the same years." },
+        { "label": "k, October day", "value": 2.40, "unit": "VIIRS per MODIS", "result": true, "band": [2.28, 2.56], "say": "Divide, and the day rate for October is 2.40, with a range from 2.28 to 2.56. Now the night: MODIS saw only 39 night cell-days, against 752 for VIIRS. So the night rate is 19.3, with a very wide range from 12.9 to 38.6, because so few MODIS nights exist." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F13_a.svg",
+      "title": "Day, night and drifting overpasses",
+      "beats": [
+        { "say": "On the left are the day and night exchange rates for October and November, with their ninety-five percent ranges. Night rates sit far above day rates. In November, day is 1.99 and night is 26.0." },
+        { "say": "On the right is the median solar time of daytime detections for each satellite and year. Terra drifts earlier, from 10:50 in 2015 to 9:39 in 2025, and Aqua drifts later, from 13:17 to 14:37." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sensors",
+      "beats": [
+        { "target": ".sl-switch", "label": "MODIS or VIIRS", "say": "On the FIREWORK website, open Sensor Lab, and switch between MODIS and VIIRS to compare the same farms through two instruments." },
+        { "target": ".sl-side", "label": "Hot pixels by satellite", "say": "The side panel lists hot pixels by satellite, and the exchange rate that links them. Keep in mind that this is a daytime story: at night VIIRS records more than ten times as many fire cell-days as MODIS." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["One k for day passes, one for night passes", "Night k is much larger: VIIRS sees small night fires", "Night strata are sparse, so their ranges are wide"],
+      "next": "F14 · Poisson GLM with exposure offset",
+      "beats": [
+        { "say": "So, to remember: split by pass, add up each sensor's cell-days, and divide. A single day-dominated rate would badly underrate night activity, which matters for industry and for any shift of burning towards the evening." },
+        { "say": "Next, formula fourteen: the Poisson GLM with exposure offset." }
+      ]
+    }
+  ]
+}

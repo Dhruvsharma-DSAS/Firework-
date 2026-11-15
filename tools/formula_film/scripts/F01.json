@@ -1,0 +1,60 @@
+{
+  "id": "F01",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Aqua · Punjab and Haryana · 4 Nov 2020",
+      "question": "What time was it where the fire actually burned?",
+      "beats": [
+        { "say": "Imagine a friend in Punjab sends you a photo, but the camera stamped it with London time. To know whether it was taken at breakfast or at lunch, you first have to move the clock to where your friend was standing." },
+        { "say": "Satellites do the same thing. They stamp every fire pixel with one world clock, called UTC. Formula one, the local solar time of an overpass, moves each detection onto the Sun's clock at the place where it was seen." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "t_{\\mathrm{LMST}} \\;=\\; ", "say": "On the left is the answer we want: the local mean solar time. That is the time on the Sun's clock, right at the spot where the fire was seen." },
+        { "tex": "\\Big(t_{\\mathrm{UTC}}", "say": "We start from the time the satellite stamped on the detection. It is in UTC, the same clock for the whole planet." },
+        { "tex": " + \\frac{\\lambda}{15^{\\circ}\\,\\mathrm{h}^{-1}}\\Big)", "say": "Then we add the longitude, divided by fifteen. The Earth turns fifteen degrees every hour, so every degree further east moves the Sun's clock four minutes later." },
+        { "tex": " \\bmod 24", "say": "Finally, we wrap the answer so it stays between zero and twenty-four hours. If the shift carries us past midnight, the fire belongs to the next local day, and the local date moves with it." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · one Aqua fire, 2 Nov 2023",
+      "steps": [
+        { "label": "Time stamped in UTC", "value": 7.80, "unit": "hours UTC", "say": "Here is a real Aqua detection from the archive, on the second of November 2023. FIRMS stamped it at seven forty-eight UTC. In decimal hours, that is 7.80." },
+        { "label": "Longitude offset", "value": 5.05, "unit": "hours", "say": "The fire sat at longitude 75.74 degrees east. Divide by fifteen, and we get 5.05 hours. That is how far ahead of UTC the Sun's clock runs at that spot." },
+        { "label": "Local solar time", "value": 12.85, "unit": "hours, local mean solar time", "result": true, "say": "Add the two, and the fire was seen at 12.85 hours, or about 12:51 on the Sun's clock. Indian Standard Time would read 13:18 for the same moment, about half an hour ahead of the Sun." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F01_a.svg",
+      "title": "Solar offset and the real overpass windows",
+      "beats": [
+        { "say": "On the left, the solar offset grows steadily with longitude. India's single time zone, the dashed line, matches the Sun only at 82.5 degrees east, so over Punjab it runs ahead." },
+        { "say": "On the right is the solar time of every detection in Punjab and Haryana, by satellite. Terra looks in the late morning, Aqua and the VIIRS satellites in the early afternoon, and small night peaks sit near half past one." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/blind-spot",
+      "beats": [
+        { "target": ".bs-clock", "label": "Overpass windows on the Sun's clock", "say": "On the FIREWORK website, open the Blind Spot page. This clock shows when each satellite looks at Punjab during the day. The windows are drawn on the Sun's clock, which is exactly what formula one produces." },
+        { "target": ".bs-controls", "label": "Move the burning peak", "say": "Because everything is on solar time, you can slide the burning peak through the afternoon and see it move in and out of those narrow windows." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Local solar time = UTC + longitude ÷ 15, wrapped to 24 h", "The local date comes from the shifted time, not the UTC date", "IST runs about half an hour ahead of the Sun over Punjab"],
+      "next": "F02 · Pixel footprint and scan-angle growth",
+      "beats": [
+        { "say": "So, to remember: take the UTC stamp, add the longitude divided by fifteen, and wrap it around the day. Now a fire, a farmer and a satellite all share the same clock, the Sun's." },
+        { "say": "Next, formula two: pixel footprint and scan-angle growth." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "F22",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/zoom_modis_2020-11-04.webp",
+      "imageLabel": "MODIS 1 km fire pixels · zoom · 4 Nov 2020",
+      "question": "How do you compare marks from two different exams?",
+      "beats": [
+        { "say": "Imagine two schools with different exams. Scoring seventy at one school might be as good as scoring fifty at the other, simply because one exam was harder. A fair way to compare is by rank: the top student at one school matches the top student at the other, and the middle matches the middle." },
+        { "say": "Counts get one exchange rate, but fire strength, FRP, is a whole spread of values. Formula twenty-two, quantile mapping, translates a MODIS FRP value into the VIIRS value at the same rank." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "x' \\;=\\;", "say": "On the left is x prime, the translated value: what a MODIS fire of strength x looks like on the VIIRS scale." },
+        { "tex": " F_V^{-1}", "say": "This is the inverse of the VIIRS distribution. Give it a rank, like the middle or the top ten percent, and it hands back the VIIRS strength at that rank." },
+        { "tex": "\\big(F_M(x)\\big)", "say": "Inside is the MODIS distribution. It takes the MODIS value x and tells us its rank among all MODIS fires. So we go from value to rank in MODIS, then from rank back to value in VIIRS." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "October–November daytime, 2012–2025",
+      "steps": [
+        { "label": "Aqua median FRP", "value": 12.5, "unit": "MW", "say": "In October and November daytime passes, from 2012 to 2025, the median Aqua MODIS fire had 12.5 megawatts, from 182,239 detections." },
+        { "label": "S-NPP median FRP", "value": 5.0, "unit": "MW", "say": "The median S-NPP fire had only 5.0 megawatts, from 873,494 detections. So the mapping sends the Aqua median straight to 5.0." },
+        { "label": "An Aqua 50 MW fire, mapped", "value": 22.3, "unit": "MW on the VIIRS scale", "result": true, "say": "An Aqua fire of 50 megawatts maps to 22.3 on the VIIRS scale, and an Aqua 10 megawatt fire maps to 4.0. Above the Aqua 99th percentile, 70.6 megawatts, values are outside the training range, so they are flagged rather than mapped." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F22_a.svg",
+      "title": "Aligning two FRP distributions",
+      "beats": [
+        { "say": "On the left are the cumulative distributions of Aqua MODIS and S-NPP VIIRS fire strength, for October and November daytime. The MODIS curve sits further right: its fires look stronger, because its big pixels miss the weak ones." },
+        { "say": "On the right is the resulting transfer function. The dotted line would mean no change. The real curve lies below it, pulling MODIS values down to the VIIRS scale." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/formulas/F22",
+      "beats": [
+        { "target": ".fp-formula", "label": "The mapping", "say": "On the FIREWORK website, the formula page for formula twenty-two shows the mapping. Notice the words in its name: FRP only." },
+        { "target": ".fl-cards", "label": "Why FRP only", "say": "Quantile mapping is deliberately not used for counts. Forcing an old period's distribution to look like the new period's would erase real changes in the tails. Counts get the exchange rate instead, and FRP gets its own careful translation, trained on the overlap years within one stratum." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["x′ = F_V⁻¹(F_M(x)): match values by rank", "Aqua median 12.5 MW → S-NPP median 5.0 MW", "Used for FRP only; out-of-range values are flagged"],
+      "next": "F23 · Bland–Altman agreement",
+      "beats": [
+        { "say": "So, to remember: turn a MODIS value into its rank, then read the VIIRS value at that same rank. It puts twenty-five years of fire strength on one scale, without touching the counts." },
+        { "say": "Next, formula twenty-three: Bland-Altman agreement." }
+      ]
+    }
+  ]
+}

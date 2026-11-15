@@ -1,0 +1,59 @@
+{
+  "id": "F08",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_clear_2023-11-03.webp",
+      "imageLabel": "Clear sky · Punjab and Haryana · 3 Nov 2023",
+      "question": "A field that burns once, or a factory that never sleeps?",
+      "beats": [
+        { "say": "Think of a street at night. A birthday candle glows once and is gone. A street lamp glows every single night. If you counted every light you ever saw, the lamp would win by far, even though it is not a celebration." },
+        { "say": "Brick kilns, gas flares and steel plants are the street lamps of the fire record. A rice field burns once. Formula eight, persistence, measures how often a site is seen hot, so steady industrial heat does not fill up the farm-fire calendar." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "p_x \\;=\\; ", "say": "On the left is p x, the persistence of site x. It is a share between zero and one." },
+        { "tex": "\\frac{\\sum_d c_{x,d}}{\\sum_d \\mathbb{1}[\\,\\mathrm{valid}_{x,d}\\,]}", "say": "On top, we count the days the site was hot. Underneath, we count the days the site could have been seen: days when the satellite had a clear look, not cloud. Dividing by calendar days instead would make cloudy places look less persistent." },
+        { "tex": ",\\qquad p_x = \\text{NULL if } \\sum_d \\mathbb{1}[\\mathrm{valid}_{x,d}] = 0", "say": "And if the site could never be seen at all, persistence is unknown. It is not zero. We simply had no chance to look. A cut-off for calling a site persistent, for example 0.20, is a hypothesis still to be fitted on labelled sites, not a fixed constant." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "An illustrative kiln",
+      "steps": [
+        { "label": "Days seen hot", "value": 300, "unit": "days", "say": "Here is an illustrative kiln, a made-up example to explain the idea. It was seen hot on 300 days." },
+        { "label": "Days it could be seen", "value": 365, "unit": "observable days", "say": "It could have been seen on 365 days." },
+        { "label": "Persistence", "value": 0.82, "unit": "share of looks", "result": true, "say": "Divide, and the kiln's persistence is 0.82. A paddy field hot on 7 of 365 days scores only 0.02. In the real archive, sites that FIRMS marks as static sources were hot on a median of 49 days, while farm-fire sites were hot on a median of just 3." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F08_a.svg",
+      "title": "Persistent heat stands out",
+      "beats": [
+        { "say": "On the left is the share of sites hot on at least a given number of days, from 2012 to 2026, for farm-fire sites and for FIRMS static-source sites, on log scales. The static sites stay hot far longer." },
+        { "say": "On the right, the static-source detections in red stand out against all the vegetation-fire detections in grey. FIREWORK removed 17,588 static-source detections." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sources",
+      "beats": [
+        { "target": ".src-side", "label": "Hot pixels by ground type", "say": "On the FIREWORK website, open the Sources page. The side panel splits hot pixels by the type of ground they sit on. Persistence is one of the clues for calling a site agricultural, industrial or uncertain." },
+        { "target": ".pd-sec", "label": "Method", "say": "The method section explains the rule. Be aware: the clear-day counts are not loaded yet for this region, so the exact persistence score is still pending. We only know the busiest static site has a persistence of at least 0.16." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Persistence = hot days ÷ days the site could be seen", "Clouded days do not count as looks", "No looks at all means unknown, not zero"],
+      "next": "F09 · Clear-sky (exposure) fire rate",
+      "beats": [
+        { "say": "So, to remember: divide the days a site was hot by the days it could be seen. Fields score low, factories score high, and the farm-fire calendar stays about farms." },
+        { "say": "Next, formula nine: the clear-sky fire rate." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+ "lesson-01": {
+  "src": "/learn/video/lesson-01.mp4",
+  "poster": "/learn/video/lesson-01.jpg",
+  "seconds": 98
+ },
+ "lesson-02": {
+  "src": "/learn/video/lesson-02.mp4",
+  "poster": "/learn/video/lesson-02.jpg",
+  "seconds": 86
+ },
+ "lesson-03": {
+  "src": "/learn/video/lesson-03.mp4",
+  "poster": "/learn/video/lesson-03.jpg",
+  "seconds": 76
+ },
+ "lesson-04": {
+  "src": "/learn/video/lesson-04.mp4",
+  "poster": "/learn/video/lesson-04.jpg",
+  "seconds": 82
+ },
+ "lesson-05": {
+  "src": "/learn/video/lesson-05.mp4",
+  "poster": "/learn/video/lesson-05.jpg",
+  "seconds": 87
+ },
+ "lesson-06": {
+  "src": "/learn/video/lesson-06.mp4",
+  "poster": "/learn/video/lesson-06.jpg",
+  "seconds": 70
+ },
+ "lesson-07": {
+  "src": "/learn/video/lesson-07.mp4",
+  "poster": "/learn/video/lesson-07.jpg",
+  "seconds": 76
+ },
+ "lesson-08": {
+  "src": "/learn/video/lesson-08.mp4",
+  "poster": "/learn/video/lesson-08.jpg",
+  "seconds": 71
+ },
+ "lesson-09": {
+  "src": "/learn/video/lesson-09.mp4",
+  "poster": "/learn/video/lesson-09.jpg",
+  "seconds": 63
+ },
+ "lesson-10": {
+  "src": "/learn/video/lesson-10.mp4",
+  "poster": "/learn/video/lesson-10.jpg",
+  "seconds": 73
+ },
+ "lesson-11": {
+  "src": "/learn/video/lesson-11.mp4",
+  "poster": "/learn/video/lesson-11.jpg",
+  "seconds": 62
+ },
+ "lesson-12": {
+  "src": "/learn/video/lesson-12.mp4",
+  "poster": "/learn/video/lesson-12.jpg",
+  "seconds": 69
+ },
+ "myths": {
+  "src": "/learn/video/myths.mp4",
+  "poster": "/learn/video/myths.jpg",
+  "seconds": 67
+ },
+ "live": {
+  "src": "/learn/video/live.mp4",
+  "poster": "/learn/video/live.jpg",
+  "seconds": 71
+ },
+ "site-tour": {
+  "src": "/learn/video/site-tour.mp4",
+  "poster": "/learn/video/site-tour.jpg",
+  "seconds": 449,
+  "starts": [
+   0,
+   4.7,
+   14.7,
+   18.5,
+   28.8,
+   38.7,
+   51,
+   69.4,
+   82.1,
+   92.6,
+   102.1,
+   112,
+   126.5,
+   136.5,
+   147.2,
+   152,
+   159.4,
+   168.2,
+   182.4,
+   193.6,
+   203.7,
+   214.7,
+   224.9,
+   235.3,
+   246.4,
+   254.9,
+   264.8,
+   268.1,
+   280.1,
+   290.6,
+   303.1,
+   308.1,
+   322.1,
+   329.6,
+   336.9,
+   340.3,
+   348.5,
+   357.7,
+   364.2,
+   367.7,
+   376.3,
+   383.8,
+   389.2,
+   401.4,
+   410,
+   425.7,
+   439.1
+  ],
+  "chapters": [
+   {
+    "at": 14.7,
+    "n": 1,
+    "title": "Home",
+    "sub": "The story of the fire record"
+   },
+   {
+    "at": 147.2,
+    "n": 2,
+    "title": "Explorer",
+    "sub": "Every hot pixel on one Earth"
+   },
+   {
+    "at": 264.8,
+    "n": 3,
+    "title": "Calendar",
+    "sub": "Twenty-five years on one page"
+   },
+   {
+    "at": 303.1,
+    "n": 4,
+    "title": "Science pages",
+    "sub": "Sensor Lab · Sources · Blind Spot"
+   },
+   {
+    "at": 336.9,
+    "n": 5,
+    "title": "Trust",
+    "sub": "How far each number can be trusted"
+   },
+   {
+    "at": 364.2,
+    "n": 6,
+    "title": "Your data",
+    "sub": "Bring your own file"
+   },
+   {
+    "at": 383.8,
+    "n": 7,
+    "title": "Learn and help",
+    "sub": "Lessons · guide · Ask Chronos"
+   }
+  ]
+ }
+}

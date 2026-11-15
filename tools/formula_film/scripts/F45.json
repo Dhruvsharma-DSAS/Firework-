@@ -1,0 +1,59 @@
+{
+  "id": "F45",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Aqua · Punjab and Haryana · 4 Nov 2020",
+      "question": "What if the fires happen between the looks?",
+      "beats": [
+        { "say": "Imagine a security guard who checks a room for just a few minutes at ten, at one and at two in the afternoon. Anything that happens in between, the guard never sees. If someone learns the schedule, they can simply wait until the guard has gone." },
+        { "say": "Polar satellites look at each place only at fixed times. If farmers burn later in the afternoon, fires happen between the looks. Formula forty-five, the diurnal fraction seen by overpasses, asks: if burning follows a daily curve, what share of it falls inside the moments the satellites are looking?" }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "f_{\\mathrm{seen}} \\;=\\;", "say": "f seen is the share of a day's burning that happens while a satellite is looking." },
+        { "tex": " \\int_{\\bigcup_o [\\,t_o - w,\\ t_o + w\\,]}", "say": "The integral sign means: add up over time. But only over the viewing windows. For each overpass o, the window runs from its time minus w to its time plus w. The cup symbol means we join the windows together first, so overlapping windows are not counted twice." },
+        { "tex": " g(t)\\,dt", "say": "And g of t is the burning curve: how much of the day's burning happens at each moment. It adds up to one over the whole day. So f seen is a share between zero and one. Here g is a scenario, not a measurement." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "2024 overpasses over Punjab and Haryana",
+      "steps": [
+        { "label": "Window half-width w", "value": 15, "unit": "minutes", "say": "The observed 2024 windows are centred on Terra at 9:52, S-NPP and NOAA-20 at 13:07, and Aqua at 14:22, local solar time. Each window is 15 minutes either side." },
+        { "label": "Share seen, peak at 13:00", "value": 23.7, "unit": "%", "say": "If burning peaks at 13:00, with a spread of 1.5 hours, the satellites see 23.7 percent of it. Adding the windows without merging would wrongly give 36.7 percent." },
+        { "label": "Share seen, peak at 16:18", "value": 7.3, "unit": "%", "result": true, "say": "Now move the peak to 16:18, late afternoon. The share seen drops to just 7.3 percent. So falling detections could partly be a timing effect. This is a scenario, not a measured share of fires." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F45_a.svg",
+      "title": "What the satellites can see",
+      "beats": [
+        { "say": "On the left are two burning scenarios, an early-afternoon peak and a late-afternoon peak, with the observed overpass windows marked." },
+        { "say": "On the right is the share seen as the burning peak moves through the day. The black line uses the merged windows. The red line sums them naively, and double counts." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/blind-spot",
+      "beats": [
+        { "target": ".bs-clock", "label": "24-hour clock of overpass windows", "say": "On the FIREWORK website, open the Blind Spot page. The clock shows the moments the satellites look, on the Sun's clock." },
+        { "target": ".bs-controls", "label": "Burning-peak slider", "say": "Drag the burning-peak slider later into the afternoon, and watch the share seen fall. The page shows a scenario, because the true daily curve would need hourly geostationary data." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["f_seen = burning curve added up over the merged viewing windows", "Peak 13:00 → 23.7% seen; peak 16:18 → 7.3%", "A scenario, not a measured share of fires"],
+      "next": "F46 · Burned-area to detection ratio B",
+      "beats": [
+        { "say": "So, to remember: satellites only see the moments they look. Merge the windows, add up the burning inside them, and you learn how much a shift to late afternoon could hide." },
+        { "say": "Next, formula forty-six: the burned-area to detection ratio B." }
+      ]
+    }
+  ]
+}

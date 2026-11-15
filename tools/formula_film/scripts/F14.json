@@ -1,0 +1,59 @@
+{
+  "id": "F14",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "What if we wrote the exchange rate as a model?",
+      "beats": [
+        { "say": "Imagine two people counting cars on the same road. One is careful, one is sleepy and misses some. If they also stand there for different lengths of time, you must account for that before you can say who is more careful." },
+        { "say": "Formula fourteen, the Poisson GLM with exposure offset, writes the exchange rate as exactly that kind of count model. Both sensors watch the same burning, each has its own sensitivity, and the number of looks enters as an offset." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\log \\mu_{s,t} \\;=\\;", "say": "On the left is the log of mu, the expected count for sensor s in month t. We work on the log scale, so effects multiply." },
+        { "tex": " \\log E_{s,t}", "say": "The first term is the log of exposure, the number of valid looks. It is an offset: more looks, more fires counted, with nothing to estimate." },
+        { "tex": " \\;+\\; \\alpha_t", "say": "Alpha t is the burning that really happened in that month and year. Both sensors share it, because they watch the same fields." },
+        { "tex": " \\;+\\; \\gamma_s", "say": "Gamma s is the sensor's own sensitivity. The difference between the VIIRS and MODIS gammas, turned back from the log scale, is the exchange rate k." },
+        { "tex": ",\\qquad Y_{s,t}\\sim \\mathrm{Poisson}(\\mu_{s,t})\\ \\text{or}\\ \\mathrm{NegBin}(\\mu_{s,t},\\theta)", "say": "Finally, the observed count Y follows a Poisson distribution, or a negative binomial when the counts are burstier than Poisson allows." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · November, 2012–2025",
+      "steps": [
+        { "label": "Total VIIRS", "value": 89005, "unit": "fire cell-days", "say": "Take November in Punjab and Haryana, over the overlap years 2012 to 2025. VIIRS recorded 89,005 fire cell-days in total." },
+        { "label": "Total MODIS", "value": 42464, "unit": "fire cell-days", "say": "MODIS recorded 42,464." },
+        { "label": "GLM exchange rate k", "value": 2.096, "unit": "VIIRS per MODIS", "result": true, "say": "Fit the simplest form of the model, and it gives k equal to 2.096. That is exactly the ratio of totals. So the model is not a separate confirmation; it is the same estimator. Its value is in what it adds: honest standard errors, and room for extras like day and night." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F14_a.svg",
+      "title": "The count model on real overlap data",
+      "beats": [
+        { "say": "On the left, November VIIRS against MODIS, with the simplest Poisson model. Its slope is the ratio of totals." },
+        { "say": "On the right are the Pearson residuals of the paired sensor model. Most lie far outside plus or minus two. The dispersion is 39.8, far above 1.5, so the plain Poisson standard error is too small, by a factor of about 6.3." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "beats": [
+        { "target": ".k-explain", "label": "Exchange rate k for each month", "say": "On the FIREWORK website, open the Calendar. The exchange-rate panel lists k for every calendar month. Each one is this model in its simplest form: total VIIRS over total MODIS, across the overlap years." },
+        { "target": "[data-film=cal-inspector]", "label": "Month inspector", "say": "The full paired model, with exposure as the offset, waits for the clear-sky exposure, which is still pending. Until then, the published k is the intercept-only form." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["log μ = log exposure + month effect + sensor effect", "Simplest form = ratio of totals (2.096 for November)", "Dispersion 39.8 → use negative binomial for honest errors"],
+      "next": "F15 · Negative-binomial variance",
+      "beats": [
+        { "say": "So, to remember: k is the difference between two sensor effects in a count model, with looks as the offset. In its simplest form it equals the ratio of totals, and its real gift is honest uncertainty." },
+        { "say": "Next, formula fifteen: negative-binomial variance." }
+      ]
+    }
+  ]
+}

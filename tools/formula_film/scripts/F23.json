@@ -1,0 +1,58 @@
+{
+  "id": "F23",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "Do two rulers move together, or do they actually agree?",
+      "beats": [
+        { "say": "Imagine two kitchen scales. Whenever you add flour, both numbers go up together. But one always reads half a kilo heavier. They are perfectly correlated, and still they do not agree." },
+        { "say": "That is why correlation is not enough. Formula twenty-three, Bland-Altman agreement, measures agreement directly: the average difference between harmonised MODIS and observed VIIRS, called the bias, and the range within which ninety-five percent of differences fall." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "d_t = \\ln(a_t + 0.5)", "say": "For each month t, we start with a, the harmonised MODIS value, and take its log, after adding a half so that empty months still work." },
+        { "tex": " - \\ln(b_t + 0.5)", "say": "Then we subtract the log of b, what VIIRS really observed. On the log scale, a difference means a ratio: zero means a perfect match. The sign is fixed: harmonised minus observed." },
+        { "tex": ",\\qquad \\bar d", "say": "d bar is the average of all those differences. That is the bias. If it is close to zero, harmonised MODIS is neither too high nor too low on average." },
+        { "tex": " \\pm 1.96\\,\\mathrm{SD}(d)", "say": "And plus or minus 1.96 standard deviations gives the limits of agreement: the band where about ninety-five percent of months fall. With fewer than eight points, the limits are not drawn." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "177 held-out overlap months",
+      "steps": [
+        { "label": "Bias, all months", "value": -0.046, "unit": "log units", "say": "To avoid cheating, each year is held out in turn: k is fitted on the other years and applied to the hidden year. Across all 177 held-out months, the bias is minus 0.046. Harmonised MODIS is 4.5 percent lower than VIIRS on average." },
+        { "label": "Spread, all months", "value": 0.40, "unit": "SD, log units", "say": "The standard deviation is 0.40, so the limits of agreement run from minus 0.84 to plus 0.74. A harmonised month lies between 0.43 and 2.10 times the observed value, ninety-five percent of the time." },
+        { "label": "Bias, October and November", "value": -0.010, "unit": "log units", "result": true, "say": "In the burning season alone, October and November, the bias shrinks to minus 0.010, with a standard deviation of 0.18. Agreement is much tighter where most fires are, and the gate, a bias of at most 0.1 either way, is met." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F23_a.svg",
+      "title": "Do the two rulers agree?",
+      "beats": [
+        { "say": "Each point is one held-out overlap month: the log difference between harmonised MODIS and observed VIIRS, plotted against the size of the month. The solid line is the bias, and the dashed lines are the ninety-five percent limits." },
+        { "say": "The red points, October and November, sit tightly around zero. The quiet months scatter more, because their counts are small." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/validation",
+      "beats": [
+        { "target": ".va-board", "label": "Gates summary", "say": "On the FIREWORK website, open the Validation page. The gates summary lists each test that the harmonised record has to pass, with its threshold." },
+        { "target": ".va-results", "label": "Results", "say": "The results show the outcomes. Agreement is always measured on held-out years, never on the years used to fit k, because agreement on your own training data would be circular." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["d = log(harmonised + 0.5) − log(observed + 0.5)", "Bias −0.046 overall; −0.010 in Oct + Nov", "Limits of agreement [−0.84, +0.74], on held-out years"],
+      "next": "F24 · Block bootstrap over years",
+      "beats": [
+        { "say": "So, to remember: compare harmonised and observed months on a log scale, report the average difference and the band around it, and always test on years the model did not see." },
+        { "say": "Next, formula twenty-four: the block bootstrap over years." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+ "model": "forecast_next_month",
+ "version": "0.1",
+ "trained_at_utc": "2026-11-02T01:02:51.570871+00:00",
+ "provenance": "RUN_TESTED_LOCALLY",
+ "regions": [
+  "punjab_haryana"
+ ],
+ "target": "VIIRS S-NPP fire cell-days per 0.1\u00b0 cell, next month",
+ "features": [
+  "lag1",
+  "lag3",
+  "clim_mean",
+  "clim_max",
+  "clim_years_active",
+  "climv_mean",
+  "next_mon",
+  "abs_lat",
+  "area_km2"
+ ],
+ "algorithm": "HistGradientBoostingRegressor (Poisson)",
+ "validation": "rolling origin by year (train < Y, test = Y)",
+ "folds": [
+  {
+   "test_year": 2024,
+   "n_test": 11928,
+   "deviance_model": 1.1823881933941487,
+   "deviance_climatology": 1.8879973405922958,
+   "skill_vs_climatology": 0.37373418490980814,
+   "mae_model": 0.941886080353517,
+   "mae_climatology": 1.179542860859602,
+   "brier_above_normal": 0.12842461610782513,
+   "base_rate_above_normal": 0.17798457411133467
+  },
+  {
+   "test_year": 2025,
+   "n_test": 11928,
+   "deviance_model": 1.0977711134685264,
+   "deviance_climatology": 2.1837790218703126,
+   "skill_vs_climatology": 0.49730668603623973,
+   "mae_model": 0.8218624327263402,
+   "mae_climatology": 1.3153797758925345,
+   "brier_above_normal": 0.1206832682604049,
+   "base_rate_above_normal": 0.18720657276995306
+  },
+  {
+   "test_year": 2026,
+   "n_test": 10934,
+   "deviance_model": 1.2967667776278113,
+   "deviance_climatology": 2.751976879044794,
+   "skill_vs_climatology": 0.5287871829512184,
+   "mae_model": 0.8194158021181575,
+   "mae_climatology": 1.4556106058297837,
+   "brier_above_normal": 0.1093200697701534,
+   "base_rate_above_normal": 0.146606914212548
+  }
+ ],
+ "n_rows": 165998,
+ "use_rule": "show the outlook only if skill_vs_climatology > 0 in every fold; label it an outlook, not an alert",
+ "limits": [
+  "Weather of the current month is used, not a weather forecast \u2014 the outlook is valid at the end of the month.",
+  "A hot spot is a pixel, not a fire."
+ ]
+}

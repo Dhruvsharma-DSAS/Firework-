@@ -1,0 +1,113 @@
+{
+  "id": "F02",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/zoom_modis_2020-11-04.webp",
+      "imageLabel": "MODIS 1 km fire pixels · zoom · 4 Nov 2020",
+      "question": "Is a bigger dot a bigger fire?",
+      "beats": [
+        {
+          "say": "Shine a torch straight down at the floor, and you get a small, sharp circle. Tilt it towards the far wall, and the same light spreads over a much bigger patch."
+        },
+        {
+          "say": "A satellite scanner works the same way. Pixels at the edge of its view cover far more ground than pixels straight below it. Formula two, the pixel footprint, tells us how much ground each detection really stands for. This matters because FIREWORK compares two sensors with very different pixels."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "A_{\\mathrm{pix}} \\;=\\; ",
+          "say": "On the left is the footprint: the area of ground that one fire pixel covers."
+        },
+        {
+          "tex": "\\mathrm{scan}",
+          "say": "The first size is scan, the width of the pixel across the satellite's sweep. It grows quickly as the scanner looks further to the side."
+        },
+        {
+          "tex": " \\times \\mathrm{track}",
+          "say": "We multiply it by track, the length of the pixel along the satellite's path. FIRMS gives both numbers for every detection, already corrected for the curve of the Earth."
+        },
+        {
+          "tex": "\\qquad [\\mathrm{km}^2]",
+          "say": "The answer is in square kilometres. It is the size of the observation, not the size of the fire burning inside it."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · the largest MODIS pixel",
+      "steps": [
+        {
+          "label": "Scan",
+          "value": 4.8,
+          "unit": "km",
+          "say": "Let's take the biggest MODIS pixel in the Punjab and Haryana archive. Right at the edge of the swath, its scan width is 4.8 kilometres."
+        },
+        {
+          "label": "Track",
+          "value": 2.0,
+          "factor": true,
+          "unit": "km",
+          "say": "Its track length, along the satellite's path, is 2.0 kilometres. Straight below the satellite, both sizes would be close to one kilometre."
+        },
+        {
+          "label": "Footprint",
+          "value": 9.6,
+          "unit": "km²",
+          "result": true,
+          "say": "Multiply them, and this one detection covers 9.6 square kilometres. Compare that with the typical MODIS footprint of 1.21 square kilometres, and the typical VIIRS footprint of only 0.20. A big square on the map is a big look, not a big fire."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F02_a.svg",
+      "title": "What one detection covers",
+      "beats": [
+        {
+          "say": "On the left are the scan and track of twenty thousand real MODIS detections. The dashed line is the simple flat-Earth sketch, and at large angles the real pixels grow even faster than it."
+        },
+        {
+          "say": "On the right are the footprint areas of all MODIS and VIIRS detections, on a log scale. The two sensors barely overlap: VIIRS pixels are about six times smaller."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sensors",
+      "beats": [
+        {
+          "target": ".sl-switch",
+          "label": "MODIS or VIIRS",
+          "say": "On the FIREWORK website, open Sensor Lab. Switch between MODIS and VIIRS, and watch how the size of the dots changes over the same farms."
+        },
+        {
+          "target": ".sl-globe",
+          "label": "Same fires, different pixels",
+          "say": "On the globe, MODIS paints a few large squares, while VIIRS paints many small ones. That difference in footprint is a main reason VIIRS reports more fire cell-days. A small field fire fills a real share of a VIIRS pixel, but only a tiny share of a big MODIS pixel."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "Footprint = scan × track, in km²",
+        "Edge-of-swath pixels cover much more ground",
+        "A footprint is the size of the look, not of the fire"
+      ],
+      "next": "F03 · Grid cell index",
+      "beats": [
+        {
+          "say": "So, to remember: multiply scan by track to get the ground each detection covers. MODIS pixels are about six times larger than VIIRS pixels, and a small farm fire can hide inside a big one."
+        },
+        {
+          "say": "Next, formula three: grid cell index."
+        }
+      ]
+    }
+  ]
+}

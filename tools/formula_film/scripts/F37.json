@@ -1,0 +1,108 @@
+{
+ "id": "F37",
+ "scenes": [
+  {
+   "type": "hook",
+   "image": "/learn/sat/punjab_clear_2023-11-03.webp",
+   "imageLabel": "Clear sky · Punjab and Haryana · 3 Nov 2023",
+   "question": "If you test 751 cells, how many look special by luck?",
+   "beats": [
+    {
+     "say": "Flip a fair coin five times, and getting all heads is rare. But give a coin to a thousand people, and a few of them will get five heads just by luck. Test enough things, and some will always look special. That is not magic; it is just how chance works."
+    },
+    {
+     "say": "Test a trend in 751 cells at the five percent level, and about 38 will look significant by chance alone. Formula thirty-seven, the Benjamini-Hochberg false discovery rate, controls the share of false discoveries among the cells it marks, so a trend map does not light up with noise."
+    }
+   ]
+  },
+  {
+   "type": "build",
+   "title": "Building the formula",
+   "parts": [
+    {
+     "tex": "\\text{sort } p_{(1)}\\le\\dots\\le p_{(m)}",
+     "say": "First, sort all m p-values from smallest to largest. The small brackets mean their position in the sorted list."
+    },
+    {
+     "tex": ",\\qquad k = \\max\\Big\\{\\,i : p_{(i)} \\le \\frac{i}{m}\\,\\alpha\\,\\Big\\}",
+     "say": "Then walk up the list. Each p-value gets its own bar: i over m, times alpha, the target false discovery rate. The first p-value must beat a very strict bar, and later ones a gentler bar. k is the last position where a p-value still sits under its bar."
+    },
+    {
+     "tex": ",\\qquad \\text{reject } H_{(1)},\\dots,H_{(k)}",
+     "say": "Finally, every test up to position k is called a discovery. Among those marked cells, the expected share of false alarms is at most alpha."
+    }
+   ]
+  },
+  {
+   "type": "example",
+   "title": "Trend map · VIIRS S-NPP, Oct–Nov, 2012–2025",
+   "steps": [
+    {
+     "label": "Cells tested",
+     "value": 751,
+     "unit": "cells",
+     "say": "In Punjab and Haryana, FIREWORK ran Mann-Kendall on the October and November cell-days of every cell with enough fires: 751 cells."
+    },
+    {
+     "label": "Cells with p below 0.05",
+     "value": 446,
+     "unit": "cells",
+     "say": "Of those, 446 have a p-value below 0.05. About 38 of them would do that by chance."
+    },
+    {
+     "label": "Survive FDR at 5%",
+     "value": 387,
+     "unit": "cells",
+     "result": true,
+     "say": "After the Benjamini-Hochberg rule, 387 cells survive: 375 falling and 12 rising. So the decline in residue burning is real across most of the agricultural plain, not a few lucky cells."
+    }
+   ]
+  },
+  {
+   "type": "figure",
+   "file": "figures/F37_a.svg",
+   "title": "Trends that survive multiple testing",
+   "beats": [
+    {
+     "say": "On the left, the sorted p-values, climbing from left to right, with the Benjamini-Hochberg line, i over m times 0.05. Everything below the last crossing is a discovery."
+    },
+    {
+     "say": "On the right, the cells with a significant trend after this control, coloured by direction. The falling cells cover most of the farm belt."
+    }
+   ]
+  },
+  {
+   "type": "site",
+   "page": "/formulas/F37",
+   "beats": [
+    {
+     "target": ".fp-formula",
+     "label": "The formula, numbered F37",
+     "say": "On the FIREWORK website, this method lives in the Formulas section. Its page shows the equation, numbered as formula 37, with every symbol explained."
+    },
+    {
+     "target": ".fl-cards",
+     "label": "Where it comes from · why · how · example",
+     "say": "Below it, four short cards explain where the method comes from, why FIREWORK needs it, how it works step by step, and a worked example. The full derivation is in the PDF on the same page."
+    }
+   ]
+  },
+  {
+   "type": "recap",
+   "points": [
+    "Sort p-values; compare each with (i/m) · α",
+    "Controls the share of false discoveries among marked cells",
+    "751 tested → 387 survive: 375 falling, 12 rising"
+   ],
+   "next": "F38 · Kalman fusion (local-level model)",
+   "beats": [
+    {
+     "say": "So, to remember: when you test many cells at once, some will look special by luck. The step-up rule keeps the share of false alarms among marked cells small, so a coloured cell can be trusted."
+    },
+    {
+     "say": "Next, formula thirty-eight: Kalman fusion."
+    }
+   ]
+  }
+ ]
+}

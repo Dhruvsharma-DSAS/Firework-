@@ -1,0 +1,108 @@
+{
+  "id": "F41",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/zoom_viirs_2020-11-04.webp",
+      "imageLabel": "VIIRS 375 m fire pixels · zoom · 4 Nov 2020",
+      "question": "Which dots belong to the same event?",
+      "beats": [
+        {
+          "say": "Look at a school playground from above. Children stand in little groups. You can spot each group because its members stand close together. But if you overlay photos from a whole week, all the groups blur into one big crowd."
+        },
+        {
+          "say": "Fire detections are the same. Points close together in space and time usually belong to one burning event or one site. Formula forty-one, DBSCAN clustering in space and time, groups them without being told how many groups to expect, and a time window stops different days from merging into one giant cluster."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "N_\\varepsilon(p) = \\{\\,q : d(p,q)\\le\\varepsilon_s",
+          "say": "N epsilon of p is the neighbourhood of a point p: all the points q within a distance epsilon s of it, measured in kilometres with the haversine formula."
+        },
+        {
+          "tex": "\\ \\wedge\\ |t_p - t_q|\\le\\varepsilon_t\\,\\}",
+          "say": "And, this is the key addition, also within a time window, epsilon t days. Two fields side by side, burned a week apart, are no longer neighbours."
+        },
+        {
+          "tex": ",\\qquad \\mathrm{core}(p) \\iff |N_\\varepsilon(p)| \\ge \\mathrm{minPts}",
+          "say": "A point is a core point if its neighbourhood holds at least minPts points; FIREWORK uses three. Clusters grow outward from core points. Points that belong to no cluster are called noise. Remember, a cluster is a grouping for analysis, not a count of fires."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "S-NPP, October–November 2023",
+      "steps": [
+        {
+          "label": "Detections",
+          "value": 34383,
+          "unit": "S-NPP points",
+          "say": "Take all S-NPP detections in Punjab and Haryana in October and November 2023: 34,383 points. Each point is one detection, a pixel, not a fire."
+        },
+        {
+          "label": "Clusters, space only",
+          "value": 945,
+          "unit": "clusters, ε = 1.5 km",
+          "say": "Cluster by space only, within 1.5 kilometres, and we get 945 clusters. But the largest swallows 19,962 points: a chain across the whole farm belt."
+        },
+        {
+          "label": "Clusters, space and time",
+          "value": 2812,
+          "unit": "clusters, 1.5 km and ±1 day",
+          "result": true,
+          "say": "Add a window of one day either way, and we get 2,812 clusters, with a median of 4 points and a largest of 880. And 47 percent of points are isolated. Now the clusters look like real, separate events."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F41_a.svg",
+      "title": "Why time matters",
+      "beats": [
+        {
+          "say": "These are S-NPP detections near Ludhiana, in October and November 2023. On the left, space-only clustering merges neighbouring fields burned on different days into one large cluster."
+        },
+        {
+          "say": "On the right, with a window of one day either way, the clusters split into separate events. Grey points are noise. Each coloured group is now one burning event, close in both place and time."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sources",
+      "beats": [
+        {
+          "target": ".src-globe",
+          "label": "Sites on the globe",
+          "say": "On the FIREWORK website, open the Sources page. Clusters turn thousands of points into a manageable number of events and sites."
+        },
+        {
+          "target": ".src-side",
+          "label": "Hot pixels by ground type",
+          "say": "That matters because persistence and night share are properties of sites, not of single pixels. The distance window is set per sensor, because their geolocation differs."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "Neighbours: close in space AND within ε_t days",
+        "Core points with ≥ minPts neighbours grow clusters",
+        "Space + time: 2,812 clusters instead of one giant chain"
+      ],
+      "next": "F42 · Distance-decay exposure (IE / AE)",
+      "beats": [
+        {
+          "say": "So, to remember: group points that are close in both space and time, and let the clusters form by themselves. Without the time window, a whole farm belt becomes one blob."
+        },
+        {
+          "say": "Next, formula forty-two: distance-decay exposure."
+        }
+      ]
+    }
+  ]
+}

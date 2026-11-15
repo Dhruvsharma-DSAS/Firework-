@@ -1,0 +1,106 @@
+{
+  "id": "F43",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "Can two numbers become one signed clue?",
+      "beats": [
+        {
+          "say": "Think of a tug of war. You could report how hard each team pulls. But the single most useful number is which way the rope moves: left, right, or not at all."
+        },
+        {
+          "say": "Formula forty-three, the context log-ratio L, turns the industrial and agricultural exposures into one signed number. Positive when industry dominates the surroundings, negative when cropland does, and zero when they balance. It is a feature for the source classifier, not a label."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "L_g",
+          "say": "L g is the context number for site g. One number, with a sign."
+        },
+        {
+          "tex": " = \\ln",
+          "say": "It is a natural logarithm. The log of a ratio is positive when the top is bigger, negative when the bottom is bigger, and zero when they are equal. That gives us the sign for free, and it keeps the number symmetric: an industrial site and an equally agricultural site get the same size, with opposite signs."
+        },
+        {
+          "tex": "\\frac{\\mathrm{IE}_g + 1}{\\mathrm{AE}_g + 1}",
+          "say": "On top, the industrial exposure plus one. Underneath, the agricultural exposure plus one. Adding one keeps the ratio sensible when either exposure is zero. If both exposures are unknown, L is unknown too."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "An illustrative site",
+      "steps": [
+        {
+          "label": "Industrial exposure IE",
+          "value": 6.5,
+          "unit": "exposure",
+          "say": "This is an illustrative example, with numbers chosen to explain the method. A site has an industrial exposure of 6.5. Remember, these exposures come from formula forty-two."
+        },
+        {
+          "label": "Agricultural exposure AE",
+          "value": 2.5,
+          "unit": "exposure",
+          "say": "Its agricultural exposure is 2.5. So the top of the ratio is 7.5, and the bottom is 3.5."
+        },
+        {
+          "label": "Context L",
+          "value": 0.762,
+          "unit": "log ratio",
+          "result": true,
+          "say": "The log of 7.5 over 3.5 is 0.762. Positive, so the context leans industrial. Another site, with IE 5 and AE 3, gives the log of 6 over 4, which is 0.405: still industrial, but less so."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F43_a.svg",
+      "title": "One signed context number",
+      "beats": [
+        {
+          "say": "This figure shows L as industrial exposure grows, for three levels of agricultural exposure. Each curve crosses zero where the two exposures balance, and rises as industry takes over. More cropland around a site shifts its whole curve downward."
+        },
+        {
+          "say": "These are illustrative numbers chosen to explain the method; they are not measurements."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sources",
+      "beats": [
+        {
+          "target": ".pd-sec",
+          "label": "Method",
+          "say": "On the FIREWORK website, open the Sources page and read the method. A single log-ratio is easy to explain, and robust to how densely features are mapped in a place."
+        },
+        {
+          "target": ".src-side",
+          "label": "Hot pixels by ground type",
+          "say": "L joins persistence and night share as one of the clues about a site. It is a feature that helps a classifier, never a label on its own. And because the feature layers it needs are still pending, no real values are shown yet."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "L = ln((IE + 1) / (AE + 1))",
+        "Positive: industrial context; negative: cropland; 0: balanced",
+        "A feature for the classifier, not a label"
+      ],
+      "next": "F44 · Night fraction",
+      "beats": [
+        {
+          "say": "So, to remember: add one to each exposure, divide, and take the log. One signed number tells which way the surroundings lean, and how strongly."
+        },
+        {
+          "say": "Next, formula forty-four: night fraction."
+        }
+      ]
+    }
+  ]
+}

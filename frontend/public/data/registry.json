@@ -1,0 +1,35 @@
+{
+ "generated_at_utc": "2026-11-15T06:55:58.577372+00:00",
+ "files": [
+  {
+   "file": "data/processed/global/calendar_global.json",
+   "sha256": "82526c3912d3cd03baa236a79c2b912700f7032ea56332987cf4f1d303d07af2",
+   "bytes": 6496516
+  },
+  {
+   "file": "data/processed/global/exposure_countries.json",
+   "sha256": "224f3813a7bd1cf4513c2fc2d45d78a6c45d05b25b3b02a7669ffc379b7fb16a",
+   "bytes": 991660
+  },
+  {
+   "file": "data/processed/global/calendar_global_ee.json",
+   "sha256": "7d99aa0f7329197070e7f805a3f17d46251d8f0e2ac1c432ca591215cd2a3a2e",
+   "bytes": 3329961
+  },
+  {
+   "file": "data/processed/global/country_monthly_ee.csv",
+   "sha256": "f07669853f7c80f2f44719b7235612f1dd94d1124ee84e40a187da59a24b74ae",
+   "bytes": 16765059
+  },
+  {
+   "file": "frontend/public/data/formulas_content.json",
+   "sha256": "5ca772941e4459771aa6337ea30e2f032093b21a5a38f1e57afb42a2d46f9149",
+   "bytes": 256412
+  },
+  {
+   "file": "frontend/public/data/studio_sample_firms.csv",
+   "sha256": "89177ce311d57739f14445585904482a0840cc7aad0dd28ade3fe7e48c51a5fc",
+   "bytes": 11643
+  }
+ ]
+}

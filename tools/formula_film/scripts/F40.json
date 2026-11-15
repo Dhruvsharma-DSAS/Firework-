@@ -1,0 +1,108 @@
+{
+  "id": "F40",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_clear_2023-11-03.webp",
+      "imageLabel": "Clear sky · Punjab and Haryana · 3 Nov 2023",
+      "question": "How far apart are two fires, really?",
+      "beats": [
+        {
+          "say": "On a flat map, the shortest flight from India to America looks like a straight line. But on a globe, planes curve up over the north. The Earth is round, so the shortest path is a great circle, not a straight line on paper."
+        },
+        {
+          "say": "Degrees are not kilometres either: one degree of longitude is 111.2 kilometres at the equator, but only 95.8 over Punjab. Formula forty, the haversine distance, gives the true great-circle distance between two points on the sphere."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "d = 2R\\,\\arcsin",
+          "say": "The distance d is twice the Earth's radius, times an arcsine. The arcsine turns a chord length back into an angle at the centre of the Earth, and radius times angle is distance along the surface."
+        },
+        {
+          "tex": "\\sqrt{\\sin^2\\frac{\\Delta\\varphi}{2} + \\cos\\varphi_1\\cos\\varphi_2\\,\\sin^2\\frac{\\Delta\\lambda}{2}}",
+          "say": "Inside the square root are two parts. The first uses the difference in latitude. The second uses the difference in longitude, shrunk by the cosines of both latitudes, because lines of longitude crowd together towards the poles. That shrink is exactly why a degree of longitude is shorter over Punjab."
+        },
+        {
+          "tex": ",\\qquad R = 6371.0088\\ \\mathrm{km}",
+          "say": "R is the mean Earth radius, 6371.0088 kilometres, the same value used for cell areas in formula four. For FIREWORK's scales a sphere is enough: the difference from the true ellipsoid is under 0.3 percent."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "Degrees into kilometres",
+      "steps": [
+        {
+          "label": "1° of longitude at the equator",
+          "value": 111.2,
+          "unit": "km",
+          "say": "At the equator, one degree of longitude spans 111.2 kilometres."
+        },
+        {
+          "label": "1° of longitude at 30.5°N",
+          "value": 95.8,
+          "unit": "km",
+          "say": "At 30.5 degrees north, over Punjab, the same degree spans only 95.8 kilometres. Treat both as the same, and every distance over Punjab would come out too long."
+        },
+        {
+          "label": "Ludhiana to Amritsar",
+          "value": 124.1,
+          "unit": "km",
+          "result": true,
+          "say": "Put Ludhiana, at 30.901 north and 75.857 east, and Amritsar, at 31.634 north and 74.872 east, into the formula, and the great-circle distance is 124.1 kilometres."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F40_a.svg",
+      "title": "Distances on a round Earth",
+      "beats": [
+        {
+          "say": "On the left, the kilometres per degree of longitude, against latitude. It falls from 111.2 at the equator towards zero at the poles."
+        },
+        {
+          "say": "On the right, the distance from each S-NPP fire to the nearest Aqua fire on the same overpass, for pairs within 3 kilometres. The median is 1.08 kilometres, from 107,787 pairs, consistent with the size and geolocation of MODIS pixels."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sources",
+      "beats": [
+        {
+          "target": ".src-globe",
+          "label": "Sites on the globe",
+          "say": "On the FIREWORK website, open the Sources page. Grouping detections into sites, and measuring distance to industry, both need distances in kilometres, and that is where this formula works behind the scenes."
+        },
+        {
+          "target": ".pd-sec",
+          "label": "Method",
+          "say": "The method section describes those steps. Matching an S-NPP fire to an Aqua fire, for the detection curve of formula twenty, uses the same haversine distance."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "Great-circle distance with the haversine formula",
+        "1° longitude: 111.2 km at the equator, 95.8 km at 30.5°N",
+        "Ludhiana to Amritsar: 124.1 km"
+      ],
+      "next": "F41 · DBSCAN fire clustering (space and time)",
+      "beats": [
+        {
+          "say": "So, to remember: never treat degrees as kilometres. The haversine formula measures along the curved surface of the Earth, and every how-far question in FIREWORK uses it."
+        },
+        {
+          "say": "Next, formula forty-one: DBSCAN fire clustering, in space and time."
+        }
+      ]
+    }
+  ]
+}

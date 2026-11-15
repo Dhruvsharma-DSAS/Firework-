@@ -1,0 +1,58 @@
+{
+  "id": "F18",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "What if the data decided how much to borrow?",
+      "beats": [
+        { "say": "Imagine twelve students each estimate how long it takes them to walk to school. Some timed it a hundred times; some only twice. You trust the careful ones as they are, and gently nudge the guessers towards the class average." },
+        { "say": "Formula eighteen, empirical Bayes partial pooling of log k, does that with exchange rates. Groups whose k is precise keep it. Groups whose k is noisy move towards the group mean. And the data itself decides how strong the pull should be." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "y_r = \\log\\hat k_r", "say": "First, for each group r, we take the log of its exchange rate, and call it y r. Logs make multiplying factors behave like distances." },
+        { "tex": ",\\quad s_r^2 = \\widehat{\\operatorname{Var}}(y_r)", "say": "Next, s r squared is how uncertain that log k is. It comes from the bootstrap. A noisy group has a large s squared." },
+        { "tex": ",\\quad Q = \\sum_r w_r (y_r-\\bar y_w)^2", "say": "Then Cochran's Q adds up how far each group sits from the weighted mean, squared and weighted. If Q is much larger than chance would give, the groups truly differ, and the between-group variance, tau squared, is large." },
+        { "tex": ",\\quad w_r = 1/s_r^2", "say": "The weights are one over the uncertainty. Precise groups get a big vote. From Q and these weights, each group gets its kept share of its own value." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · August, the noisiest month",
+      "steps": [
+        { "label": "August's own k", "value": 1.489, "unit": "VIIRS per MODIS", "say": "Only one region is processed so far, so FIREWORK shows the method using the twelve calendar months of Punjab and Haryana as the groups. August is the noisiest, with its own k of 1.489." },
+        { "label": "Own share kept", "value": 85.6, "unit": "%", "say": "Cochran's Q is 800.0 on 11 degrees of freedom, so the months really differ, and tau squared is 0.202. With that, August keeps 85.6 percent of its own value." },
+        { "label": "Pooled k, August", "value": 1.69, "unit": "VIIRS per MODIS", "result": true, "say": "So August moves from 1.489 to 1.69. November, which is very precise, keeps 99.7 percent, and stays at about 2.1. With precise months and a large real spread, pooling changes little, which is the expected outcome." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F18_a.svg",
+      "title": "Data-driven pooling",
+      "beats": [
+        { "say": "For each calendar month, black shows its own k with its ninety-five percent range, and red shows the partially pooled value. The dashed line is the pooled mean." },
+        { "say": "The groups here are calendar months, used only to demonstrate the method on one region. In a new region with two or three years of overlap, the range is wide, the kept share is small, and the region leans on the group." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "beats": [
+        { "target": "[data-film=cal-inspector]", "label": "Month inspector · share of own data", "say": "On the FIREWORK website, open the Calendar and click a month. The inspector reports the share of own data used, so you can see how much a value borrowed from the group." },
+        { "target": ".k-explain", "label": "Exchange rate k for each month", "say": "The exchange-rate panel beside it lists k for every calendar month. With fewer than three groups, partial pooling returns nothing, and FIREWORK falls back to the simple shrink rule of formula seventeen." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Work on log k, weight each group by 1/s²", "Cochran's Q → τ² decides how much groups borrow", "Precise groups keep their k; noisy ones lean on the group"],
+      "next": "F19 · Power law vs ratio (model choice)",
+      "beats": [
+        { "say": "So, to remember: measure how precise each group is, measure how much groups really differ, and let those two numbers set the balance. No fixed pull, just the data's own verdict." },
+        { "say": "Next, formula nineteen: power law versus ratio." }
+      ]
+    }
+  ]
+}

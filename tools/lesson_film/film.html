@@ -1,0 +1,682 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;600&family=Sora:wght@200;300;400&display=swap" rel="stylesheet">
+<style>html,body{margin:0;background:#05070a}canvas{display:block}</style>
+</head>
+<body>
+<canvas id="c" width="1280" height="720"></canvas>
+<script src="scripts.js"></script>
+<script>
+const W = 1280, H = 720;
+const cv = document.getElementById("c");
+const g = cv.getContext("2d");
+const C = { bg: "#05070a", ink: "#e6edf3", dim: "#9aa6b5", faint: "#5b6676", line: "rgba(230,237,243,0.12)", modis: "#ffb547", viirs: "#3dd6f5", fire: "#ff4d5e", ok: "#39d98a", blue: "#1c49b8" };
+const IMG = {};
+let LESSON = null, TL = [], SCENES = [], TOTAL = 0;
+
+function load(src) {
+  return new Promise((res) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; });
+}
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function ease(t) { const c = clamp(t, 0, 1); return c * c * (3 - 2 * c); }
+function seg(u, a, b) { return ease((u - a) / (b - a)); }
+function rnd(seed) { let s = seed; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
+function font(size, w, fam) { g.font = (w || 400) + " " + size + "px " + (fam || "Inter, sans-serif"); }
+function text(t, x, y, size, color, w, fam, align) { font(size, w, fam); g.fillStyle = color || C.ink; g.textAlign = align || "left"; g.textBaseline = "alphabetic"; g.fillText(t, x, y); }
+function wrap(t, x, y, maxW, size, lh, color, w, fam, align) {
+  font(size, w, fam); const words = t.split(" "); let line = ""; let yy = y; const lines = [];
+  words.forEach((wd) => { const test = line ? line + " " + wd : wd; if (g.measureText(test).width > maxW && line) { lines.push(line); line = wd; } else { line = test; } });
+  if (line) lines.push(line);
+  lines.forEach((l) => { text(l, x, yy, size, color, w, fam, align); yy += lh; });
+  return lines.length;
+}
+function rr(x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+function panel(x, y, w, h, stroke) { rr(x, y, w, h, 16); g.fillStyle = "rgba(10,14,22,0.85)"; g.fill(); g.strokeStyle = stroke || C.line; g.lineWidth = 1.2; g.stroke(); }
+function chip(t, x, y, color) { font(12, 600, "JetBrains Mono, monospace"); const w = g.measureText(t).width + 26; rr(x, y, w, 26, 5); g.fillStyle = "rgba(5,7,10,0.75)"; g.fill(); g.strokeStyle = color; g.lineWidth = 1; g.stroke(); g.fillStyle = color; g.fillRect(x + 9, y + 10, 6, 6); text(t, x + 20, y + 17.5, 12, color, 600, "JetBrains Mono, monospace"); return w; }
+function alpha(a, fn) { g.save(); g.globalAlpha = g.globalAlpha * clamp(a, 0, 1); fn(); g.restore(); }
+
+const STARS = (() => { const r = rnd(5); const a = []; for (let i = 0; i < 160; i++) a.push([r() * W, r() * H, r() * 1.3, r()]); return a; })();
+function background(t) {
+  const gr = g.createRadialGradient(W * 0.7, H * 0.2, 50, W * 0.6, H * 0.5, W * 0.9);
+  gr.addColorStop(0, "#0c1a33"); gr.addColorStop(1, "#03060d");
+  g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  STARS.forEach((s) => { g.fillStyle = "rgba(200,215,240," + (0.25 + 0.35 * Math.abs(Math.sin(t * 0.6 + s[3] * 9))) + ")"; g.fillRect(s[0], s[1], s[2] + 0.4, s[2] + 0.4); });
+}
+function chrome(sceneIdx, t, sc) {
+  if (IMG.logo) g.drawImage(IMG.logo, 28, 18, 40, 40);
+  text("FIREWORK", 78, 36, 15, C.ink, 400, "Sora, sans-serif");
+  text("CHRONOS · " + (LESSON.badge || "LESSON " + LESSON.num), 78, 54, 10, C.faint, 400, "JetBrains Mono, monospace");
+  text(LESSON.title.toUpperCase(), W - 28, 42, 11, C.dim, 400, "JetBrains Mono, monospace", "right");
+  if (LESSON.noBar) return;
+  g.fillStyle = "rgba(255,255,255,0.08)"; g.fillRect(28, H - 10, W - 56, 3);
+  const grd = g.createLinearGradient(28, 0, W - 28, 0); grd.addColorStop(0, C.modis); grd.addColorStop(0.5, C.fire); grd.addColorStop(1, C.viirs);
+  g.fillStyle = grd; g.fillRect(28, H - 10, (W - 56) * clamp(t / TOTAL, 0, 1), 3);
+}
+function subtitle(sc, u) {
+  if (sc.type === "title" || sc.type === "chapter") return;
+  const a = seg(u, 0, 0.06) * (1 - seg(u, 0.96, 1));
+  alpha(a, () => {
+    const grd = g.createLinearGradient(0, H - 150, 0, H); grd.addColorStop(0, "rgba(3,6,13,0)"); grd.addColorStop(0.35, "rgba(3,6,13,0.85)"); grd.addColorStop(1, "rgba(3,6,13,0.95)");
+    g.fillStyle = grd; g.fillRect(0, H - 150, W, 150);
+    wrap(sc.say, W / 2, H - 92, 1040, 20, 28, "#dfe6ee", 400, "Inter, sans-serif", "center");
+  });
+}
+const AREA = { x: 80, y: 86, w: W - 160, h: 470 };
+
+function drawImageScene(src, label, u) {
+  const im = IMG[src]; if (!im) return;
+  const z = 1 + 0.07 * u; const r = Math.min(AREA.w / im.width, AREA.h / im.height);
+  const w = im.width * r, h = im.height * r; const x = W / 2 - w / 2, y = AREA.y + AREA.h / 2 - h / 2;
+  alpha(seg(u, 0, 0.08), () => {
+    g.save(); rr(x, y, w, h, 14); g.clip();
+    g.drawImage(im, W / 2 - (w * z) / 2 - 12 * u, y + h / 2 - (h * z) / 2, w * z, h * z);
+    g.restore(); rr(x, y, w, h, 14); g.strokeStyle = C.line; g.stroke();
+    let col = C.viirs; if (label.indexOf("LIVE") >= 0) col = C.ok; if (label.indexOf("RUN_TESTED") >= 0 || label.indexOf("DIAGRAM") >= 0 || label.indexOf("OFFICIAL") >= 0) col = C.modis;
+    chip(label, x + 14, y + 14, col);
+  });
+}
+function drawCompare(sc, u) {
+  const a = IMG[sc.a], b = IMG[sc.b]; if (!a || !b) return;
+  const w = (AREA.w - 30) / 2; const h = Math.min(AREA.h, w * a.height / a.width); const y = AREA.y + (AREA.h - h) / 2;
+  [[a, sc.la, AREA.x, C.modis, 0], [b, sc.lb, AREA.x + w + 30, C.viirs, 0.35]].forEach((p) => {
+    alpha(seg(u, p[4], p[4] + 0.12), () => {
+      g.save(); rr(p[2], y, w, h, 14); g.clip();
+      const r = Math.max(w / p[0].width, h / p[0].height); const z = 1 + 0.05 * u;
+      g.drawImage(p[0], p[2] + w / 2 - (p[0].width * r * z) / 2, y + h / 2 - (p[0].height * r * z) / 2, p[0].width * r * z, p[0].height * r * z);
+      g.restore(); rr(p[2], y, w, h, 14); g.strokeStyle = p[3]; g.lineWidth = 1.5; g.stroke(); g.lineWidth = 1;
+      chip(p[1], p[2] + 14, y + 14, p[3]);
+    });
+  });
+}
+function bigTitle(sc, u) {
+  const a = seg(u, 0, 0.15) * (1 - seg(u, 0.9, 1));
+  alpha(a, () => {
+    text(LESSON.badge || "LESSON " + LESSON.num, W / 2, 250, 16, C.modis, 600, "JetBrains Mono, monospace", "center");
+    wrap(LESSON.title, W / 2, 330, 1000, 62, 72, C.ink, 300, "Sora, sans-serif", "center");
+    text(LESSON.kicker, W / 2, 470, 20, C.dim, 300, "Inter, sans-serif", "center");
+    const ww = 260 * seg(u, 0.1, 0.5); const grd = g.createLinearGradient(W / 2 - 130, 0, W / 2 + 130, 0); grd.addColorStop(0, C.modis); grd.addColorStop(1, C.viirs);
+    g.fillStyle = grd; g.fillRect(W / 2 - ww / 2, 500, ww, 3);
+  });
+  drawSat(W / 2 + 330 - 660 * u, 150 + 20 * Math.sin(u * 6), 0.9, -0.2);
+}
+function drawSat(x, y, s, rot) {
+  g.save(); g.translate(x, y); g.rotate(rot || 0); g.scale(s, s);
+  g.fillStyle = C.blue; g.strokeStyle = "#cfe3ff"; g.lineWidth = 1.5;
+  [-1, 1].forEach((d) => { const px = d < 0 ? -78 : 22; g.fillRect(px, -14, 56, 28); g.strokeRect(px, -14, 56, 28); g.beginPath(); for (let k = 1; k < 4; k++) { g.moveTo(px + k * 14, -14); g.lineTo(px + k * 14, 14); } g.moveTo(px, 0); g.lineTo(px + 56, 0); g.strokeStyle = "rgba(207,227,255,0.7)"; g.stroke(); g.strokeStyle = "#cfe3ff"; });
+  g.fillStyle = "#9aa6b5"; g.fillRect(-22, -3, 44, 6);
+  const bg = g.createLinearGradient(-16, 0, 16, 0); bg.addColorStop(0, "#8b97a8"); bg.addColorStop(0.5, "#f1f4f8"); bg.addColorStop(1, "#8b97a8");
+  g.fillStyle = bg; rr(-16, -24, 32, 40, 6); g.fill(); g.fillStyle = C.modis; g.fillRect(-16, -16, 32, 5);
+  g.fillStyle = "#ffe7a0"; g.beginPath(); g.arc(0, 22, 5, 0, 7); g.fill();
+  g.restore();
+}
+function flame(x, y, s, t) {
+  g.save(); g.translate(x, y); g.scale(s, s * (1 + 0.06 * Math.sin(t * 9)));
+  const gr = g.createLinearGradient(0, 20, 0, -30); gr.addColorStop(0, C.fire); gr.addColorStop(0.6, C.modis); gr.addColorStop(1, "#fff1c2");
+  g.fillStyle = gr; g.beginPath(); g.moveTo(0, -30); g.bezierCurveTo(14, -12, 20, 0, 16, 10); g.bezierCurveTo(12, 22, -12, 22, -16, 10); g.bezierCurveTo(-20, -2, -8, -8, -6, -18); g.bezierCurveTo(-2, -10, 2, -10, 0, -30); g.fill();
+  g.restore();
+}
+
+const DRAW = {
+  bands(sc, u, t) {
+    const T = 300 + 700 * seg(u, 0.15, 0.7);
+    const p4 = (T - 300) / 700, b4 = 30 + 330 * Math.pow(p4, 1.4), b11 = 30 + 60 * p4;
+    panel(140, 110, 1000, 430);
+    text("Temperature in the pixel", 180, 160, 16, C.dim);
+    text(Math.round(T) + " K", 180, 210, 44, T > 800 ? C.fire : C.modis, 300, "Sora, sans-serif");
+    [["4 µm · mid-infrared", 560, b4, C.fire, "× 4,927 from 300 K to 1000 K"], ["11 µm · thermal", 860, b11, C.viirs, "× 28.6"]].forEach((b) => {
+      g.fillStyle = "rgba(255,255,255,0.06)"; g.fillRect(b[1], 140, 120, 360);
+      g.fillStyle = b[3]; g.fillRect(b[1], 500 - b[2], 120, b[2]);
+      text(b[0], b[1] + 60, 530, 15, C.ink, 400, "Inter", "center");
+      alpha(seg(u, 0.7, 0.8), () => text(b[4], b[1] + 60, 485 - b[2], 15, C.ink, 600, "JetBrains Mono, monospace", "center"));
+    });
+    flame(300, 380, 2.2 * (0.4 + p4), t);
+    chip("PHYSICS · PLANCK'S LAW", 180, 470, C.modis);
+  },
+  subpixel(sc, u, t) {
+    const x = 390, y = 110, s = 420;
+    const glow = seg(u, 0.25, 0.6);
+    g.fillStyle = "rgb(" + Math.round(40 + 200 * glow) + "," + Math.round(50 + 60 * glow) + "," + Math.round(60 - 20 * glow) + ")"; g.fillRect(x, y, s, s);
+    g.strokeStyle = C.ink; g.lineWidth = 2; g.strokeRect(x, y, s, s); g.lineWidth = 1;
+    g.fillStyle = "rgba(60,120,60,0.35)"; for (let i = 0; i < 6; i++) g.fillRect(x + 20 + i * 66, y + 20, 50, s - 40);
+    flame(x + 300, y + 260, 0.8, t);
+    text("1 km MODIS pixel", x + s / 2, y + s + 30, 16, C.ink, 400, "Inter", "center");
+    alpha(seg(u, 0.4, 0.55), () => { text("small fire, tiny share of the area", 900, 300, 16, C.dim); text("→ whole pixel's 4 µm signal rises", 900, 330, 16, C.fire, 600); });
+    chip("DIAGRAM", x, y - 40, C.modis);
+  },
+  context(sc, u, t) {
+    const n = 7, cs = 56, x0 = 440, y0 = 120;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      const isFire = i === 3 && j === 3; const v = 0.35 + 0.15 * Math.sin(i * 2 + j);
+      g.fillStyle = isFire ? "rgb(" + Math.round(120 + 135 * seg(u, 0.2, 0.4)) + ",70,60)" : "rgba(80,100,130," + v + ")";
+      g.fillRect(x0 + i * cs, y0 + j * cs, cs - 3, cs - 3);
+    }
+    const sw = seg(u, 0.3, 0.7);
+    g.strokeStyle = C.viirs; g.lineWidth = 2; g.strokeRect(x0 + 1 * cs - 2, y0 + 1 * cs - 2, 5 * cs + 1, 5 * cs + 1); g.lineWidth = 1;
+    alpha(sw, () => { g.strokeStyle = C.fire; g.lineWidth = 3; g.strokeRect(x0 + 3 * cs - 3, y0 + 3 * cs - 3, cs + 3, cs + 3); g.lineWidth = 1; });
+    const tags = [["Cloud & water masked", C.dim], ["Hotter than its neighbours?", C.viirs], ["Deserts, roofs, glint filtered", C.dim], ["→ active fire pixel", C.fire]];
+    tags.forEach((tg, i) => alpha(seg(u, 0.15 + i * 0.15, 0.25 + i * 0.15), () => text(tg[0], 860, 200 + i * 52, 20, tg[1], 400)));
+    chip("DIAGRAM", x0, y0 - 40, C.modis);
+  },
+  pixels(sc, u, t) {
+    const x1 = 170, x2 = 700, y = 120, s = 410;
+    const r = rnd(9); const fires = []; for (let i = 0; i < 9; i++) fires.push([r() * s, r() * s]);
+    [[x1, 1, C.modis, "MODIS · 1 km pixels"], [x2, 3, C.viirs, "VIIRS · 375 m pixels"]].forEach((p, k) => {
+      alpha(seg(u, k * 0.3, k * 0.3 + 0.15), () => {
+        g.fillStyle = "#0e2140"; g.fillRect(p[0], y, s, s);
+        const n = p[1] === 1 ? 2 : 6; const cs = s / n;
+        for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+          const hit = fires.some((f) => f[0] >= i * cs && f[0] < (i + 1) * cs && f[1] >= j * cs && f[1] < (j + 1) * cs);
+          const big = fires.filter((f) => f[0] >= i * cs && f[0] < (i + 1) * cs && f[1] >= j * cs && f[1] < (j + 1) * cs).length;
+          if (hit && (p[1] === 3 || big >= 3)) { g.fillStyle = "rgba(255,77,94," + (0.45 + 0.4 * seg(u, 0.5, 0.7)) + ")"; g.fillRect(p[0] + i * cs, y + j * cs, cs, cs); }
+          g.strokeStyle = p[2]; g.strokeRect(p[0] + i * cs, y + j * cs, cs, cs);
+        }
+        fires.forEach((f) => flame(p[0] + f[0], y + f[1], 0.32, t + f[0]));
+        text(p[3], p[0] + s / 2, y + s + 32, 18, p[2], 600, "Inter", "center");
+      });
+    });
+    alpha(seg(u, 0.65, 0.8), () => text("≈ 7 VIIRS pixels fit in 1 MODIS pixel  (1 km² ÷ 0.375² km²)", W / 2, 100, 17, C.ink, 400, "JetBrains Mono, monospace", "center"));
+  },
+  swath(sc, u, t) {
+    const sx = W / 2, sy = 130; drawSat(sx, sy, 0.7, 0);
+    const sweep = Math.sin(t * 2.2);
+    g.fillStyle = "rgba(61,214,245,0.12)"; g.beginPath(); g.moveTo(sx, sy + 20); g.lineTo(sx - 520, 470); g.lineTo(sx + 520, 470); g.fill();
+    g.strokeStyle = C.viirs; g.beginPath(); g.moveTo(sx, sy + 20); g.lineTo(sx + 520 * sweep, 470); g.stroke();
+    let x = 0; const show = seg(u, 0.1, 0.6);
+    while (x < 520) { const w = 22 + Math.pow(x / 520, 2) * 70; [-1, 1].forEach((d) => { const px = d > 0 ? sx + x : sx - x - w; alpha(show, () => { g.strokeStyle = C.modis; g.strokeRect(px, 480, w - 3, 40 + (w - 22) * 0.4); }); }); x += w; }
+    alpha(seg(u, 0.5, 0.65), () => { text("small at nadir", sx, 600 - 40, 16, C.ink, 400, "Inter", "center"); text("several times larger at the edge", 150, 600 - 40, 16, C.modis, 400); });
+    chip("DIAGRAM", 80, 100, C.modis);
+  },
+  cloud(sc, u, t) {
+    const x0 = 240, y0 = 160, n = 10, cs = 52; const r = rnd(4);
+    const cx = 200 + 600 * seg(u, 0.1, 0.8);
+    for (let i = 0; i < n; i++) for (let j = 0; j < 6; j++) {
+      const px = x0 + i * cs * 1.6, py = y0 + j * cs; const fire = r() < 0.2;
+      const covered = Math.abs(px - (cx + 240)) < 260 && j < 6;
+      g.fillStyle = covered ? "rgba(140,150,165,0.35)" : (fire ? "rgba(255,77,94,0.85)" : "rgba(60,120,80,0.45)");
+      g.fillRect(px, py, cs * 1.6 - 4, cs - 4);
+      if (covered) text("?", px + cs * 0.8, py + cs * 0.65, 18, C.ink, 600, "Inter", "center");
+    }
+    alpha(0.92, () => { for (let k = 0; k < 7; k++) { g.fillStyle = "rgba(235,240,248,0.85)"; g.beginPath(); g.ellipse(cx + 240 + Math.cos(k) * 160, 200 + Math.sin(k * 2) * 40, 120, 55, 0, 0, 7); g.fill(); } });
+    alpha(seg(u, 0.35, 0.5), () => { chip("CLOUD = NOT OBSERVED", 240, 520, C.dim); chip("NEVER = 0 FIRE", 470, 520, C.fire); });
+  },
+  clock(sc, u, t) {
+    const cx = 420, cy = 320, R = 190;
+    g.strokeStyle = C.line; g.lineWidth = 2; g.beginPath(); g.arc(cx, cy, R, 0, 7); g.stroke(); g.lineWidth = 1;
+    for (let h = 0; h < 24; h++) { const a = -Math.PI / 2 + h * Math.PI / 12; g.strokeStyle = h % 6 ? "rgba(230,237,243,0.25)" : C.ink; g.beginPath(); g.moveTo(cx + (R - 10) * Math.cos(a), cy + (R - 10) * Math.sin(a)); g.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a)); g.stroke(); }
+    ["00", "06", "12", "18"].forEach((l, i) => { const a = -Math.PI / 2 + i * Math.PI / 2; text(l, cx + (R + 26) * Math.cos(a), cy + (R + 26) * Math.sin(a) + 5, 14, C.dim, 400, "JetBrains Mono", "center"); });
+    const passes = [[1.5, C.viirs, "01:30"], [10.5, C.modis, "10:30"], [13.5, C.viirs, "13:30"], [22.5, C.modis, "22:30"]];
+    passes.forEach((p, i) => alpha(seg(u, 0.1 + i * 0.12, 0.2 + i * 0.12), () => { const a = -Math.PI / 2 + p[0] * Math.PI / 12; g.fillStyle = p[1]; g.beginPath(); g.arc(cx + (R - 34) * Math.cos(a), cy + (R - 34) * Math.sin(a), 9, 0, 7); g.fill(); text(p[2], cx + (R - 70) * Math.cos(a), cy + (R - 70) * Math.sin(a) + 5, 14, p[1], 600, "JetBrains Mono", "center"); }));
+    const hand = 24 * ((t * 0.12) % 1); const ha = -Math.PI / 2 + hand * Math.PI / 12;
+    g.strokeStyle = C.ink; g.lineWidth = 2; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + (R - 50) * Math.cos(ha), cy + (R - 50) * Math.sin(ha)); g.stroke(); g.lineWidth = 1;
+    panel(720, 170, 440, 290);
+    text("A fire between passes", 750, 215, 20, C.ink, 400);
+    const bx = 750, by = 390, bw = 380; g.strokeStyle = C.line; g.beginPath(); g.moveTo(bx, by); g.lineTo(bx + bw, by); g.stroke();
+    [10.5, 13.5].forEach((p, i) => { const x = bx + (p / 24) * bw * 2 - bw * 0.8; g.strokeStyle = i ? C.viirs : C.modis; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(x, 250); g.lineTo(x, by); g.stroke(); g.setLineDash([]); });
+    const fx = bx + 0.6 * bw; alpha(seg(u, 0.5, 0.6), () => { flame(fx, by - 40, 0.9, t); text("lit and out unseen", fx, by + 30, 14, C.fire, 600, "Inter", "center"); });
+  },
+  rate(sc, u, t) {
+    const rows = [["Month A", 6, 30, C.modis], ["Month B", 6, 10, C.viirs]];
+    panel(180, 120, 920, 400);
+    text("fire-days ÷ clear-sky days", W / 2, 170, 22, C.ink, 300, "Sora", "center");
+    rows.forEach((r, i) => {
+      const y = 230 + i * 130; text(r[0], 220, y + 22, 18, r[3], 600);
+      for (let d = 0; d < 30; d++) { const clear = d < r[2]; g.fillStyle = clear ? "rgba(80,140,100,0.6)" : "rgba(140,150,165,0.35)"; g.fillRect(340 + d * 18, y, 14, 30); }
+      for (let d = 0; d < r[1]; d++) { alpha(seg(u, 0.2 + d * 0.03, 0.3 + d * 0.03), () => { g.fillStyle = C.fire; g.fillRect(340 + d * 18 * (r[2] / 6), y, 14, 30); }); }
+      alpha(seg(u, 0.55, 0.7), () => text(r[1] + " ÷ " + r[2] + " = " + (r[1] / r[2]).toFixed(2), 900, y + 22, 22, C.ink, 600, "JetBrains Mono"));
+    });
+    alpha(seg(u, 0.75, 0.85), () => text("Same count, very different rate", W / 2, 490, 18, C.dim, 400, "Inter", "center"));
+    chip("ILLUSTRATIVE NUMBERS", 200, 132, C.modis);
+  },
+  jump(sc, u, t) {
+    const x0 = 220, y0 = 480, w = 840, h = 330; panel(170, 110, 940, 440);
+    g.strokeStyle = C.line; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x0 + w, y0); g.stroke();
+    const yr = (v) => y0 - (v / 26000) * h;
+    const xs = (i) => x0 + 60 + i * 340;
+    const bars = [["2011 · MODIS", 9294, C.modis], ["2013 · VIIRS", 23977, C.viirs]];
+    bars.forEach((b, i) => { const gh = (y0 - yr(b[1])) * seg(u, 0.2 + i * 0.25, 0.4 + i * 0.25); g.fillStyle = b[2]; g.fillRect(xs(i), y0 - gh, 140, gh); text(b[0], xs(i) + 70, y0 + 28, 16, b[2], 600, "Inter", "center"); alpha(seg(u, 0.35 + i * 0.25, 0.45 + i * 0.25), () => text(b[1].toLocaleString("en-US"), xs(i) + 70, y0 - gh - 12, 22, C.ink, 600, "JetBrains Mono", "center")); });
+    alpha(seg(u, 0.7, 0.8), () => { g.strokeStyle = C.fire; g.setLineDash([6, 5]); g.beginPath(); g.moveTo(xs(0) + 140, yr(9294)); g.lineTo(xs(1), yr(23977)); g.stroke(); g.setLineDash([]); text("≈ 2.58× overnight?", 640, 210, 20, C.fire, 600, "Inter", "center"); });
+    text("Punjab + Haryana · fire cell-days", 200, 145, 14, C.dim, 400, "JetBrains Mono");
+    chip("RUN_TESTED_LOCALLY", 900, 128, C.modis);
+  },
+  jump2(sc, u, t) {
+    const x0 = 220, y0 = 480, h = 330; panel(170, 110, 940, 440);
+    const yr = (v) => y0 - (v / 26000) * h; const xs = (i) => x0 + 20 + i * 280;
+    const bars = [["2011 · MODIS", 9294, C.modis, 0], ["2013 · MODIS", 9476, C.modis, 0.25], ["2013 · VIIRS", 23977, C.viirs, 0]];
+    bars.forEach((b, i) => { const gh = (y0 - yr(b[1])) * (b[3] === 0 ? 1 : seg(u, 0.15, 0.45)); g.fillStyle = b[2]; alpha(i === 2 ? 0.35 : 1, () => g.fillRect(xs(i), y0 - gh, 140, gh)); text(b[0], xs(i) + 70, y0 + 28, 16, b[2], 600, "Inter", "center"); text(b[1].toLocaleString("en-US"), xs(i) + 70, y0 - gh - 12, 22, C.ink, 600, "JetBrains Mono", "center"); });
+    alpha(seg(u, 0.5, 0.62), () => text("Same farms · same MODIS · no jump", 640, 200, 22, C.ok, 600, "Inter", "center"));
+    chip("RUN_TESTED_LOCALLY", 900, 128, C.modis);
+  },
+  ratio(sc, u, t) {
+    panel(160, 110, 960, 430);
+    text("Overlap years · 2012 → today", W / 2, 160, 16, C.dim, 400, "JetBrains Mono", "center");
+    const yrs = 8;
+    for (let i = 0; i < yrs; i++) { alpha(seg(u, i * 0.05, i * 0.05 + 0.1), () => { g.fillStyle = C.viirs; g.fillRect(300 + i * 30, 330 - 60 - (i % 3) * 10, 20, 60 + (i % 3) * 10); g.fillStyle = C.modis; g.fillRect(820 + i * 30, 330 - 25 - (i % 2) * 6, 20, 25 + (i % 2) * 6); }); }
+    text("Σ VIIRS", 420, 365, 20, C.viirs, 600, "Inter", "center"); text("Σ MODIS", 940, 365, 20, C.modis, 600, "Inter", "center");
+    alpha(seg(u, 0.45, 0.6), () => { text("k  =  Σ VIIRS  ÷  Σ MODIS", W / 2, 445, 34, C.ink, 300, "Sora", "center"); text("an exchange rate between two sensors · one per calendar month", W / 2, 485, 16, C.dim, 400, "Inter", "center"); });
+    chip("METHOD", 180, 122, C.viirs);
+  },
+  season(sc, u, t) {
+    panel(200, 120, 880, 400);
+    text("k by calendar month · Punjab + Haryana", W / 2, 170, 16, C.dim, 400, "JetBrains Mono", "center");
+    [["November", 2.13, C.fire, "thousands of fires → steady"], ["June", 7.25, C.viirs, "few fires → larger, less certain"]].forEach((m, i) => {
+      const y = 250 + i * 130; text(m[0], 260, y + 30, 26, m[2], 300, "Sora");
+      const w = 440 * (m[1] / 8) * seg(u, 0.15 + i * 0.25, 0.4 + i * 0.25); g.fillStyle = m[2]; g.fillRect(470, y + 5, w, 34);
+      alpha(seg(u, 0.35 + i * 0.25, 0.45 + i * 0.25), () => { text("k ≈ " + m[1], 480 + w, y + 32, 24, C.ink, 600, "JetBrains Mono"); text(m[3], 470, y + 70, 15, C.dim); });
+    });
+    chip("RUN_TESTED_LOCALLY", 220, 132, C.modis);
+  },
+  convert(sc, u, t) {
+    panel(140, 110, 1000, 430);
+    text("November 2005", W / 2, 165, 18, C.dim, 400, "JetBrains Mono", "center");
+    text("2,350", 330, 300, 56, C.modis, 300, "Sora", "center"); text("MODIS cell-days", 330, 340, 16, C.modis, 400, "Inter", "center");
+    alpha(seg(u, 0.15, 0.3), () => text("× k", 560, 300, 40, C.ink, 300, "Sora", "center"));
+    alpha(seg(u, 0.3, 0.45), () => { text("≈ 5,375", 860, 300, 56, C.viirs, 300, "Sora", "center"); text("VIIRS-equivalent", 860, 340, 16, C.viirs, 400, "Inter", "center"); });
+    alpha(seg(u, 0.55, 0.7), () => {
+      const x0 = 300, x1 = 1000, v = (n) => x0 + (n / 10000) * (x1 - x0);
+      g.fillStyle = "rgba(61,214,245,0.2)"; g.fillRect(v(2184), 420, v(9330) - v(2184), 26);
+      g.fillStyle = C.viirs; g.fillRect(v(5375) - 2, 410, 4, 46);
+      text("2,184", v(2184), 480, 15, C.dim, 400, "JetBrains Mono", "center"); text("9,330", v(9330), 480, 15, C.dim, 400, "JetBrains Mono", "center");
+      text("95 % band", v(2184) - 20, 438, 14, C.viirs, 600, "Inter", "right");
+    });
+    chip("RUN_TESTED_LOCALLY", 160, 122, C.modis);
+  },
+  band(sc, u, t) {
+    panel(200, 140, 880, 360);
+    const x0 = 300, x1 = 980, y = 330;
+    g.strokeStyle = C.line; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke();
+    const lo = x0 + 140 * seg(u, 0.2, 0.5), hi = x1 - 160 * seg(u, 0.2, 0.5), mid = (x0 + x1) / 2;
+    g.fillStyle = "rgba(61,214,245,0.2)"; g.fillRect(lo, y - 30, hi - lo, 60);
+    g.fillStyle = C.viirs; g.fillRect(mid - 2, y - 46, 4, 92);
+    alpha(seg(u, 0.45, 0.6), () => { text("low", lo, y + 70, 20, C.dim, 400, "Inter", "center"); text("estimate", mid, y + 70, 20, C.ink, 600, "Inter", "center"); text("high", hi, y + 70, 20, C.dim, 400, "Inter", "center"); });
+    text("Where the true value probably lies · 95 %", W / 2, 200, 20, C.ink, 300, "Sora", "center");
+  },
+  band2(sc, u, t) {
+    panel(140, 120, 1000, 420);
+    const rows = [["Nov 2005", 2184, 5375, 9330, 10000, C.viirs], ["Jul 2005", 0, 32.8, 275.3, 300, C.modis]];
+    rows.forEach((r, i) => alpha(seg(u, i * 0.4, i * 0.4 + 0.12), () => {
+      const y = 240 + i * 160, x0 = 380, x1 = 1060, v = (n) => x0 + (n / r[4]) * (x1 - x0);
+      text(r[0], 180, y + 8, 24, r[5], 300, "Sora");
+      g.strokeStyle = C.line; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke();
+      g.fillStyle = r[5] === C.viirs ? "rgba(61,214,245,0.22)" : "rgba(255,181,71,0.22)"; g.fillRect(v(r[1]), y - 22, v(r[3]) - v(r[1]), 44);
+      g.fillStyle = r[5]; g.fillRect(v(r[2]) - 2, y - 32, 4, 64);
+      text(String(r[1]).replace("2184", "2,184"), v(r[1]), y + 52, 15, C.dim, 400, "JetBrains Mono", "center");
+      text(String(r[2]).replace("5375", "5,375"), v(r[2]), y - 40, 16, C.ink, 600, "JetBrains Mono", "center");
+      text(String(r[3]).replace("9330", "9,330"), v(r[3]), y + 52, 15, C.dim, 400, "JetBrains Mono", "center");
+    }));
+    alpha(seg(u, 0.75, 0.85), () => text("few fires → a wide band relative to the value", W / 2, 520, 17, C.modis, 400, "Inter", "center"));
+    chip("RUN_TESTED_LOCALLY", 160, 132, C.modis);
+  },
+  overlap(sc, u, t) {
+    panel(160, 120, 960, 420);
+    const x0 = 260, x1 = 1020;
+    [["barely overlap → probably a real difference", 230, [300, 520, 420], [600, 900, 750], C.ok], ["overlap a lot → say “similar”", 400, [380, 760, 560], [470, 860, 650], C.modis]].forEach((r, i) => alpha(seg(u, i * 0.4, i * 0.4 + 0.15), () => {
+      [r[2], r[3]].forEach((b, k) => { const y = r[1] + k * 34; g.fillStyle = k ? "rgba(61,214,245,0.3)" : "rgba(255,181,71,0.3)"; g.fillRect(b[0], y, b[1] - b[0], 24); g.fillStyle = k ? C.viirs : C.modis; g.fillRect(b[2] - 2, y - 4, 4, 32); });
+      text(r[0], W / 2, r[1] + 100, 18, r[4], 600, "Inter", "center");
+    }));
+    chip("DIAGRAM", 180, 132, C.modis);
+  },
+  fleet(sc, u, t) {
+    const sats = [["Terra", "MODIS", 2000, C.modis], ["Aqua", "MODIS", 2002, C.modis], ["Suomi NPP", "VIIRS", 2012, C.viirs], ["NOAA-20", "VIIRS", 2018, C.viirs], ["NOAA-21", "VIIRS", 2023, C.viirs]];
+    const x0 = 180, x1 = 1100, yr = (y) => x0 + ((y - 2000) / 27) * (x1 - x0);
+    g.strokeStyle = C.line; g.beginPath(); g.moveTo(x0, 470); g.lineTo(x1, 470); g.stroke();
+    [2000, 2005, 2010, 2015, 2020, 2025].forEach((y) => text(String(y), yr(y), 495, 13, C.faint, 400, "JetBrains Mono", "center"));
+    sats.forEach((s, i) => alpha(seg(u, i * 0.13, i * 0.13 + 0.1), () => {
+      const y = 140 + i * 62; const xs = yr(s[2]);
+      g.fillStyle = s[3]; g.globalAlpha *= 0.35; g.fillRect(xs, y + 14, x1 - xs, 8); g.globalAlpha /= 0.35;
+      drawSat(xs, y + 18, 0.3, 0);
+      text(s[0] + " · " + s[1], xs + 36, y + 10, 17, s[3], 600);
+      text("since " + s[2], xs + 36, y + 34, 13, C.dim, 400, "JetBrains Mono");
+    }));
+    chip("OFFICIAL_DOCUMENTED", 180, 100, C.modis);
+  },
+  orbit(sc, u, t) {
+    const cx = 640, cy = 320, R = 150;
+    const gr = g.createRadialGradient(cx - 40, cy - 50, 20, cx, cy, R); gr.addColorStop(0, "#2f78d0"); gr.addColorStop(1, "#061433");
+    g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, R, 0, 7); g.fill(); g.strokeStyle = "rgba(61,214,245,0.5)"; g.stroke();
+    g.strokeStyle = C.viirs; g.lineWidth = 2; g.beginPath(); g.ellipse(cx, cy, 70, 230, 0.15, 0, 7); g.stroke(); g.lineWidth = 1;
+    const a = t * 1.3; const sxp = cx + 70 * Math.cos(a) * Math.cos(0.15) - 230 * Math.sin(a) * Math.sin(0.15), syp = cy + 70 * Math.cos(a) * Math.sin(0.15) + 230 * Math.sin(a) * Math.cos(0.15);
+    drawSat(sxp, syp, 0.4, 0);
+    alpha(seg(u, 0.2, 0.35), () => { text("700–830 km up", 900, 240, 22, C.ink, 300, "Sora"); text("over the poles", 900, 280, 18, C.dim); text("~14 orbits a day", 900, 330, 22, C.ink, 300, "Sora"); text("same local time every pass", 900, 370, 18, C.dim); });
+    chip("SUN-SYNCHRONOUS ORBIT", 160, 110, C.viirs);
+  },
+  grid(sc, u, t) {
+    const x0 = 300, y0 = 120, cs = 84, n = 5; const r = rnd(12); const pts = []; for (let i = 0; i < 26; i++) pts.push([r(), r()]);
+    g.strokeStyle = "rgba(61,214,245,0.35)"; for (let i = 0; i <= n; i++) { g.beginPath(); g.moveTo(x0 + i * cs, y0); g.lineTo(x0 + i * cs, y0 + n * cs); g.stroke(); g.beginPath(); g.moveTo(x0, y0 + i * cs); g.lineTo(x0 + n * cs, y0 + i * cs); g.stroke(); }
+    const snap = seg(u, 0.35, 0.7);
+    pts.forEach((p) => { const px = x0 + p[0] * n * cs, py = y0 + p[1] * n * cs; const cxp = x0 + (Math.floor(p[0] * n) + 0.5) * cs, cyp = y0 + (Math.floor(p[1] * n) + 0.5) * cs; g.fillStyle = C.fire; g.beginPath(); g.arc(px + (cxp - px) * snap, py + (cyp - py) * snap, 5, 0, 7); g.fill(); });
+    alpha(seg(u, 0.1, 0.25), () => { text("0.1° grid", 840, 220, 26, C.ink, 300, "Sora"); text("≈ 11 km × 11 km near the equator", 840, 255, 17, C.dim); text("each detection snaps to its cell", 840, 300, 17, C.viirs); });
+    chip("DIAGRAM", x0, y0 - 40, C.modis);
+  },
+  cellday(sc, u, t) {
+    const x0 = 260, y0 = 130, cs = 84, n = 5; const r = rnd(12); const pts = []; for (let i = 0; i < 26; i++) pts.push([Math.floor(r() * n), Math.floor(r() * n)]);
+    const lit = {}; pts.forEach((p) => { lit[p[0] + "_" + p[1]] = (lit[p[0] + "_" + p[1]] || 0) + 1; });
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const k = lit[i + "_" + j]; g.fillStyle = k ? "rgba(255,77,94," + (0.3 + 0.55 * seg(u, 0.25, 0.45)) + ")" : "rgba(20,40,70,0.5)"; g.fillRect(x0 + i * cs, y0 + j * cs, cs - 3, cs - 3); if (k) { text(String(k), x0 + i * cs + cs / 2, y0 + j * cs + cs / 2 + 7, 18, C.ink, 600, "JetBrains Mono", "center"); alpha(seg(u, 0.5, 0.65), () => text("→ 1", x0 + i * cs + cs / 2, y0 + j * cs + cs - 8, 12, C.ok, 600, "JetBrains Mono", "center")); } }
+    alpha(seg(u, 0.55, 0.7), () => { text(pts.length + " fire pixels", 780, 240, 26, C.fire, 300, "Sora"); text("= " + Object.keys(lit).length + " fire cell-days", 780, 285, 26, C.ok, 300, "Sora"); text("each cell counts once per day", 780, 325, 17, C.dim); });
+    chip("DIAGRAM", x0, y0 - 40, C.modis);
+  },
+  notarea(sc, u, t) {
+    [[380, "tiny stubble fire", 0.5], [880, "forest blaze", 1.6]].forEach((f, i) => alpha(seg(u, i * 0.25, i * 0.25 + 0.12), () => {
+      g.fillStyle = "rgba(20,40,70,0.6)"; g.fillRect(f[0] - 150, 160, 300, 260); g.strokeStyle = C.line; g.strokeRect(f[0] - 150, 160, 300, 260);
+      flame(f[0], 300, f[2], t + i); text(f[1], f[0], 455, 18, C.ink, 400, "Inter", "center"); text("cell-day = 1", f[0], 490, 22, C.ok, 600, "JetBrains Mono", "center");
+    }));
+    alpha(seg(u, 0.6, 0.75), () => text("not burned area · not a number of fires", W / 2, 130, 20, C.modis, 600, "Inter", "center"));
+  },
+  calendar(sc, u, t) {
+    const x0 = 260, y0 = 120, cw = 58, ch = 15; const months = "JFMAMJJASOND";
+    for (let m = 0; m < 12; m++) text(months[m], x0 + m * cw + cw / 2, y0 - 8, 13, C.faint, 400, "JetBrains Mono", "center");
+    for (let y = 0; y < 26; y++) { if (y % 5 === 0) text(String(2000 + y), x0 - 14, y0 + y * ch + 12, 11, C.faint, 400, "JetBrains Mono", "right");
+      for (let m = 0; m < 12; m++) { const v = (m === 10 || m === 9) ? 0.75 + 0.2 * Math.sin(y) : (m === 4 || m === 3) ? 0.45 : 0.12; const show = seg(u, y * 0.015, y * 0.015 + 0.1);
+        g.fillStyle = "rgba(255," + Math.round(77 + 120 * (1 - v)) + ",60," + (v * show) + ")"; g.fillRect(x0 + m * cw, y0 + y * ch, cw - 3, ch - 3);
+        if (y === 12) { g.fillStyle = "rgba(61,214,245,0.8)"; g.fillRect(x0 - 4, y0 + y * ch - 2, 12 * cw + 2, 1.5); } } }
+    alpha(seg(u, 0.5, 0.65), () => { g.strokeStyle = C.viirs; g.lineWidth = 2; g.strokeRect(x0 + 10 * cw - 3, y0 - 3, cw + 3, 26 * ch + 3); g.lineWidth = 1; text("November vs every other November", 990, 280, 17, C.viirs, 600); });
+    chip("ILLUSTRATIVE", 990, 130, C.modis);
+  },
+  robust(sc, u, t) {
+    panel(180, 120, 920, 400);
+    const vals = [3, 4, 4, 5, 5, 6, 6, 7, 30]; const x0 = 260, x1 = 1020, v = (n) => x0 + (n / 32) * (x1 - x0);
+    vals.forEach((n, i) => alpha(seg(u, i * 0.04, i * 0.04 + 0.08), () => { g.fillStyle = n > 20 ? C.fire : C.modis; g.beginPath(); g.arc(v(n), 260, 9, 0, 7); g.fill(); }));
+    const mean = vals.reduce((a, b) => a + b) / vals.length;
+    alpha(seg(u, 0.4, 0.5), () => { g.fillStyle = C.fire; g.fillRect(v(mean) - 1, 220, 2, 80); text("mean · dragged by one extreme year", v(mean), 330, 15, C.fire, 600, "Inter", "center"); });
+    alpha(seg(u, 0.55, 0.65), () => { g.fillStyle = C.ok; g.fillRect(v(5) - 1, 200, 2, 120); text("median · stays put", v(5), 190, 15, C.ok, 600, "Inter", "center"); });
+    alpha(seg(u, 0.7, 0.8), () => text("work on log(x + 0.5) · use median and MAD", W / 2, 440, 20, C.ink, 300, "Sora", "center"));
+    chip("ILLUSTRATIVE", 200, 132, C.modis);
+  },
+  zscore(sc, u, t) {
+    panel(180, 150, 920, 330);
+    const x0 = 260, x1 = 1020, z = (n) => x0 + ((n + 3) / 6) * (x1 - x0);
+    g.fillStyle = "rgba(61,214,245,0.25)"; g.fillRect(z(-3), 300, z(-1) - z(-3), 30); g.fillStyle = "rgba(255,255,255,0.06)"; g.fillRect(z(-1), 300, z(1) - z(-1), 30); g.fillStyle = "rgba(255,77,94,0.3)"; g.fillRect(z(1), 300, z(3) - z(1), 30);
+    [-3, -2, -1, 0, 1, 2, 3].forEach((n) => text((n > 0 ? "+" : "") + n, z(n), 360, 14, C.dim, 400, "JetBrains Mono", "center"));
+    text("notably less", z(-2), 285, 16, C.viirs, 600, "Inter", "center"); text("usual", z(0), 285, 16, C.dim, 600, "Inter", "center"); text("notably more", z(2), 285, 16, C.fire, 600, "Inter", "center");
+    const k = -2.4 + 4.6 * seg(u, 0.2, 0.8); g.fillStyle = C.ink; g.beginPath(); g.moveTo(z(k), 296); g.lineTo(z(k) - 8, 282); g.lineTo(z(k) + 8, 282); g.fill();
+    text("robust z", W / 2, 210, 26, C.ink, 300, "Sora", "center");
+  },
+  clues(sc, u, t) {
+    [["Land", "what the cell is made of", C.ok], ["Repetition", "same spot, every night?", C.modis], ["Timing", "crop cycle or dry season?", C.viirs]].forEach((c, i) => alpha(seg(u, i * 0.2, i * 0.2 + 0.15), () => {
+      const x = 200 + i * 310; panel(x, 170, 270, 280, c[2]); text(c[0], x + 135, 270, 30, c[2], 300, "Sora", "center"); text(c[1], x + 135, 320, 16, C.dim, 400, "Inter", "center");
+    }));
+  },
+  landcover(sc, u, t) {
+    const cls = [["Cropland", "#f096ff", 0.62], ["Tree cover", "#2e8b57", 0.18], ["Built-up", "#fa4b4b", 0.08], ["Grassland", "#e6d36b", 0.12]];
+    let x = 220; cls.forEach((c, i) => { const w = 840 * c[2] * seg(u, 0.1, 0.4); g.fillStyle = c[1]; g.fillRect(x, 240, w, 70); alpha(seg(u, 0.4, 0.5), () => text(c[0], x + w / 2, 340, 15, C.ink, 400, "Inter", "center")); x += w; });
+    alpha(seg(u, 0.55, 0.7), () => { flame(640, 200, 0.8, t); text("hot pixel in a mostly-cropland cell at harvest → likely residue burning", W / 2, 420, 18, C.ink, 400, "Inter", "center"); });
+    chip("ESA WORLDCOVER · ILLUSTRATIVE SHARES", 220, 150, C.modis);
+  },
+  persist(sc, u, t) {
+    panel(180, 120, 920, 420);
+    text("Nights in one year at one location", 220, 165, 16, C.dim, 400, "JetBrains Mono");
+    [["Gas flare", 0.92, C.modis], ["Crop field", 0.05, C.fire]].forEach((r, i) => { const y = 220 + i * 150; text(r[0], 220, y + 12, 22, r[2], 300, "Sora");
+      for (let d = 0; d < 52; d++) { const on = ((d * 37) % 100) / 100 < r[1] || (i === 1 && (d === 43 || d === 44)); alpha(seg(u, d * 0.008, d * 0.008 + 0.05), () => { g.fillStyle = on ? r[2] : "rgba(255,255,255,0.06)"; g.fillRect(220 + d * 16, y + 30, 12, 40); }); } });
+    alpha(seg(u, 0.6, 0.72), () => text("hot almost every night, same place → industrial, removed", W / 2, 520, 17, C.modis, 600, "Inter", "center"));
+    chip("ILLUSTRATIVE", 900, 132, C.modis);
+  },
+  frp(sc, u, t) {
+    const v = seg(u, 0.1, 0.6);
+    g.strokeStyle = C.line; g.lineWidth = 18; g.beginPath(); g.arc(640, 400, 220, Math.PI, 2 * Math.PI); g.stroke();
+    const grd = g.createLinearGradient(420, 0, 860, 0); grd.addColorStop(0, C.modis); grd.addColorStop(1, C.fire); g.strokeStyle = grd; g.beginPath(); g.arc(640, 400, 220, Math.PI, Math.PI + Math.PI * v); g.stroke(); g.lineWidth = 1;
+    flame(640, 360, 1.6 * (0.5 + v), t); text("Fire Radiative Power", 640, 450, 24, C.ink, 300, "Sora", "center"); text("megawatts · at the moment of the pass", 640, 480, 16, C.dim, 400, "Inter", "center");
+    chip("CONCEPT", 160, 110, C.viirs);
+  },
+  energy(sc, u, t) {
+    panel(170, 120, 940, 420);
+    const x0 = 230, x1 = 1060, y0 = 470; g.strokeStyle = C.line; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y0); g.stroke();
+    const f = (x) => 220 * Math.exp(-Math.pow((x - 0.45) / 0.2, 2)) + 40 * Math.exp(-Math.pow((x - 0.75) / 0.08, 2));
+    const k = seg(u, 0.1, 0.6); g.beginPath(); g.moveTo(x0, y0); for (let i = 0; i <= 100 * k; i++) { const x = i / 100; g.lineTo(x0 + x * (x1 - x0), y0 - f(x)); } g.lineTo(x0 + k * (x1 - x0), y0); g.closePath(); g.fillStyle = "rgba(255,77,94,0.3)"; g.fill();
+    g.strokeStyle = C.fire; g.beginPath(); for (let i = 0; i <= 100; i++) { const x = i / 100; if (i === 0) g.moveTo(x0, y0 - f(x)); else g.lineTo(x0 + x * (x1 - x0), y0 - f(x)); } g.stroke();
+    [0.27, 0.56].forEach((p, i) => { const x = x0 + p * (x1 - x0); g.strokeStyle = i ? C.viirs : C.modis; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(x, 160); g.lineTo(x, y0); g.stroke(); g.setLineDash([]); });
+    text("power over time", x0, 160, 15, C.dim, 400, "JetBrains Mono"); alpha(seg(u, 0.55, 0.7), () => { text("area = Fire Radiative Energy (MJ)", 760, 210, 18, C.fire, 600); text("≈ 0.37 kg dry matter per MJ · large uncertainty", 760, 240, 15, C.dim); });
+    text("dashed lines: the only two looks", x0, y0 + 30, 14, C.faint, 400, "JetBrains Mono");
+    chip("ILLUSTRATIVE CURVE", 900, 128, C.modis);
+  },
+  labels(sc, u, t) {
+    [["OFFICIAL_DOCUMENTED", "matches a NASA / NOAA / ESA source", C.viirs], ["SOURCE_DERIVED", "computed straight from official data", C.viirs], ["RUN_TESTED_LOCALLY", "produced and checked by our pipeline", C.ok], ["SIMULATED_DEMO", "made-up data to show the interface", C.modis], ["PROPOSED_UNVALIDATED", "not yet passed its test", C.fire]].forEach((l, i) => alpha(seg(u, i * 0.13, i * 0.13 + 0.1), () => {
+      const y = 140 + i * 78; chip(l[0], 280, y, l[2]); text(l[1], 620, y + 18, 18, C.ink, 300, "Inter");
+    }));
+  },
+  nullzero(sc, u, t) {
+    const x0 = 300, cw = 56;
+    ["J", "F", "M", "A", "M", "J"].forEach((m, i) => { const isNull = i === 3; alpha(seg(u, i * 0.06, i * 0.06 + 0.1), () => { g.fillStyle = isNull ? "rgba(255,255,255,0.04)" : "rgba(255,120,60," + (0.2 + i * 0.1) + ")"; g.fillRect(x0 + i * (cw + 50), 230, cw + 30, 120); if (isNull) { g.strokeStyle = C.dim; g.setLineDash([5, 5]); g.strokeRect(x0 + i * (cw + 50), 230, cw + 30, 120); g.setLineDash([]); text("null", x0 + i * (cw + 50) + 43, 295, 16, C.dim, 600, "JetBrains Mono", "center"); } text(m, x0 + i * (cw + 50) + 43, 380, 14, C.faint, 400, "JetBrains Mono", "center"); }); });
+    alpha(seg(u, 0.45, 0.6), () => { text("not observed ≠ 0", W / 2, 180, 30, C.ink, 300, "Sora", "center"); chip("STATUS: UNOBSERVED", 520, 420, C.dim); });
+  },
+  heldout(sc, u, t) {
+    panel(160, 120, 960, 420);
+    const yrs = ["2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]; const hide = 4;
+    yrs.forEach((y, i) => { const x = 220 + i * 110; const hidden = i === hide && seg(u, 0.15, 0.25) > 0.5; g.fillStyle = hidden ? "rgba(255,255,255,0.05)" : "rgba(61,214,245,0.5)"; g.fillRect(x, 200, 90, 50); text(hidden ? "hidden" : y, x + 45, 232, 15, hidden ? C.dim : C.ink, 600, "JetBrains Mono", "center"); });
+    alpha(seg(u, 0.3, 0.45), () => { text("fit k without that year → predict it from MODIS × k", W / 2, 310, 18, C.ink, 400, "Inter", "center"); });
+    alpha(seg(u, 0.5, 0.62), () => { const x = 220 + hide * 110 + 45; g.fillStyle = "rgba(255,181,71,0.25)"; g.fillRect(x - 60, 360, 120, 30); g.fillStyle = C.viirs; g.beginPath(); g.arc(x + 18, 375, 8, 0, 7); g.fill(); text("prediction band", x - 70, 378, 14, C.modis, 600, "Inter", "right"); text("real VIIRS", x + 34, 380, 14, C.viirs, 600, "Inter"); });
+    alpha(seg(u, 0.7, 0.82), () => text("≈ 95 of 100 truths inside the 95 % bands → honest bands", W / 2, 470, 19, C.ok, 600, "Inter", "center"));
+    chip("VALIDATION", 180, 132, C.viirs);
+  },
+  wordsonly(sc, u, t) {
+    panel(220, 150, 380, 300, C.viirs); text("Computed numbers", 410, 200, 20, C.viirs, 600, "Inter", "center");
+    ["5,375", "95 % band", "k ≈ 2.13"].forEach((n, i) => text(n, 410, 260 + i * 50, 26, C.ink, 300, "JetBrains Mono", "center"));
+    alpha(seg(u, 0.3, 0.45), () => { panel(680, 150, 380, 300, C.modis); text("AI writes words", 870, 200, 20, C.modis, 600, "Inter", "center"); wrap("“November usually burns about 5,375 cell-days on the VIIRS scale…”", 870, 260, 320, 18, 28, C.dim, 400, "Inter", "center"); });
+    alpha(seg(u, 0.6, 0.72), () => text("never creates or edits a number", W / 2, 500, 20, C.fire, 600, "Inter", "center"));
+  },
+  myth(sc, u, t) {
+    const flip = seg(u, 0.35, 0.5);
+    panel(260, 150, 760, 330, flip > 0.5 ? C.ok : C.fire);
+    text("MYTH " + sc.n, 300, 200, 14, flip > 0.5 ? C.ok : C.fire, 600, "JetBrains Mono");
+    if (flip < 0.5) { alpha(1 - flip * 2, () => wrap("“" + sc.myth + "”", W / 2, 320, 660, 40, 50, C.ink, 300, "Sora", "center")); }
+    else { alpha(flip * 2 - 1, () => { text("✗  " + sc.myth, W / 2, 270, 20, C.dim, 400, "Inter", "center"); wrap(sc.truth, W / 2, 340, 660, 30, 42, C.ink, 300, "Sora", "center"); }); }
+  },
+  pipeline(sc, u, t) {
+    const boxes = [["Satellite pass", C.viirs], ["NASA FIRMS · NRT", C.modis], ["FIREWORK server · cache", C.ok], ["Your browser · no key", C.ink]];
+    boxes.forEach((b, i) => alpha(seg(u, i * 0.15, i * 0.15 + 0.1), () => { const x = 130 + i * 270; panel(x, 250, 230, 110, b[1]); wrap(b[0], x + 115, 300, 200, 18, 24, b[1], 600, "Inter", "center"); if (i < 3) { g.strokeStyle = C.dim; g.beginPath(); g.moveTo(x + 235, 305); g.lineTo(x + 265, 305); g.stroke(); } }));
+    alpha(seg(u, 0.25, 0.35), () => text("≈ 3 hours", 130 + 270 + 115, 400, 16, C.modis, 600, "JetBrains Mono", "center"));
+    drawSat(245, 180, 0.4, 0);
+  },
+  checklist(sc, u, t) {
+    [["Which sensor?", "don't mix VIIRS and MODIS counts"], ["Which time?", "note the local overpass time"], ["Was it clear?", "a gap may be cloud"]].forEach((c, i) => alpha(seg(u, 0.1 + i * 0.22, 0.2 + i * 0.22), () => {
+      const y = 170 + i * 110; g.strokeStyle = C.ok; g.lineWidth = 2; g.strokeRect(300, y, 36, 36); g.lineWidth = 1; text("✓", 318, y + 28, 26, C.ok, 600, "Inter", "center");
+      text(c[0], 370, y + 18, 26, C.ink, 300, "Sora"); text(c[1], 370, y + 46, 17, C.dim);
+    }));
+  },
+  provisional(sc, u, t) {
+    const x0 = 220, x1 = 1060; g.strokeStyle = C.line; g.lineWidth = 3; g.beginPath(); g.moveTo(x0, 320); g.lineTo(x1, 320); g.stroke(); g.lineWidth = 1;
+    const k = seg(u, 0.15, 0.7); const xm = x0 + (x1 - x0) * k;
+    g.fillStyle = C.ok; g.fillRect(x0, 300, Math.min(xm, x0 + 340) - x0, 40); alpha(seg(u, 0.5, 0.6), () => { g.fillStyle = C.viirs; g.fillRect(x0 + 340, 300, Math.max(0, xm - (x0 + 340)), 40); });
+    text("NRT · fast, provisional", x0, 280, 18, C.ok, 600); alpha(seg(u, 0.5, 0.6), () => text("SP archive · final orbit & calibration", x0 + 360, 280, 18, C.viirs, 600));
+    text("~5 months", x0 + 340, 380, 16, C.dim, 400, "JetBrains Mono", "center");
+  },
+};
+
+function endCard(sc, u, t) {
+  alpha(seg(u, 0, 0.15), () => {
+    if (IMG.logo) g.drawImage(IMG.logo, W / 2 - 60, 120, 120, 120);
+    wrap(sc.line, W / 2, 330, 980, 40, 52, C.ink, 300, "Sora, sans-serif", "center");
+    text(LESSON.endNote || "Detailed lesson " + LESSON.num + " · PDF on the Learn page", W / 2, 460, 17, C.viirs, 600, "Inter", "center");
+  });
+}
+
+
+const FR = { x: 100, y: 80, w: 1080, bar: 28, h: 482 };
+const SHOT_W = 1440, SHOT_H = 900;
+function fitCrop(r, minW) {
+  const aspect = FR.w / (FR.h - FR.bar);
+  let w = Math.max(r[2], minW || 0); let h = w / aspect;
+  if (h < r[3]) { h = r[3]; w = h * aspect; }
+  if (w > SHOT_W) { w = SHOT_W; h = w / aspect; }
+  let x = r[0] + r[2] / 2 - w / 2; let y = r[1] + r[3] / 2 - h / 2;
+  x = clamp(x, 0, SHOT_W - w); y = clamp(y, 0, SHOT_H - h);
+  return [x, y, w, h];
+}
+function lerpRect(a, b, k) { return [0, 1, 2, 3].map((i) => a[i] + (b[i] - a[i]) * k); }
+function drawScreen(sc, u, t) {
+  const im = IMG[sc.src]; if (!im) return;
+  const full = fitCrop([0, (sc.focus || [0, 0, SHOT_W, SHOT_H])[1], SHOT_W, 10], SHOT_W);
+  const startR = sc.start ? fitCrop(sc.start, 620) : full;
+  const endR = sc.focus ? fitCrop(sc.focus, 620) : full;
+  const k = seg(u, sc.start ? 0.02 : 0.1, sc.start ? 0.3 : 0.42);
+  const cr = lerpRect(startR, endR, k);
+  const top = FR.y + FR.bar; const ih = FR.h - FR.bar;
+  g.save(); g.shadowColor = "rgba(0,0,0,0.55)"; g.shadowBlur = 40; rr(FR.x, FR.y, FR.w, FR.h, 14); g.fillStyle = "#0a0e16"; g.fill(); g.restore();
+  g.save(); rr(FR.x, FR.y, FR.w, FR.h, 14); g.clip();
+  g.fillStyle = "#121826"; g.fillRect(FR.x, FR.y, FR.w, FR.bar);
+  ["#ff5f57", "#febc2e", "#28c840"].forEach((c, i) => { g.fillStyle = c; g.beginPath(); g.arc(FR.x + 18 + i * 16, FR.y + 14, 4.5, 0, 7); g.fill(); });
+  rr(FR.x + 90, FR.y + 6, 420, 16, 8); g.fillStyle = "rgba(255,255,255,0.06)"; g.fill();
+  text("firework-chronos.vercel.app" + (sc.path || ""), FR.x + 102, FR.y + 18, 11, C.dim, 400, "JetBrains Mono, monospace");
+  g.drawImage(im, cr[0], cr[1], cr[2], cr[3], FR.x, top, FR.w, ih);
+  const sx = FR.w / cr[2]; const sy = ih / cr[3];
+  (sc.marks || []).forEach((m, i) => {
+    const at = m.at !== undefined ? m.at : 0.45 + i * (0.4 / Math.max(1, sc.marks.length));
+    const a = seg(u, at, at + 0.05);
+    if (a <= 0) return;
+    const x = FR.x + (m.r[0] - cr[0]) * sx, y = top + (m.r[1] - cr[1]) * sy, w = m.r[2] * sx, h = m.r[3] * sy;
+    const col = m.c || C.modis;
+    alpha(a, () => {
+      g.save(); g.shadowColor = col; g.shadowBlur = 16 + 6 * Math.sin(t * 4);
+      rr(x, y, w, h, 8); g.strokeStyle = col; g.lineWidth = 2.4; g.stroke(); g.restore();
+      rr(x, y, w, h, 8); g.fillStyle = "rgba(255,181,71,0.06)"; g.fill();
+      font(12, 600, "JetBrains Mono, monospace"); const lw = g.measureText(m.label).width + 26;
+      let ly = y - 34; if (ly < top + 6) ly = y + h + 8; if (ly > top + ih - 30) ly = y + 8;
+      let lx = clamp(x, FR.x + 8, FR.x + FR.w - lw - 8);
+      chip(m.label, lx, ly, col);
+    });
+  });
+  g.restore();
+  rr(FR.x, FR.y, FR.w, FR.h, 14); g.strokeStyle = "rgba(230,237,243,0.16)"; g.lineWidth = 1.2; g.stroke();
+}
+
+function drawAgenda(sc, u, t) {
+  alpha(seg(u, 0, 0.08), () => {
+    text("THE TOUR IN SEVEN PARTS", 140, 150, 13, C.modis, 600, "JetBrains Mono, monospace");
+    text("What we will cover", 140, 200, 40, C.ink, 300, "Sora, sans-serif");
+  });
+  sc.parts.forEach((p, i) => {
+    const at = 0.08 + i * 0.075;
+    const a = seg(u, at, at + 0.06);
+    alpha(a, () => {
+      const col = i % 2; const row = Math.floor(i / 2);
+      const x = 140 + col * 510; const y = 250 + row * 72 + (1 - a) * 12;
+      panel(x, y, 490, 58, "rgba(230,237,243,0.12)");
+      text(String(i + 1).padStart(2, "0"), x + 22, y + 37, 22, C.modis, 600, "JetBrains Mono, monospace");
+      text(p, x + 74, y + 37, 22, C.ink, 400, "Inter, sans-serif");
+    });
+  });
+}
+function drawChapter(sc, u, t) {
+  const a = seg(u, 0, 0.12);
+  alpha(a, () => {
+    text("PART " + sc.n + " OF " + sc.parts.length, 120, 250, 16, C.modis, 600, "JetBrains Mono, monospace");
+    text(sc.title, 120, 330, 64, C.ink, 300, "Sora, sans-serif");
+    text(sc.sub, 120, 380, 22, C.dim, 300, "Inter, sans-serif");
+    const ww = 300 * seg(u, 0.05, 0.4); const grd = g.createLinearGradient(120, 0, 420, 0); grd.addColorStop(0, C.modis); grd.addColorStop(1, C.viirs);
+    g.fillStyle = grd; g.fillRect(120, 408, ww, 3);
+    sc.parts.forEach((p, i) => {
+      const y = 190 + i * 50;
+      const on = i + 1 === sc.n;
+      const done = i + 1 < sc.n;
+      rr(800, y, 360, 40, 10);
+      g.fillStyle = on ? "rgba(255,181,71,0.16)" : "rgba(10,14,22,0.7)"; g.fill();
+      g.strokeStyle = on ? C.modis : "rgba(230,237,243,0.1)"; g.lineWidth = on ? 1.6 : 1; g.stroke();
+      text(String(i + 1).padStart(2, "0"), 820, y + 26, 15, on ? C.modis : (done ? C.ok : C.faint), 600, "JetBrains Mono, monospace");
+      text(p, 862, y + 26, 17, on ? C.ink : (done ? C.dim : C.faint), on ? 600 : 400, "Inter, sans-serif");
+      if (done) text("✓", 1136, y + 26, 16, C.ok, 600, "Inter", "right");
+    });
+  });
+}
+function drawPoints(sc, u, t) {
+  const n = sc.items.length;
+  alpha(seg(u, 0, 0.08), () => {
+    text(sc.kicker || "", 140, 140, 13, C.modis, 600, "JetBrains Mono, monospace");
+    wrap(sc.title, 140, 196, 1000, 40, 50, C.ink, 300, "Sora, sans-serif");
+  });
+  sc.items.forEach((it, i) => {
+    const at = 0.08 + i * (0.62 / n);
+    const a = seg(u, at, at + 0.06);
+    alpha(a, () => {
+      const y = 262 + i * 58 + (1 - a) * 14;
+      panel(140, y, 1000, 46, "rgba(230,237,243,0.1)");
+      g.fillStyle = it.c || [C.modis, C.viirs, C.fire, C.ok, "#c7a6ff"][i % 5]; g.beginPath(); g.arc(166, y + 23, 6, 0, 7); g.fill();
+      text(it.t || it, 186, y + 30, 19, C.ink, 400, "Inter, sans-serif");
+    });
+  });
+}
+function drawSays(sc, u, t) {
+  alpha(seg(u, 0, 0.08), () => { wrap(sc.title, W / 2, 128, 1100, 34, 44, C.ink, 300, "Sora, sans-serif", "center"); });
+  [[sc.yes, "WHAT OUR DATA SAYS", C.ok, 90], [sc.no, "WHAT IT DOES NOT SAY", C.fire, 660]].forEach((col, ci) => {
+    const base = 0.06 + ci * 0.36;
+    alpha(seg(u, base, base + 0.05), () => {
+      panel(col[3], 160, 530, 400, col[2]);
+      text(col[1], col[3] + 26, 196, 13, col[2], 600, "JetBrains Mono, monospace");
+    });
+    col[0].forEach((it, i) => {
+      const at = base + 0.04 + i * 0.07;
+      alpha(seg(u, at, at + 0.05), () => {
+        const y = 226 + i * 80;
+        g.fillStyle = col[2]; font(22, 600, "Inter"); g.textAlign = "left"; g.fillText(ci === 0 ? "✓" : "✕", col[3] + 26, y + 30);
+        wrap(it, col[3] + 60, y + 28, 440, 18, 25, C.ink, 400, "Inter, sans-serif");
+      });
+    });
+  });
+}
+
+let HIRES = 1;
+function renderAt(t) {
+  g.setTransform(HIRES, 0, 0, HIRES, 0, 0);
+  background(t);
+  let i = 0; while (i < TL.length - 1 && t >= TL[i + 1].start) i++;
+  const sc = SCENES[i]; const sp = TL[i]; const u = clamp((t - sp.start) / sp.dur, 0, 1);
+  let fadeIn = seg(u, 0, 0.05); let fadeOut = 1 - seg(u, 0.97, 1);
+  if (sc.start) fadeIn = 1;
+  if (SCENES[i + 1] && SCENES[i + 1].start) fadeOut = 1;
+  const fade = fadeIn * fadeOut;
+  alpha(i === 0 ? 1 : fade, () => {
+    if (sc.type === "title") bigTitle(sc, u);
+    else if (sc.type === "end") endCard(sc, u, t);
+    else if (sc.type === "image") drawImageScene(sc.src, sc.label, u);
+    else if (sc.type === "compare") drawCompare(sc, u);
+    else if (sc.type === "screen") drawScreen(sc, u, t);
+    else if (sc.type === "points") drawPoints(sc, u, t);
+    else if (sc.type === "says") drawSays(sc, u, t);
+    else if (sc.type === "agenda") drawAgenda(sc, u, t);
+    else if (sc.type === "chapter") drawChapter(sc, u, t);
+    else if (DRAW[sc.type]) DRAW[sc.type](sc, u, t);
+  });
+  subtitle(sc, u);
+  chrome(i, t, sc);
+}
+
+window.setup = async function (lessonId, lesson, timeline) {
+  LESSON = lesson; SCENES = window.FILMS[lessonId]; TL = timeline; TOTAL = timeline[timeline.length - 1].start + timeline[timeline.length - 1].dur;
+  IMG.logo = await load("/logo_orbit.svg");
+  const srcs = []; SCENES.forEach((s) => { if (s.src) srcs.push(s.src); if (s.a) srcs.push(s.a); if (s.b) srcs.push(s.b); });
+  for (const s of srcs) IMG[s] = await load(s);
+  await document.fonts.ready;
+  renderAt(0);
+  return TOTAL;
+};
+window.renderAt = renderAt;
+window.hires = function (k) {
+  HIRES = k; cv.width = W * k; cv.height = H * k; cv.style.width = W * k + "px"; cv.style.height = H * k + "px";
+};
+window.setupScenes = async function (scenes, lesson, timeline) {
+  LESSON = lesson; SCENES = scenes; TL = timeline; TOTAL = timeline[timeline.length - 1].start + timeline[timeline.length - 1].dur;
+  IMG.logo = await load("/logo_orbit.svg");
+  for (const s of scenes) { if (s.src && !IMG[s.src]) IMG[s.src] = await load(s.src); }
+  await document.fonts.ready;
+  renderAt(0);
+  return TOTAL;
+};
+window.caption = async function (say, tag) {
+  await document.fonts.ready;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, cv.width, cv.height);
+  g.setTransform(HIRES, 0, 0, HIRES, 0, 0);
+  const lines = (() => { font(20, 400, "Inter, sans-serif"); const words = say.split(" "); let line = ""; let n = 0; words.forEach((wd) => { const test = line ? line + " " + wd : wd; if (g.measureText(test).width > 1040 && line) { n++; line = wd; } else { line = test; } }); return n + 1; })();
+  const top = H - 46 - lines * 28;
+  const grd = g.createLinearGradient(0, top - 40, 0, H); grd.addColorStop(0, "rgba(3,6,13,0)"); grd.addColorStop(0.45, "rgba(3,6,13,0.78)"); grd.addColorStop(1, "rgba(3,6,13,0.9)");
+  g.fillStyle = grd; g.fillRect(0, top - 40, W, H - top + 40);
+  wrap(say, W / 2, top + 22, 1040, 20, 28, "#eef3f8", 400, "Inter, sans-serif", "center");
+  if (tag) {
+    font(12, 600, "JetBrains Mono, monospace"); const tw = g.measureText(tag).width + 30;
+    rr(28, top - 30, tw, 26, 13); g.fillStyle = "rgba(5,7,10,0.82)"; g.fill(); g.strokeStyle = "rgba(255,181,71,0.7)"; g.lineWidth = 1; g.stroke();
+    g.fillStyle = C.modis; g.beginPath(); g.arc(42, top - 17, 3.5, 0, 7); g.fill();
+    text(tag, 52, top - 12.5, 12, "#ffd08a", 600, "JetBrains Mono, monospace");
+  }
+  return lines;
+};
+</script>
+</body>
+</html>

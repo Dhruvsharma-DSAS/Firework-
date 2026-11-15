@@ -1,0 +1,13 @@
+{
+  "note": "bbox = [west, south, east, north]. Areas from Natural Earth admin-1 (SOURCE-DERIVED) except where marked approx.",
+  "regions": [
+    {"id": "punjab_haryana", "name": "Punjab + Haryana + Chandigarh, India", "bbox": [73.8423, 27.6704, 77.588, 32.5167], "role": "flagship", "detail": true},
+    {"id": "punjab", "name": "Punjab, India", "bbox": [73.8423, 29.5598, 76.9104, 32.5167], "role": "flagship", "detail": true},
+    {"id": "haryana", "name": "Haryana, India", "bbox": [74.4594, 27.6704, 77.588, 30.9343], "role": "flagship", "detail": true},
+    {"id": "cordoba_ar", "name": "Córdoba, Argentina", "bbox": [-65.8, -35.0, -61.75, -29.5], "role": "partner_region", "detail": true, "note": "approx bbox — refine with the Natural Earth polygon"},
+    {"id": "california", "name": "California, USA", "bbox": [-124.4092, 32.5317, -114.1191, 41.9995], "role": "global_test", "detail": true},
+    {"id": "mato_grosso", "name": "Mato Grosso, Brazil", "bbox": [-61.6113, -18.0316, -50.2357, -7.3391], "role": "global_test", "detail": false},
+    {"id": "new_south_wales", "name": "New South Wales, Australia", "bbox": [141.0001, -37.5103, 153.6306, -28.1493], "role": "global_test", "detail": true},
+    {"id": "delhi", "name": "Delhi, India", "bbox": [76.8337, 28.4326, 77.3375, 28.8821], "role": "air_quality_context", "detail": true}
+  ]
+}

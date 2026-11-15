@@ -1,0 +1,31 @@
+node_modules/
+dist/
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# not part of the deliverable
+archive/
+design/prototype/
+design/screenshots/
+frontend/public/vid/tour.*
+frontend/public/img/aqua_hero.webp
+frontend/public/img/npp_hero2.webp
+frontend/public/logo_board.png
+*.log
+
+# raw downloads (re-creatable, large)
+data/raw/
+
+# pipeline + ML outputs (re-creatable)
+pipeline/data/
+pipeline/.env
+ml/data/
+ml/models/*.joblib
+ml/models/persistence_table.csv
+data/cache/
+supabase data enter/csv/pipeline/
+.film_work/

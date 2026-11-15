@@ -1,0 +1,247 @@
+{
+ "generated_at_utc": "2026-11-14T20:38:09.088050+00:00",
+ "harmoniser": {
+  "folds": [
+   {
+    "year": 2012,
+    "mae_k": 433.11403357162004,
+    "mae_model": 483.7495214300712,
+    "model_wins": false
+   },
+   {
+    "year": 2013,
+    "mae_k": 253.75335311269063,
+    "mae_model": 351.71698354052006,
+    "model_wins": false
+   },
+   {
+    "year": 2014,
+    "mae_k": 265.28721612540846,
+    "mae_model": 380.82390073915303,
+    "model_wins": false
+   },
+   {
+    "year": 2015,
+    "mae_k": 303.2283394375363,
+    "mae_model": 486.198647505045,
+    "model_wins": false
+   },
+   {
+    "year": 2016,
+    "mae_k": 298.95356461884,
+    "mae_model": 442.69752968393016,
+    "model_wins": false
+   },
+   {
+    "year": 2017,
+    "mae_k": 299.6757177947335,
+    "mae_model": 386.21638793048015,
+    "model_wins": false
+   },
+   {
+    "year": 2018,
+    "mae_k": 303.363471974027,
+    "mae_model": 378.7391564169602,
+    "model_wins": false
+   },
+   {
+    "year": 2019,
+    "mae_k": 271.1516478584613,
+    "mae_model": 444.9731713287139,
+    "model_wins": false
+   },
+   {
+    "year": 2020,
+    "mae_k": 425.0020050838608,
+    "mae_model": 452.35375288172924,
+    "model_wins": false
+   },
+   {
+    "year": 2021,
+    "mae_k": 291.26545194965354,
+    "mae_model": 355.90561476594684,
+    "model_wins": false
+   },
+   {
+    "year": 2022,
+    "mae_k": 564.7981674362702,
+    "mae_model": 565.1426365829279,
+    "model_wins": false
+   },
+   {
+    "year": 2023,
+    "mae_k": 326.711430465018,
+    "mae_model": 458.61352551628534,
+    "model_wins": false
+   },
+   {
+    "year": 2024,
+    "mae_k": 629.4329692881734,
+    "mae_model": 578.9320884147019,
+    "model_wins": true
+   },
+   {
+    "year": 2025,
+    "mae_k": 400.1328042315676,
+    "mae_model": 483.9392039339676,
+    "model_wins": false
+   }
+  ],
+  "ready": false
+ },
+ "outlook": {
+  "folds": [
+   {
+    "year": 2001,
+    "mae_climatology": 3040.6859302849116,
+    "mae_model": 1788.9202949725773,
+    "model_wins": true
+   },
+   {
+    "year": 2002,
+    "mae_climatology": 2600.830698599831,
+    "mae_model": 2315.5390295895836,
+    "model_wins": true
+   },
+   {
+    "year": 2003,
+    "mae_climatology": 1504.7150427760168,
+    "mae_model": 1848.5337265681594,
+    "model_wins": false
+   },
+   {
+    "year": 2004,
+    "mae_climatology": 1531.7977765544601,
+    "mae_model": 1383.211964203608,
+    "model_wins": true
+   },
+   {
+    "year": 2005,
+    "mae_climatology": 1404.4000912506385,
+    "mae_model": 1423.854601624622,
+    "model_wins": false
+   },
+   {
+    "year": 2006,
+    "mae_climatology": 1196.5988009209548,
+    "mae_model": 1170.3954378649075,
+    "model_wins": true
+   },
+   {
+    "year": 2007,
+    "mae_climatology": 1371.8159169056787,
+    "mae_model": 1513.8554038326772,
+    "model_wins": false
+   },
+   {
+    "year": 2008,
+    "mae_climatology": 1160.2500878920002,
+    "mae_model": 1179.9609504496395,
+    "model_wins": false
+   },
+   {
+    "year": 2009,
+    "mae_climatology": 1018.295752378322,
+    "mae_model": 1104.8558740419812,
+    "model_wins": false
+   },
+   {
+    "year": 2010,
+    "mae_climatology": 1065.2980659163848,
+    "mae_model": 1209.524142010738,
+    "model_wins": false
+   },
+   {
+    "year": 2011,
+    "mae_climatology": 1008.5118193103376,
+    "mae_model": 1134.0072589778233,
+    "model_wins": false
+   },
+   {
+    "year": 2012,
+    "mae_climatology": 686.826586125193,
+    "mae_model": 921.1638285357946,
+    "model_wins": false
+   },
+   {
+    "year": 2013,
+    "mae_climatology": 627.5981669695905,
+    "mae_model": 713.0017937222832,
+    "model_wins": false
+   },
+   {
+    "year": 2014,
+    "mae_climatology": 639.6463339089998,
+    "mae_model": 708.2089301840233,
+    "model_wins": false
+   },
+   {
+    "year": 2015,
+    "mae_climatology": 761.5358570268684,
+    "mae_model": 824.1592735340779,
+    "model_wins": false
+   },
+   {
+    "year": 2016,
+    "mae_climatology": 646.6022922505487,
+    "mae_model": 798.9132134525156,
+    "model_wins": false
+   },
+   {
+    "year": 2017,
+    "mae_climatology": 567.5028068082905,
+    "mae_model": 637.6596776900703,
+    "model_wins": false
+   },
+   {
+    "year": 2018,
+    "mae_climatology": 702.2575857455073,
+    "mae_model": 834.6546166095777,
+    "model_wins": false
+   },
+   {
+    "year": 2019,
+    "mae_climatology": 664.7112503400945,
+    "mae_model": 825.5042882603955,
+    "model_wins": false
+   },
+   {
+    "year": 2020,
+    "mae_climatology": 671.327704148332,
+    "mae_model": 754.7007732938697,
+    "model_wins": false
+   },
+   {
+    "year": 2021,
+    "mae_climatology": 696.2896269742149,
+    "mae_model": 725.5055593133526,
+    "model_wins": false
+   },
+   {
+    "year": 2022,
+    "mae_climatology": 943.2510958714789,
+    "mae_model": 809.030431924332,
+    "model_wins": true
+   },
+   {
+    "year": 2023,
+    "mae_climatology": 690.9210001481921,
+    "mae_model": 810.824904622237,
+    "model_wins": false
+   },
+   {
+    "year": 2024,
+    "mae_climatology": 839.7948638130315,
+    "mae_model": 931.3237832063228,
+    "model_wins": false
+   },
+   {
+    "year": 2025,
+    "mae_climatology": 930.3564544041332,
+    "mae_model": 835.0042081551268,
+    "model_wins": true
+   }
+  ],
+  "ready": false
+ }
+}

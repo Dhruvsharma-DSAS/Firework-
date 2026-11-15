@@ -1,0 +1,118 @@
+{
+  "id": "F25",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Aqua · Punjab and Haryana · 4 Nov 2020",
+      "question": "What if two things are uncertain at once?",
+      "beats": [
+        {
+          "say": "Imagine baking a cake when you are not quite sure of the oven temperature, and also not quite sure of the baking time. To know how the cake might turn out, you could try many combinations and look at the range of results."
+        },
+        {
+          "say": "A harmonised month has two such doubts: how well we know k, and how bursty the MODIS count itself is. Formula twenty-five, Monte Carlo error propagation, simulates both. Draw k, draw the count, multiply, repeat, and read the spread."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "\\log k^{(s)} \\sim",
+          "say": "For each simulation s, we draw a value of log k. The wavy sign means drawn at random from."
+        },
+        {
+          "tex": " \\mathcal{N}\\big(\\log\\hat k,\\ \\mathrm{se}^2_{\\log k}\\big)",
+          "say": "We draw it from a normal curve, centred on our estimate of log k, with the standard error from the bootstrap. Drawing on the log scale guarantees that k always comes out positive."
+        },
+        {
+          "tex": ",\\qquad M^{(s)} \\sim",
+          "say": "Next, we draw a MODIS count for the same simulation."
+        },
+        {
+          "tex": " \\mathrm{NegBin}\\big(M,\\ \\hat\\theta\\big)",
+          "say": "We draw it from a negative binomial, with the observed count as its mean and the fitted burstiness theta. Then we multiply the two draws. Twenty thousand times."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · November 2005",
+      "steps": [
+        {
+          "label": "MODIS counted",
+          "value": 2332,
+          "unit": "fire cell-days",
+          "say": "Take November 2005, with a MODIS count of 2,332 fire cell-days. The burstiness theta is 188. That is the real MODIS value we want to convert."
+        },
+        {
+          "label": "Exchange rate k",
+          "value": 2.096,
+          "factor": true,
+          "unit": "× VIIRS per MODIS, se(log k) = 0.025",
+          "say": "The exchange rate is 2.096, with a standard error of 0.025 on the log scale."
+        },
+        {
+          "label": "Predictive median",
+          "value": 4885,
+          "unit": "VIIRS-equivalent cell-days",
+          "result": true,
+          "band": [
+            4166,
+            5697
+          ],
+          "say": "Twenty thousand draws give a median of 4,885. If only k is uncertain, the band is 4,655 to 5,141. Add the count noise, and the predictive band widens to 4,166 to 5,697. All draws are positive. A normal draw on the raw scale would have given negative multipliers in 8.2 percent of draws."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F25_a.svg",
+      "title": "Two bands for one harmonised month",
+      "beats": [
+        {
+          "say": "This figure shows November 2005. In teal are 20,000 simulated harmonised values with only k uncertain. They form a narrow hill."
+        },
+        {
+          "say": "In red, k is uncertain and the MODIS count is bursty too. The hill is wider. The teal answers how sure we are of the expected value. The red answers what range VIIRS could actually have recorded that month."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "click": "Harmonised",
+      "beats": [
+        {
+          "target": ".ex-bar",
+          "label": "View switch · Harmonised",
+          "say": "On the FIREWORK website, open the Calendar and press Harmonised. Every month before VIIRS began becomes a VIIRS-equivalent value, and each value carries a band around it."
+        },
+        {
+          "target": "[data-film=cal-inspector]",
+          "label": "Which band is shown",
+          "say": "Be clear about which band you see: the Calendar band currently reflects uncertainty in k only. The wider predictive band is what formula twenty-five adds, and FIREWORK labels which one is shown."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "Draw log k from a normal, the count from a negative binomial",
+        "Multiply, repeat 20,000 times, read the quantiles",
+        "Calibration band vs predictive band: always labelled"
+      ],
+      "next": "F26 · Exact Poisson interval (Garwood)",
+      "beats": [
+        {
+          "say": "So, to remember: simulate each source of doubt, combine them draw by draw, and read the spread. Drawing on the log scale keeps every multiplier positive, and the band always says what it measures."
+        },
+        {
+          "say": "Next, formula twenty-six: the exact Poisson interval."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "id": "F27",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_clear_2023-11-03.webp",
+      "imageLabel": "Clear sky · Punjab and Haryana · 3 Nov 2023",
+      "question": "Is this November unusual?",
+      "beats": [
+        { "say": "Is thirty degrees hot? In January in Delhi, very. In June, not at all. To call a day unusual, you compare it with the same time of year, not with the whole calendar." },
+        { "say": "Formula twenty-seven, the robust anomaly z-score, compares a month only with the same calendar month in every other year. It uses the median and a robust spread, so one record-breaking year cannot distort the yardstick, and the month being judged is left out of its own baseline." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "y_t = \\ln(x_t + 0.5)", "say": "First, we take the log of each month's harmonised value, after adding a half. The October and November peak is hundreds of times bigger than July, and the log puts every month on the same footing." },
+        { "tex": ",\\qquad z_t \\;=\\;", "say": "Then z for month t, our measure of how unusual it is." },
+        { "tex": " \\frac{y_t - \\operatorname{med}\\big(y_{\\mathcal{B}\\setminus t}\\big)}{\\max\\!\\big(1.4826\\,\\operatorname{MAD}(y_{\\mathcal{B}\\setminus t}),\\ 0.15\\big)}", "say": "On top: this month's log value, minus the median of the same month in all the other years. Underneath: the robust spread. That is the median absolute deviation, times 1.4826 so it matches a standard deviation, but never smaller than 0.15, so a very calm baseline cannot make tiny changes look huge." },
+        { "tex": ",\\qquad |\\mathcal{B}\\setminus t| \\ge 8", "say": "And we need at least eight other years. With fewer, the result is only indicative. Missing months are left out, never treated as zero." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · November 2025",
+      "steps": [
+        { "label": "November 2025", "value": 3413, "unit": "hot spots, VIIRS-equivalent", "say": "In November 2025, Punjab and Haryana recorded 3,413 hot spots, on the harmonised VIIRS-equivalent scale. Remember, a hot spot is a pixel, not a fire." },
+        { "label": "Median of the other 25 Novembers", "value": 28101, "unit": "hot spots", "say": "The 25 other Novembers have a median of 28,101. So this month is 88 percent below normal. On the log scale, the median is 10.24, and the robust spread is 0.72." },
+        { "label": "Robust z", "value": -2.93, "unit": "robust spreads from normal", "result": true, "say": "So z is minus 2.93: almost three robust spreads below normal. The most negative months in the record are October 2026 and October 2025. The collapse of residue burning since 2023 is the largest anomaly in 26 years." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F27_a.svg",
+      "title": "How unusual is a month?",
+      "beats": [
+        { "say": "On the left are the log values of every November. The band is the reference median, plus or minus one robust spread, and the red point, far below, is November 2025." },
+        { "say": "On the right is z for every month of the record, red above normal and blue below. The deep blue at the end is the recent collapse; the red spikes are early Septembers with unusual early burning." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "beats": [
+        { "target": "[data-film=cal-grid]", "label": "Month × year grid", "say": "On the FIREWORK website, open the Calendar. The anomaly view answers exactly this question: how unusual is this month, compared with the same month in other years?" },
+        { "target": "[data-film=cal-inspector]", "label": "Month inspector", "say": "Click a month, and the inspector shows how it compares with normal. Because everything is on the harmonised scale, a month before 2012 and a month after 2012 are judged on one ruler." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Compare a month only with the same calendar month", "Log scale, median and robust spread, month left out", "November 2025: z = −2.93, 88% below normal"],
+      "next": "F28 · Month baseline and spread",
+      "beats": [
+        { "say": "So, to remember: log the values, compare with the median of the same month in other years, and divide by a robust spread. One extreme year cannot fool the yardstick, and missing months are never zeros." },
+        { "say": "Next, formula twenty-eight: month baseline and spread." }
+      ]
+    }
+  ]
+}

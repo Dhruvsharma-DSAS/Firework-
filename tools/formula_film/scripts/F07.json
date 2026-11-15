@@ -1,0 +1,116 @@
+{
+ "id": "F07",
+ "scenes": [
+  {
+   "type": "hook",
+   "image": "/learn/sat/zoom_modis_2020-11-04.webp",
+   "imageLabel": "MODIS 1 km fire pixels · zoom · 4 Nov 2020",
+   "question": "What if two teachers grade in different languages?",
+   "beats": [
+    {
+     "say": "Imagine two teachers marking the same exam. One gives marks out of a hundred. The other gives letters: low, middle or high. You cannot just compare a 30 with a letter. You need a clear rule for each teacher."
+    },
+    {
+     "say": "Satellites grade their own fire detections in the same two languages. MODIS gives a number from 0 to 100, and VIIRS gives a class: low, nominal or high. Formula seven, the confidence filter, keeps each sensor in its own language and applies one documented rule to each."
+    }
+   ]
+  },
+  {
+   "type": "build",
+   "title": "Building the formula",
+   "parts": [
+    {
+     "tex": "\\mathrm{keep}_i \\;=\\;",
+     "say": "On the left is the decision for detection i: keep it, or drop it."
+    },
+    {
+     "tex": " \\mathbb{1}\\!\\left[\\,\\mathrm{class}_i \\in \\mathcal{Q}_s\\,\\right]",
+     "say": "It is a yes-or-no indicator. The answer is yes when the detection's own grade belongs to Q s, the set of accepted grades for that sensor."
+    },
+    {
+     "tex": ",\\qquad \\mathcal{Q}_{\\mathrm{MODIS}} = \\{q \\ge 30\\}",
+     "say": "For MODIS, the accepted grades are confidence 30 or more. That removes the lowest-scored pixels, while keeping almost all real farm fires."
+    },
+    {
+     "tex": ",\\quad \\mathcal{Q}_{\\mathrm{VIIRS}} = \\{\\mathrm{n},\\mathrm{h}\\}",
+     "say": "For VIIRS, the accepted classes are nominal and high. That is the default that FIRMS itself recommends. Two languages, two rules, both written down. Why does this matter? Because k is a ratio of two filtered counts. If one filter were much stricter than the other, k would change even though the fires did not."
+    }
+   ]
+  },
+  {
+   "type": "example",
+   "title": "The default rule in Punjab and Haryana",
+   "steps": [
+    {
+     "label": "MODIS detections kept",
+     "value": 97.0,
+     "unit": "%",
+     "say": "With the default rule, FIREWORK keeps 97.0 percent of MODIS vegetation-fire detections in Punjab and Haryana."
+    },
+    {
+     "label": "VIIRS S-NPP detections kept",
+     "value": 87.7,
+     "unit": "%",
+     "say": "For S-NPP it keeps 87.7 percent. Most VIIRS detections are nominal, 84 percent, while 12 percent are low and only 4 percent are high."
+    },
+    {
+     "label": "Exchange rate k, Oct–Nov",
+     "value": 2.27,
+     "unit": "VIIRS per MODIS",
+     "result": true,
+     "band": [
+      2.24,
+      2.5
+     ],
+     "say": "With these rules, the October and November exchange rate is 2.27. Other reasonable rules give k between 2.24 and 2.50, so the answer barely moves. Extreme rules do move it: keeping only VIIRS high drops k to 0.19, because high marks saturated pixels, not certain fires."
+    }
+   ]
+  },
+  {
+   "type": "figure",
+   "file": "figures/F07_a.svg",
+   "title": "Two confidence languages",
+   "beats": [
+    {
+     "say": "On the left is MODIS confidence for all vegetation-fire detections, with the default cut at 30. Everything to the right of the line is kept."
+    },
+    {
+     "say": "On the right are the VIIRS S-NPP classes. Nominal dominates by far, which is why keeping nominal and high keeps most of the record."
+    }
+   ]
+  },
+  {
+   "type": "site",
+   "page": "/explore",
+   "beats": [
+    {
+     "target": "aside.left",
+     "label": "Layers panel · confidence rule",
+     "say": "On the FIREWORK website, open Explorer. In the layers panel on the left, the confidence slider applies each sensor's own rule: for MODIS, a confidence of at least thirty, and for VIIRS, the nominal and high classes."
+    },
+    {
+     "target": ".ex-globe",
+     "label": "Pixels that pass the rule",
+     "say": "The dots on the globe are only the pixels that pass that rule. The fires do not change; only the quality cut is applied, the same way for every day."
+    }
+   ]
+  },
+  {
+   "type": "recap",
+   "points": [
+    "MODIS: keep confidence ≥ 30",
+    "VIIRS: keep nominal and high",
+    "Reasonable rules keep k between 2.24 and 2.50"
+   ],
+   "next": "F08 · Persistence (static-source mask)",
+   "beats": [
+    {
+     "say": "So, to remember: each sensor is judged in its own language, with one written rule, and FIREWORK shows how much k moves under other sensible rules. That spread is part of the honest uncertainty of the record."
+    },
+    {
+     "say": "Next, formula eight: persistence, the static-source mask."
+    }
+   ]
+  }
+ ]
+}

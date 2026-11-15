@@ -1,0 +1,37 @@
+# Render Blueprint: New → Blueprint → pick this repo. Secrets marked sync: false are typed in the Render dashboard.
+services:
+  - type: web
+    name: firework-chronos-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: frankfurt
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: FIRMS_MAP_KEY
+        sync: false
+      - key: FIRMS_DAY_RANGE
+        value: "1"
+      - key: MAX_POINTS
+        value: "20000"
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: ALLOWED_ORIGIN_REGEX
+        value: "https://.*\\.vercel\\.app"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: EE_PROJECT
+        sync: false
+      - key: EARTHENGINE_TOKEN
+        sync: false
+      - key: EE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: HF_TOKEN
+        sync: false

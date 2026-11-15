@@ -1,0 +1,269 @@
+{
+ "modis_2000": {
+  "id": "R3AGDGL6YIUC6CGNBNX4CIKV",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2000",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:05.307478+00:00"
+ },
+ "modis_2001": {
+  "id": "Z32TIH3FD43XRK635PULMRXH",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2001",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:07.678844+00:00"
+ },
+ "modis_2002": {
+  "id": "NESNBO2YSG2P3ZK26A3SWCYD",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2002",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:10.264534+00:00"
+ },
+ "modis_2003": {
+  "id": "SB64VEWLOPJ772PLU66LCZL5",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2003",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:11.430678+00:00"
+ },
+ "modis_2004": {
+  "id": "5LKQ2CTYESHZEKYPBDH7FS6M",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2004",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:13.662622+00:00"
+ },
+ "modis_2005": {
+  "id": "J3WWGSYTLXD4B6VTGCJATLRT",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2005",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:14.825452+00:00"
+ },
+ "modis_2006": {
+  "id": "4O3THNXEJDQ4EQ5F3VX5N6FJ",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2006",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:16.980845+00:00"
+ },
+ "modis_2007": {
+  "id": "FQ7T32EMNEBL6XHSCIRHE4DP",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2007",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:19.176188+00:00"
+ },
+ "modis_2008": {
+  "id": "CR4IZNZBHB72D7QN3ET4EWDN",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2008",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:20.241705+00:00"
+ },
+ "modis_2010": {
+  "id": "3UIPSK4MIKYNUBF5BCFLGPEE",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2010",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:25.167871+00:00"
+ },
+ "modis_2011": {
+  "id": "D7JZ6X2JHOFTT2MZMDGBPTGT",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2011",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:26.324025+00:00"
+ },
+ "modis_2012": {
+  "id": "TN5SO5NSDOPP2RMRRBMTKA7T",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2012",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:28.422076+00:00"
+ },
+ "modis_2013": {
+  "id": "MO34PRQ2DD2LL6MLTEIQ5E6J",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2013",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:31.234117+00:00"
+ },
+ "modis_2014": {
+  "id": "UN3VRD7E5WQECANG7URQ67N3",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2014",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:32.390342+00:00"
+ },
+ "modis_2016": {
+  "id": "WZ2AVO72NHONCLS77RVWCUSA",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2016",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:37.859067+00:00"
+ },
+ "modis_2017": {
+  "id": "6NVILVVDSC255IZHJPFYNAN6",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2017",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:38.911713+00:00"
+ },
+ "modis_2018": {
+  "id": "ISBOGSRXFWGTAAFNM4Y35URM",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2018",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:41.196776+00:00"
+ },
+ "modis_2019": {
+  "id": "TBGTFCUUGREIQX7E7O4C7ZWX",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2019",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:43.515574+00:00"
+ },
+ "modis_2020": {
+  "id": "P7YATC3DUF6OBNHTNHBRL6KT",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2020",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:44.734187+00:00"
+ },
+ "modis_2021": {
+  "id": "X4ZHALRRPPORYNSXIVOH2DTO",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2021",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:45.998606+00:00"
+ },
+ "modis_2022": {
+  "id": "ATL43MIMMIQVLI7SU63XSWRB",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2022",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:47.208055+00:00"
+ },
+ "modis_2023": {
+  "id": "36SKCDBK2MYD23VWQAPDQ3DH",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2023",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:49.586338+00:00"
+ },
+ "modis_2024": {
+  "id": "WLSINM7R3PCVJWFA6I6NLRTS",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2024",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:53.041324+00:00"
+ },
+ "modis_2025": {
+  "id": "IGQQBKC4WHXXBQPUBAMXZQNU",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2025",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:54.415926+00:00"
+ },
+ "viirs_2012": {
+  "id": "ENBJI4NFEN2BSHAZCGO3HQR5",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2012",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:57.734192+00:00"
+ },
+ "viirs_2013": {
+  "id": "CJ6KQAHKAW2THGB73XANMFZZ",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2013",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:38:58.863950+00:00"
+ },
+ "viirs_2014": {
+  "id": "3JSQTVBJP5R35JBN7LHGN2LX",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2014",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:00.154346+00:00"
+ },
+ "viirs_2015": {
+  "id": "4TD5IL3Z4GT5SRDGQABWVE7U",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2015",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:02.248053+00:00"
+ },
+ "viirs_2016": {
+  "id": "QXISISKKKJ2FK6BP4EG7PGF7",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2016",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:03.579424+00:00"
+ },
+ "viirs_2017": {
+  "id": "5TKXF5I3YCS74NGAET6UZFO6",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2017",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:04.877081+00:00"
+ },
+ "viirs_2018": {
+  "id": "FCXZTXN4ENCVCI2XCMZON5OU",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2018",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:06.021094+00:00"
+ },
+ "viirs_2019": {
+  "id": "Z5ZNHDLZOUTL7B2FRDWLTLU5",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2019",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:09.023729+00:00"
+ },
+ "viirs_2020": {
+  "id": "LU64UFAUICWBAVBGCVUM3AD7",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2020",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:10.140302+00:00"
+ },
+ "viirs_2021": {
+  "id": "W5ICZ6QUGMCOXUNQUWGLS66G",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2021",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:11.607837+00:00"
+ },
+ "viirs_2022": {
+  "id": "6MXLHGY7IA3BGYMUIOQIDGCI",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2022",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:13.075937+00:00"
+ },
+ "viirs_2023": {
+  "id": "PI4XQITMWKS6JGTIB52HWLD5",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2023",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:14.312751+00:00"
+ },
+ "viirs_2024": {
+  "id": "32JF4KBEMYARC2MNDHRMTDMV",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2024",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:17.897858+00:00"
+ },
+ "viirs_2025": {
+  "id": "AZT7HPOJGJKELZNGFCZIGKBT",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2025",
+  "state": "COMPLETED",
+  "submitted": "2026-11-05T05:39:19.115296+00:00"
+ },
+ "modis_2009": {
+  "id": "MFQUEL6ZJZE7WFRB4FL253GC",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2009",
+  "state": "COMPLETED",
+  "submitted": "2026-11-07T03:32:48.147768+00:00"
+ },
+ "modis_2015": {
+  "id": "HZDKC277WV2HQ6DSYJXUAXUX",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2015",
+  "state": "FAILED",
+  "submitted": "2026-11-07T03:32:55.141971+00:00",
+  "error": "Computation timed out."
+ },
+ "modis_2026": {
+  "id": "CDNPMI3UDPMP3I6GO7SQPXVG",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_2026",
+  "state": "FAILED",
+  "submitted": "2026-11-07T03:33:00.169349+00:00",
+  "error": "Image.reduceRegions: Image has no bands."
+ },
+ "viirs_2026": {
+  "id": "J47L6JTJ6YLANSLIFSORC67K",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_2026",
+  "state": "COMPLETED",
+  "submitted": "2026-11-07T03:33:02.355403+00:00"
+ },
+ "modis_nrt_2026": {
+  "id": "ATJU4ZM7HTTHJ4CSSF6QNZE6",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/modis_nrt_2026",
+  "state": "COMPLETED",
+  "submitted": "2026-11-07T03:33:07.296287+00:00"
+ },
+ "viirs_nrt_2026": {
+  "id": "GA6WZQZNMWI3MQC4CDZ4WHUC",
+  "asset": "projects/forest-fire-research-512304/assets/firework_global/viirs_nrt_2026",
+  "state": "FAILED",
+  "submitted": "2026-11-07T03:33:11.006179+00:00",
+  "error": "Reprojection output too large (9354x7594 pixels)."
+ }
+}

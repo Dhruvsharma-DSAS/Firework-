@@ -1,0 +1,230 @@
+{
+ "id": "F34",
+ "scenes": [
+  {
+   "type": "hook",
+   "image": "/learn/sat/punjab_viirs_2013-11-03.webp",
+   "imageLabel": "VIIRS · Punjab and Haryana · 3 Nov 2013",
+   "question": "What if the record has more than one step?",
+   "beats": [
+    {
+     "say": "Imagine a long road with several speed bumps. Feeling for the single biggest bump is easy. But to drive safely, you want a map of every bump along the way."
+    },
+    {
+     "say": "Instruments joined the fire record at several moments: Aqua in 2002, S-NPP in 2012, NOAA-20 in 2018, NOAA-21 in 2023. Formula thirty-four, PELT, finds every step in a series at once, with a penalty declared in advance, so it cannot be tuned to tell a story."
+    }
+   ]
+  },
+  {
+   "type": "series",
+   "title": "More than one seam",
+   "subtitle": "October + November fire cell-days · Punjab and Haryana · FIREWORK archive calendar",
+   "split": 2012,
+   "leftLabel": "MODIS counting",
+   "rightLabel": "VIIRS counting",
+   "data": [
+    [
+     2001,
+     980
+    ],
+    [
+     2002,
+     5078
+    ],
+    [
+     2003,
+     5757
+    ],
+    [
+     2004,
+     4728
+    ],
+    [
+     2005,
+     8257
+    ],
+    [
+     2006,
+     5481
+    ],
+    [
+     2007,
+     7303
+    ],
+    [
+     2008,
+     7073
+    ],
+    [
+     2009,
+     7132
+    ],
+    [
+     2010,
+     6859
+    ],
+    [
+     2011,
+     7143
+    ],
+    [
+     2012,
+     17528
+    ],
+    [
+     2013,
+     15967
+    ],
+    [
+     2014,
+     17637
+    ],
+    [
+     2015,
+     16629
+    ],
+    [
+     2016,
+     19523
+    ],
+    [
+     2017,
+     17003
+    ],
+    [
+     2018,
+     16273
+    ],
+    [
+     2019,
+     11885
+    ],
+    [
+     2020,
+     16945
+    ],
+    [
+     2021,
+     18134
+    ],
+    [
+     2022,
+     13420
+    ],
+    [
+     2023,
+     11457
+    ],
+    [
+     2024,
+     7862
+    ],
+    [
+     2025,
+     5656
+    ]
+   ],
+   "beats": [
+    {
+     "say": "Here is the raw stitched record again, starting in 2001. Look at the very first bar: it is far lower, because only Terra was flying. Aqua joined in 2002."
+    },
+    {
+     "say": "Then comes the big step at 2012, when VIIRS takes over. So the raw record has at least two instrument steps, and PELT should find both."
+    }
+   ]
+  },
+  {
+   "type": "build",
+   "title": "Building the formula",
+   "parts": [
+    {
+     "tex": "\\min_{\\tau_1<\\dots<\\tau_K}",
+     "say": "We search over every possible set of break points, tau one to tau K, and pick the best one."
+    },
+    {
+     "tex": "\\ \\sum_{k=0}^{K} \\mathcal{C}\\big(y_{(\\tau_k+1):\\tau_{k+1}}\\big)",
+     "say": "Best means the smallest total cost. The breaks cut the series into segments, and each segment pays a cost, C, for how badly a flat level fits it."
+    },
+    {
+     "tex": " + \\beta K",
+     "say": "But every extra break also pays a penalty, beta. Without it, we could cut the series everywhere and get a perfect fit. The penalty is set before looking at the answer, from the noise level and the length of the series."
+    },
+    {
+     "tex": ",\\qquad \\mathcal{C}(y_{a:b}) = \\sum_{t=a}^{b}\\big(y_t-\\bar y_{a:b}\\big)^2",
+     "say": "The cost of a segment is the sum of squared distances of each month from that segment's average. A segment with a single steady level costs little."
+    }
+   ]
+  },
+  {
+   "type": "example",
+   "title": "Monthly fire cell-days, 2001–2025",
+   "steps": [
+    {
+     "label": "Monthly values",
+     "value": 299,
+     "unit": "months",
+     "say": "PELT runs on 299 monthly values, logged and with each calendar month's median removed, so the burning seasons themselves do not count as steps."
+    },
+    {
+     "label": "Minimum segment",
+     "value": 12,
+     "unit": "months",
+     "say": "Each segment must last at least 12 months. On the raw stitched series, PELT finds 2 breaks: March 2002 and October 2011."
+    },
+    {
+     "label": "Breaks after harmonising",
+     "value": 1,
+     "unit": "change point",
+     "result": true,
+     "say": "On the harmonised series, only 1 break is left, in March 2002. The 2011 to 2012 break, VIIRS joining, is gone. The 2002 break remains because it is Aqua joining Terra, a step inside MODIS that the MODIS-to-VIIRS calibration does not touch."
+    }
+   ]
+  },
+  {
+   "type": "figure",
+   "file": "figures/F34_a.svg",
+   "title": "All the steps in the record",
+   "beats": [
+    {
+     "say": "This figure shows the deseasonalised log monthly fire cell-days, with the change points found by PELT in red. The top panel is the raw stitched series, with two breaks."
+    },
+    {
+     "say": "The bottom panel is the harmonised series. The VIIRS seam has vanished, and only the early Aqua step remains."
+    }
+   ]
+  },
+  {
+   "type": "site",
+   "page": "/formulas/F34",
+   "beats": [
+    {
+     "target": ".fp-formula",
+     "label": "The formula, numbered F34",
+     "say": "On the FIREWORK website, this method lives in the Formulas section. Its page shows the equation, numbered as formula 34, with every symbol explained."
+    },
+    {
+     "target": ".fl-cards",
+     "label": "Where it comes from · why · how · example",
+     "say": "Below it, four short cards explain where the method comes from, why FIREWORK needs it, how it works step by step, and a worked example. The full derivation is in the PDF on the same page."
+    }
+   ]
+  },
+  {
+   "type": "recap",
+   "points": [
+    "Minimise segment cost + penalty per break",
+    "Raw: breaks at 2002-03 and 2011-10",
+    "Harmonised: only 2002-03 left, the Aqua step inside MODIS"
+   ],
+   "next": "F35 · Seam ratio",
+   "beats": [
+    {
+     "say": "So, to remember: PELT finds every step at once, with a penalty fixed in advance. Harmonisation removes the VIIRS seam, and the remaining Aqua step is reported, not hidden."
+    },
+    {
+     "say": "Next, formula thirty-five: the seam ratio."
+    }
+   ]
+  }
+ ]
+}

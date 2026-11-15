@@ -1,0 +1,113 @@
+{
+  "id": "F06",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Aqua · Punjab and Haryana · 4 Nov 2020",
+      "question": "Is an empty box the same as a zero?",
+      "beats": [
+        {
+          "say": "Imagine a class register. A student who came and answered nothing gets a zero. A student whose page was torn out gets a blank. Those are very different, and mixing them up would give the wrong average."
+        },
+        {
+          "say": "The FIREWORK calendar has the same rule. Formula six, the monthly cell-day count, adds up fire cell-days for a region and a month. And when data is missing, the box stays empty. It is never written as zero. Writing zero would invent quiet months that never happened."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "C_{s,r,m} \\;=\\;",
+          "say": "Capital C is the monthly count, for sensor s, region r and month m."
+        },
+        {
+          "tex": " \\sum_{g\\in r}",
+          "say": "The first sum runs over every grid cell g inside the region. For Punjab and Haryana, that is every cell inside the two states."
+        },
+        {
+          "tex": "\\ \\sum_{d\\in m}",
+          "say": "The second sum runs over every local day d in the month. Local days come from formula one, so a fire late in the UTC day lands on the right date."
+        },
+        {
+          "tex": " c_{s,g,d}",
+          "say": "And what we add up are the yes-or-no flags from formula five. So C is simply the number of cell-days with a detected fire. Separately, the pipeline records how many days were actually downloaded, so a month with missing days is marked partial, not quiet."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · November 2015",
+      "steps": [
+        {
+          "label": "MODIS, Terra + Aqua",
+          "value": 3210,
+          "unit": "fire cell-days",
+          "say": "In November 2015, in Punjab and Haryana, MODIS recorded 3,210 fire cell-days."
+        },
+        {
+          "label": "VIIRS S-NPP",
+          "value": 7552,
+          "unit": "fire cell-days",
+          "say": "In the same month, VIIRS on S-NPP recorded 7,552. NOAA-20 has no value at all, because its archive only starts in April 2018. That box is empty, not zero."
+        },
+        {
+          "label": "Region-month rows",
+          "value": 600,
+          "unit": "rows in the table",
+          "result": true,
+          "say": "Every square of the calendar is one row like these. The table holds 600 region-month rows, each with its status: ok, partial or not downloaded."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F06_a.svg",
+      "title": "Twenty-six years of monthly counts",
+      "beats": [
+        {
+          "say": "Here are the monthly fire cell-days for each sensor family. Two seasons stand out every year: April and May, when wheat residue burns, and October and November, when rice residue burns."
+        },
+        {
+          "say": "In the burning season VIIRS records about two to three times as many cell-days as MODIS. That gap is what the exchange rate k will measure. Notice that the gap is about what each sensor can see. The farms are the same."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "click": "VIIRS only",
+      "beats": [
+        {
+          "target": ".ex-bar",
+          "label": "View switch · VIIRS only",
+          "say": "On the FIREWORK website, open the Calendar and press VIIRS only. There is no VIIRS value for any month before 2012, because S-NPP had not started yet. The calendar does not pretend those months were quiet."
+        },
+        {
+          "target": "[data-film=cal-grid]",
+          "label": "Each square is C",
+          "say": "Each square in this grid is one value of formula six. The current month is always partial until it ends. The first MODIS month is November 2000, and the first S-NPP month is January 2012, which is itself marked partial."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "C = sum of cell-days over cells in the region and days in the month",
+        "Missing or partial months are NULL, never zero",
+        "Every calendar square is one value of C"
+      ],
+      "next": "F07 · Confidence filter (sensor-native)",
+      "beats": [
+        {
+          "say": "So, to remember: add the daily flags over the region and the month, and keep a careful record of what was actually downloaded. An empty box means unknown, and unknown is never zero."
+        },
+        {
+          "say": "Next, formula seven: the confidence filter."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "id": "F46",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_721_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Terra bands 7-2-1 · burn scars · 4 Nov 2020",
+      "question": "What if the scars tell a different story than the flames?",
+      "beats": [
+        {
+          "say": "Imagine you only ever hear about parties from photos posted while they are happening. If people stop posting, it looks like there are fewer parties. But the empty bottles the next morning tell you the parties still happened."
+        },
+        {
+          "say": "Burn scars are those empty bottles: they stay visible for weeks, while active-fire detections last minutes. Formula forty-six, the burned-area to detection ratio B, is a warning flag. If burned area per detection rises well above its usual level, detections may be missing burning."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "B_{r,y} =",
+          "say": "B is the ratio for region r and season y."
+        },
+        {
+          "tex": " \\frac{\\mathrm{BA}_{r,y} / C_{r,y}}{\\operatorname{med}_{y'\\in\\mathcal{R}}\\big(\\mathrm{BA}_{r,y'}/C_{r,y'}\\big)}",
+          "say": "On top: this season's burned area, BA, divided by its detected fire cell-days, C. That is burned area per detection. Underneath: the median of that same ratio in the reference years. So B compares this season with what is usual. B near one means the two products agree as usual. B well above one means scars are outpacing detections."
+        },
+        {
+          "tex": ",\\qquad |\\mathcal{R}|\\ge 3",
+          "say": "And we need at least three reference years to make a usual level. A season with B of 1.5 or more gets a check flag."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "An illustrative test year",
+      "steps": [
+        {
+          "label": "Reference median",
+          "value": 1.2,
+          "unit": "km² per cell-day",
+          "say": "This is an illustrative example, with numbers chosen to explain the method. In the reference years, the median is 1.2 square kilometres of burned area per fire cell-day."
+        },
+        {
+          "label": "Test year",
+          "value": 2.9,
+          "unit": "km² per cell-day",
+          "say": "In a test year, it is 2.9 square kilometres per cell-day. That is more than twice the usual amount of burned area for every detection."
+        },
+        {
+          "label": "B",
+          "value": 2.4,
+          "unit": "check flag",
+          "result": true,
+          "say": "Divide, and B is 2.4, above the 1.5 threshold, so the season gets a check flag. This would not mean real burning is 2.4 times the detections. It means the two products disagree, and the detections deserve scrutiny."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F46_a.svg",
+      "title": "A disagreement flag",
+      "beats": [
+        {
+          "say": "This figure shows B by year. Reference years are grey, test years are coloured, and the dashed line is the check threshold."
+        },
+        {
+          "say": "These are illustrative numbers chosen to explain the method; they are not measurements."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/blind-spot",
+      "beats": [
+        {
+          "target": ".bs-reasons",
+          "label": "Four reasons fires go unseen",
+          "say": "On the FIREWORK website, open the Blind Spot page. It lists four reasons fires can go unseen. B is one way such a gap could show up in the data: scars that keep growing while detections fall."
+        },
+        {
+          "target": ".bs-verdict",
+          "label": "Verdict",
+          "say": "Be clear about the status: burned area is published with a lag, so recent seasons are pending. B is a flag, never a multiplier. It never corrects the counts."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "B = (burned area ÷ cell-days) ÷ its reference median",
+        "B ≥ 1.5 → check flag",
+        "A disagreement flag, never a multiplier; recent seasons pending"
+      ],
+      "beats": [
+        {
+          "say": "So, to remember: burned area does not depend on catching the fire alive. When scars grow faster than detections, B raises a flag, and FIREWORK says so honestly, without pretending to fix the counts."
+        },
+        {
+          "say": "That completes all forty-six formulas of FIREWORK. Thank you for learning with us."
+        }
+      ]
+    }
+  ]
+}

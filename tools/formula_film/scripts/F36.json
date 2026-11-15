@@ -1,0 +1,58 @@
+{
+  "id": "F36",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "Can the model predict a year it has never seen?",
+      "beats": [
+        { "say": "A student who memorises last year's exam answers will ace last year's exam. The real test is a new exam, with questions they have never seen. Only then do you know whether they truly understand." },
+        { "say": "The same is true for a calibration. Formula thirty-six, held-out error, hides one overlap year, fits k on the rest, predicts the hidden year's VIIRS value from its MODIS value, and measures the miss. Then it repeats for every year." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\hat V_y = \\sum_{m}\\hat k_{m,-y}\\,M_{m,y}", "say": "First, the prediction. For the hidden year y, we take each month's MODIS count and multiply it by that month's k, fitted without year y. The minus y is the key: the model never sees the year it predicts. Then we add up the months." },
+        { "tex": ",\\qquad \\mathrm{AE}_y = |\\hat V_y - V_y|", "say": "The absolute error is the size of the miss: prediction minus what VIIRS really recorded, ignoring the sign." },
+        { "tex": ",\\qquad D_y = 2\\Big[V_y\\ln\\frac{V_y}{\\hat V_y}", "say": "The deviance D is a second way to score the miss, suited to counts. Its first part compares observed and predicted as a ratio, on the log scale." },
+        { "tex": " - (V_y-\\hat V_y)\\Big]", "say": "Its second part corrects for the plain difference. Together, a perfect prediction scores zero. The thresholds for a pass are declared before running the test." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "The hardest year · 2025",
+      "steps": [
+        { "label": "Observed VIIRS, Oct + Nov 2025", "value": 3479, "unit": "fire cell-days", "say": "Take the hardest year, 2025. VIIRS actually recorded 3,479 fire cell-days in October and November." },
+        { "label": "Predicted from MODIS", "value": 4427, "unit": "fire cell-days", "say": "With k fitted on the other years, MODIS predicted 4,427." },
+        { "label": "Relative miss", "value": 27, "unit": "%", "result": true, "say": "That is a miss of 27 percent, the largest of all years, in the year burning collapsed. The smallest miss is 2013, at 1.0 percent. Over all years, the median relative error is 6.5 percent, and the mean absolute error is 739 cell-days." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F36_a.svg",
+      "title": "Predicting years the model never saw",
+      "beats": [
+        { "say": "For each held-out year, the teal bar is what VIIRS observed in October and November, and the violet bar is the prediction from MODIS, with k fitted on the other years." },
+        { "say": "The two bars match closely almost every year. Only at the very end, in the collapse of 2025, does the prediction run clearly high." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/validation",
+      "beats": [
+        { "target": ".va-results", "label": "Gate G1 · held-out error", "say": "On the FIREWORK website, open the Validation page and look at the results. Gate G1 is this test: a median error of at most 15 percent, and better than a simple baseline. It is met." },
+        { "target": ".va-board", "label": "Gates summary", "say": "The baseline uses one constant k for all months. It gives a median error of 12.8 percent and a mean absolute error of 1,638. So the per-month k is about twice as accurate, and its extra complexity earns its place." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Hide a year, fit k on the rest, predict, measure the miss", "Median error 6.5% vs 12.8% for one constant k", "Gate G1 met; largest miss 27% in 2025"],
+      "next": "F37 · Benjamini–Hochberg false discovery rate",
+      "beats": [
+        { "say": "So, to remember: the honest test of a calibration is a year it has never seen. FIREWORK's per-month k predicts held-out years with a median error of 6.5 percent, and every claim of reliability rests on this test." },
+        { "say": "Next, formula thirty-seven: the Benjamini-Hochberg false discovery rate." }
+      ]
+    }
+  ]
+}

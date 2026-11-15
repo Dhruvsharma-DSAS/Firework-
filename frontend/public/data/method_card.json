@@ -1,0 +1,366 @@
+{
+ "name": "FIREWORK CHRONOS harmonised fire calendar",
+ "method_version": "harmonise v1.1 + trust v1.0",
+ "generated_at_utc": "2026-11-15T06:55:58.577372+00:00",
+ "calendar_generated_at_utc": "2026-11-15T06:52:37.856918+00:00",
+ "inputs": [
+  {
+   "file": "data/processed/global/calendar_global.json",
+   "sha256": "82526c3912d3cd03baa236a79c2b912700f7032ea56332987cf4f1d303d07af2",
+   "bytes": 6496516
+  },
+  {
+   "file": "data/processed/global/exposure_countries.json",
+   "sha256": "224f3813a7bd1cf4513c2fc2d45d78a6c45d05b25b3b02a7669ffc379b7fb16a",
+   "bytes": 991660
+  },
+  {
+   "file": "data/processed/global/calendar_global_ee.json",
+   "sha256": "7d99aa0f7329197070e7f805a3f17d46251d8f0e2ac1c432ca591215cd2a3a2e",
+   "bytes": 3329961
+  },
+  {
+   "file": "data/processed/global/country_monthly_ee.csv",
+   "sha256": "f07669853f7c80f2f44719b7235612f1dd94d1124ee84e40a187da59a24b74ae",
+   "bytes": 16765059
+  },
+  {
+   "file": "frontend/public/data/formulas_content.json",
+   "sha256": "5ca772941e4459771aa6337ea30e2f032093b21a5a38f1e57afb42a2d46f9149",
+   "bytes": 256412
+  },
+  {
+   "file": "frontend/public/data/studio_sample_firms.csv",
+   "sha256": "89177ce311d57739f14445585904482a0840cc7aad0dd28ade3fe7e48c51a5fc",
+   "bytes": 11643
+  }
+ ],
+ "unit": "fire cell-days (0.1° cell × local solar day with ≥ 1 qualifying FIRMS fire point)",
+ "harmonisation": "H = k(region, month) × MODIS before 2012; VIIRS S-NPP as observed from 2012. k = ratio of totals 2012–2025, year-block bootstrap 95 % band, empirical-Bayes pooling toward the World value.",
+ "coverage_gate": {
+  "rules": {
+   "high": {
+    "min_years": 10,
+    "min_modis": 300,
+    "max_rel_band": 0.3
+   },
+   "medium": {
+    "min_years": 6,
+    "min_modis": 50,
+    "max_rel_band": 0.75
+   }
+  },
+  "low_means": "k is withheld for that region and month; harmonised values are not shown",
+  "counts": {
+   "high": 937,
+   "medium": 730,
+   "low": 1177
+  }
+ },
+ "conformal": {
+  "method": "Mondrian split conformal: leave-one-year-out log-ratio scores, one quantile per MODIS-size class pooled over all regions; interval = H × exp(± q_class)",
+  "results": {
+   "method": "Mondrian split conformal by MODIS size class",
+   "nominal": {
+    "90": 0.9,
+    "95": 0.95
+   },
+   "achieved_on_unseen_years": {
+    "90": 0.9,
+    "95": 0.95
+   },
+   "scores": 19984,
+   "classes": [
+    {
+     "from": 10,
+     "to": 30,
+     "q95": 1.0036,
+     "factor95": 2.728,
+     "q90": 0.7912,
+     "n": 4398,
+     "achieved95": 0.95
+    },
+    {
+     "from": 30,
+     "to": 100,
+     "q95": 0.6784,
+     "factor95": 1.971,
+     "q90": 0.5398,
+     "n": 4986,
+     "achieved95": 0.9499
+    },
+    {
+     "from": 100,
+     "to": 300,
+     "q95": 0.5263,
+     "factor95": 1.693,
+     "q90": 0.4121,
+     "n": 3281,
+     "achieved95": 0.9497
+    },
+    {
+     "from": 300,
+     "to": 1000,
+     "q95": 0.3682,
+     "factor95": 1.445,
+     "q90": 0.2949,
+     "n": 2791,
+     "achieved95": 0.9509
+    },
+    {
+     "from": 1000,
+     "to": 3000,
+     "q95": 0.3347,
+     "factor95": 1.398,
+     "q90": 0.2463,
+     "n": 2087,
+     "achieved95": 0.9502
+    },
+    {
+     "from": 3000,
+     "to": null,
+     "q95": 0.2437,
+     "factor95": 1.276,
+     "q90": 0.1758,
+     "n": 2441,
+     "achieved95": 0.9492
+    }
+   ]
+  }
+ },
+ "physics_checks": {
+  "P1": {
+   "pass": 237,
+   "of": 237
+  },
+  "P2": {
+   "pass": 237,
+   "of": 237
+  },
+  "P3": {
+   "pass": 234,
+   "of": 237
+  },
+  "P4": {
+   "pass": 186,
+   "of": 237
+  }
+ },
+ "gates": {
+  "G1": {
+   "value": 0.097,
+   "bar": "≤ 0.15",
+   "status": "PASSED"
+  },
+  "G3": {
+   "value": 0.19,
+   "bar": "≤ 0.25",
+   "status": "PASSED"
+  },
+  "G6": {
+   "value": 0.95,
+   "bar": "0.88–0.99",
+   "status": "PASSED"
+  }
+ },
+ "model_choice": "Simplest-model rule: the ratio-of-totals k is kept because the ML harmoniser did not beat it by more than one standard deviation (models marked NOT READY).",
+ "limits": [
+  "Counts are detections, not fires",
+  "k uses 2012–2025 overlap only",
+  "Region × month resolution",
+  "Clear-sky exposure not yet divided out"
+ ],
+ "advanced": {
+  "coverage_distance": {
+   "method": "mean distance to the 5 nearest High-coverage region-months, median/IQR scaled",
+   "features": [
+    "Distance from equator",
+    "Season (spring/autumn)",
+    "Season (summer/winter)",
+    "Amount of fire",
+    "How peaked the fire season is"
+   ],
+   "reference": 917,
+   "d75": 0.419,
+   "d95": 0.6,
+   "d99": 0.824,
+   "zones": {
+    "core": 986,
+    "edge": 401,
+    "outside": 773
+   }
+  },
+  "why_k": {
+   "method": "gradient-boosted trees on ln k, exact interventional Shapley values (32 coalitions, 30 real background rows)",
+   "rows": 1980,
+   "cv": "GroupKFold by region (5 folds)",
+   "r2_unseen_regions": 0.24,
+   "median_abs_ln_error": 0.2564,
+   "median_abs_ln_error_constant": 0.3392,
+   "importance": [
+    {
+     "f": "abs_lat",
+     "label": "Distance from equator",
+     "mean_abs_ln": 0.1116
+    },
+    {
+     "f": "season_sin",
+     "label": "Season (spring/autumn)",
+     "mean_abs_ln": 0.0507
+    },
+    {
+     "f": "season_cos",
+     "label": "Season (summer/winter)",
+     "mean_abs_ln": 0.0266
+    },
+    {
+     "f": "fire_level",
+     "label": "Amount of fire",
+     "mean_abs_ln": 0.1382
+    },
+    {
+     "f": "month_share",
+     "label": "How peaked the fire season is",
+     "mean_abs_ln": 0.1705
+    }
+   ]
+  },
+  "tests": [
+   {
+    "id": "T1",
+    "name": "Transfer to unseen continent and year",
+    "rule": "median error of the transferred k is lower than a single global k, overall and on at least 4 of 6 continents",
+    "n": 19576,
+    "median_abs_log_error": {
+     "model": 0.2936,
+     "global_k": 0.3339,
+     "own_k": 0.141
+    },
+    "typical_factor": {
+     "model": 1.341,
+     "global_k": 1.396,
+     "own_k": 1.151
+    },
+    "by_continent": {
+     "Africa": {
+      "n": 6363,
+      "model": 0.3092,
+      "global_k": 0.3504
+     },
+     "Asia": {
+      "n": 5545,
+      "model": 0.3453,
+      "global_k": 0.3193
+     },
+     "Europe": {
+      "n": 2553,
+      "model": 0.2871,
+      "global_k": 0.3507
+     },
+     "North America": {
+      "n": 2136,
+      "model": 0.2321,
+      "global_k": 0.2841
+     },
+     "Oceania": {
+      "n": 774,
+      "model": 0.2758,
+      "global_k": 0.3868
+     },
+     "South America": {
+      "n": 2205,
+      "model": 0.2293,
+      "global_k": 0.3401
+     }
+    },
+    "continents_won": 5,
+    "pass": true,
+    "note": "error = |ln((V+0.5)/(k·M+0.5))| for each held-out region-month of the held-out year; own_k is the region's own k (not transferred) and shows the ceiling"
+   },
+   {
+    "id": "T2",
+    "name": "Agreement with MODIS burned area (MCD64A1)",
+    "rule": "median year-to-year Spearman correlation between harmonised fire cell-days and burned area is at least 0.5, over countries with ≥ 15 years and ≥ 100 km² burned per year",
+    "countries": 114,
+    "median_rho": 0.689,
+    "share_positive": 0.974,
+    "top": [
+     {
+      "iso3": "AUS",
+      "years": 24,
+      "rho": 0.857,
+      "mean_burned_km2": 452521
+     },
+     {
+      "iso3": "AGO",
+      "years": 24,
+      "rho": 0.513,
+      "mean_burned_km2": 362858
+     },
+     {
+      "iso3": "COD",
+      "years": 24,
+      "rho": -0.008,
+      "mean_burned_km2": 328678
+     },
+     {
+      "iso3": "SSD",
+      "years": 24,
+      "rho": 0.25,
+      "mean_burned_km2": 266978
+     },
+     {
+      "iso3": "ZMB",
+      "years": 24,
+      "rho": 0.568,
+      "mean_burned_km2": 227074
+     },
+     {
+      "iso3": "MOZ",
+      "years": 24,
+      "rho": 0.318,
+      "mean_burned_km2": 195527
+     },
+     {
+      "iso3": "BRA",
+      "years": 24,
+      "rho": 0.723,
+      "mean_burned_km2": 176710
+     },
+     {
+      "iso3": "CAF",
+      "years": 24,
+      "rho": 0.432,
+      "mean_burned_km2": 174101
+     },
+     {
+      "iso3": "TZA",
+      "years": 24,
+      "rho": 0.675,
+      "mean_burned_km2": 120413
+     },
+     {
+      "iso3": "TCD",
+      "years": 24,
+      "rho": 0.781,
+      "mean_burned_km2": 88377
+     },
+     {
+      "iso3": "NGA",
+      "years": 24,
+      "rho": 0.535,
+      "mean_burned_km2": 79446
+     },
+     {
+      "iso3": "KAZ",
+      "years": 24,
+      "rho": 0.921,
+      "mean_burned_km2": 73884
+     }
+    ],
+    "pass": true,
+    "status": "done"
+   }
+  ]
+ }
+}

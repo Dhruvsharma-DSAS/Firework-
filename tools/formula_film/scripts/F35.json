@@ -1,0 +1,72 @@
+{
+  "id": "F35",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Aqua · Punjab and Haryana · 4 Nov 2020",
+      "question": "How much of the 2012 step is left?",
+      "beats": [
+        { "say": "Imagine repairing a crack in a wall. Saying the crack is fixed is not enough. A careful builder measures the crack before and after, and says: ninety-nine percent of it is gone." },
+        { "say": "Formula thirty-five, the seam ratio, does that for the 2012 instrument step. It divides the step left in the harmonised series by the step in the raw stitched series. Zero means the seam is gone. One means nothing was fixed." }
+      ]
+    },
+    {
+      "type": "series",
+      "title": "The step we want to measure",
+      "subtitle": "October + November fire cell-days · Punjab and Haryana · FIREWORK archive calendar",
+      "split": 2012,
+      "leftLabel": "MODIS counting",
+      "rightLabel": "VIIRS counting",
+      "data": [[2002, 5078], [2003, 5757], [2004, 4728], [2005, 8257], [2006, 5481], [2007, 7303], [2008, 7073], [2009, 7132], [2010, 6859], [2011, 7143], [2012, 17528], [2013, 15967], [2014, 17637], [2015, 16629], [2016, 19523], [2017, 17003], [2018, 16273], [2019, 11885], [2020, 16945], [2021, 18134], [2022, 13420], [2023, 11457], [2024, 7862], [2025, 5656]],
+      "beats": [
+        { "say": "Here is the raw stitched record. Look at the three years before 2012, from 2009 to 2011, and the three years after, from 2012 to 2014." },
+        { "say": "The jump between those two windows is the raw step. It is what the bottom of the seam ratio measures." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "R_{\\mathrm{seam}}", "say": "R seam is the seam ratio: the share of the 2012 step that is still left after harmonising." },
+        { "tex": " \\;=\\;", "say": "It equals one step divided by another. Both are measured on a log scale, using three-year windows on each side of 2012." },
+        { "tex": " \\frac{\\big|\\,\\overline{\\ln H}_{2012\\text{–}14} - \\overline{\\ln H}_{2009\\text{–}11}\\,\\big|}{\\big|\\,\\overline{\\ln V}_{2012\\text{–}14} - \\overline{\\ln M}_{2009\\text{–}11}\\,\\big|}", "say": "On top: the step in the harmonised series, H, the average log from 2012 to 2014 minus the average log from 2009 to 2011. Underneath: the raw step, VIIRS after against MODIS before. The bars mean we take the size of each step, ignoring its sign." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "October + November seasons",
+      "steps": [
+        { "label": "Step left after harmonising", "value": 0.011, "unit": "log units", "say": "After harmonisation, the step across 2012 is just 0.011 in log units." },
+        { "label": "Raw step", "value": 0.832, "unit": "log units", "say": "The raw step is 0.832 in log units. That is a factor of 2.30, or plus 130 percent: VIIRS reading more than double." },
+        { "label": "Seam ratio", "value": 0.013, "unit": "share of the step left", "result": true, "band": [0.002, 0.100], "say": "Divide, and the seam ratio is 0.013, with a ninety-five percent interval from 0.002 to 0.100. The upper end is below the 0.25 gate. And placebo seams at years with no instrument change have a median of 0.080. What is left at 2012 is smaller than ordinary year-to-year change." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F35_a.svg",
+      "title": "What is left of the seam",
+      "beats": [
+        { "say": "The red point is the seam ratio at 2012, with its ninety-five percent interval. The grey points are placebo seams, at years when no instrument changed, all with the same bottom step." },
+        { "say": "The real seam sits low among the placebos. Natural changes from one year to the next are bigger than what harmonisation left behind." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/validation",
+      "beats": [
+        { "target": ".va-board", "label": "Gates summary", "say": "On the FIREWORK website, open the Validation page. The seam ratio is one of the gates. It turns the claim that the seam is fixed into a number with an interval, and a threshold declared before the test." },
+        { "target": ".va-results", "label": "Results", "say": "The results show the outcome. The interval is found by resampling years inside each window, so the gate is judged on its upper end, not only on the best guess." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["R = harmonised step ÷ raw step, log scale, 3-year windows", "R = 0.013 [0.002, 0.100], below the 0.25 gate", "Smaller than placebo seams (median 0.080)"],
+      "next": "F36 · Held-out error (leave one year out)",
+      "beats": [
+        { "say": "So, to remember: measure the step before and after the repair, and divide. The 2012 seam drops from more than double to almost nothing, smaller than the natural wobble between years." },
+        { "say": "Next, formula thirty-six: held-out error, leaving one year out." }
+      ]
+    }
+  ]
+}

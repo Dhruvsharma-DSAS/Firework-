@@ -1,0 +1,108 @@
+{
+  "id": "F44",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_clear_2023-11-03.webp",
+      "imageLabel": "Clear sky · Punjab and Haryana · 3 Nov 2023",
+      "question": "Who burns at night?",
+      "beats": [
+        {
+          "say": "Walk through a town at midnight. The shops are dark, the fields are quiet, but the factory chimney still glows. Some things work round the clock; others only by day."
+        },
+        {
+          "say": "Factories, kilns and flares burn around the clock, while farmers burn residue in the afternoon. Formula forty-four, the night fraction, measures the share of a site's detections that come from night passes, adjusted for how many day and night looks the satellite had."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "\\nu_g =",
+          "say": "Nu g is the night fraction for site g, a share between zero and one."
+        },
+        {
+          "tex": " \\frac{N^{\\mathrm{N}}_g / E^{\\mathrm{N}}_g}{N^{\\mathrm{D}}_g / E^{\\mathrm{D}}_g + N^{\\mathrm{N}}_g / E^{\\mathrm{N}}_g}",
+          "say": "On top is the night rate: night detections, N with a night label, divided by night looks, E. Underneath is the day rate plus the night rate, each one detections divided by looks. So it is the night rate's share of the total. Dividing by looks matters: if the satellite looked at night less often, raw counts would underrate night burning."
+        },
+        {
+          "tex": ",\\qquad \\nu_g = \\text{NULL if } N^{\\mathrm{D}}_g + N^{\\mathrm{N}}_g < 10",
+          "say": "And with fewer than ten detections at a site, the share is too shaky to use, so it is unknown. When looks are not yet loaded, the raw share is shown. For VIIRS that is close to the adjusted value, because each platform makes one day and one night pass per day."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "S-NPP sites in Punjab and Haryana",
+      "steps": [
+        {
+          "label": "Sites with at least 10 detections",
+          "value": 14218,
+          "unit": "S-NPP sites",
+          "say": "FIREWORK looked at all S-NPP sites in Punjab and Haryana with at least 10 detections: 14,218 sites. Sites with fewer detections are left unknown, as the rule says."
+        },
+        {
+          "label": "Farm-fire sites · median night share",
+          "value": 0.0,
+          "unit": "share",
+          "say": "For farm-fire sites, the median night share is 0.00, with a mean of only 0.011. Farm fires are a daytime activity. Across all S-NPP detections, only 2.6 percent are at night."
+        },
+        {
+          "label": "Static-source sites · median night share",
+          "value": 0.86,
+          "unit": "share",
+          "result": true,
+          "say": "For the 45 sites that FIRMS marks as static sources, the median night share is 0.86. Most of their detections come at night. The difference could hardly be clearer."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F44_a.svg",
+      "title": "Industry burns at night",
+      "beats": [
+        {
+          "say": "This figure shows the night share at S-NPP sites with at least 10 detections, comparing farm-fire sites with FIRMS static-source sites."
+        },
+        {
+          "say": "Farm sites pile up at zero. Static sites sit far to the right, near one. That gap is what makes night fraction one of the strongest clues on the Sources page."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sources",
+      "beats": [
+        {
+          "target": ".src-side",
+          "label": "Hot pixels by ground type",
+          "say": "On the FIREWORK website, open the Sources page. Night share is one of the strongest pieces of evidence used there, alongside persistence and context."
+        },
+        {
+          "target": ".pd-sec",
+          "label": "Method",
+          "say": "The method also explains how it guards the calendar: a site with a high night share is unlikely to be crop residue, so it should not inflate the farm-fire record."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "ν = night rate ÷ (day rate + night rate), per look",
+        "NULL with fewer than 10 detections",
+        "Static sites 0.86, farm sites 0.00"
+      ],
+      "next": "F45 · Diurnal fraction seen by overpasses",
+      "beats": [
+        {
+          "say": "So, to remember: divide night detections by night looks, compare with the day, and read the share. Factories glow at night; farm fires almost never do."
+        },
+        {
+          "say": "Next, formula forty-five: the diurnal fraction seen by overpasses."
+        }
+      ]
+    }
+  ]
+}

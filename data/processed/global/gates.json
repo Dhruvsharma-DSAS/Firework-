@@ -1,0 +1,94 @@
+{
+ "generated_at_utc": "2026-11-15T07:03:30.357829+00:00",
+ "rules_fixed": "2026-10-27",
+ "gates": {
+  "G1": {
+   "value": 0.0971,
+   "b1_one_global_k": 0.2808,
+   "regions": "world, countries, states and boxes",
+   "rule": "median relative error ≤ 0.15 and better than B1 (one global k)",
+   "pass": true,
+   "status": "passed"
+  },
+  "G2": {
+   "value": 3.437,
+   "transfer_error": 0.2589,
+   "in_region_error": 0.0753,
+   "n": 2204,
+   "rule": "error ≤ 1.5 × in-region error",
+   "pass": false,
+   "status": "failed"
+  },
+  "G3": {
+   "value": 0.1901,
+   "upper_ci95": 0.2005,
+   "regions": 3081,
+   "rule": "seam ratio upper 95 % CI ≤ 0.25",
+   "pass": true,
+   "status": "passed"
+  },
+  "G4": {
+   "value": 0.0808,
+   "placebo_years": [
+    2005,
+    2006,
+    2007,
+    2008,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021,
+    2022
+   ],
+   "tests": 1881,
+   "regions": 171,
+   "power_check_raw_2012": 0.848,
+   "method": "Welch t-test on log annual harmonised totals, 4 years before vs 4 after each placebo year (all 11 years whose window avoids 2012; the plan said 20, only 11 exist)",
+   "rule": "false-positive rate ≤ 10 %",
+   "pass": true,
+   "status": "passed"
+  },
+  "G5": {
+   "value": {
+    "2018": {
+     "flag_rate": 0.076,
+     "tests": 171,
+     "excess_vs_placebo": false
+    },
+    "2023": {
+     "flag_rate": 0.1053,
+     "tests": 171,
+     "excess_vs_placebo": false
+    }
+   },
+   "rule": "no break after harmonisation at 2018 and 2023 (α = 0.05): flag rate not above the placebo rate",
+   "pass": true,
+   "status": "passed"
+  },
+  "G7": {
+   "value": -0.0123,
+   "median": -0.0147,
+   "limits_of_agreement": [
+    -0.624,
+    0.599
+   ],
+   "n": 19725,
+   "method": "Bland–Altman on ln((k·MODIS + 0.5) / (VIIRS + 0.5)), k learned without the held-out year, region-months with ≥ 10 cell-days each",
+   "rule": "|bias| ≤ 0.1",
+   "pass": true,
+   "status": "passed"
+  },
+  "G8": {
+   "value": 0,
+   "regions": 237,
+   "cells": 153576,
+   "examples": [],
+   "method": "every region through the API calendar builder: no crash; every value carries a status; a 0 appears only where the month was processed and had no fire",
+   "rule": "no crash; a status, never 0",
+   "pass": true,
+   "status": "passed"
+  }
+ }
+}

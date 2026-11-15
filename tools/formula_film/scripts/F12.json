@@ -1,0 +1,74 @@
+{
+  "id": "F12",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Aqua · Punjab and Haryana · 4 Nov 2020",
+      "question": "What if your ruler changed halfway through the record?",
+      "beats": [
+        { "say": "Imagine measuring a field for twenty-five years, and halfway through, you swap your old ruler for a much finer one. Every measurement after the swap looks bigger, even if nothing on the ground has changed." },
+        { "say": "That is exactly what happened to the satellite fire record in 2012. Formula twelve, the harmonised MODIS value, is how FIREWORK fixes it." }
+      ]
+    },
+    {
+      "type": "series",
+      "title": "The jump that is not real",
+      "subtitle": "October + November fire cell-days · Punjab and Haryana · FIREWORK archive calendar",
+      "split": 2012,
+      "leftLabel": "MODIS counting",
+      "rightLabel": "VIIRS counting",
+      "data": [[2002, 5078], [2003, 5757], [2004, 4728], [2005, 8257], [2006, 5481], [2007, 7303], [2008, 7073], [2009, 7132], [2010, 6859], [2011, 7143], [2012, 17528], [2013, 15967], [2014, 17637], [2015, 16629], [2016, 19523], [2017, 17003], [2018, 16273], [2019, 11885], [2020, 16945], [2021, 18134], [2022, 13420], [2023, 11457], [2024, 7862], [2025, 5656]],
+      "beats": [
+        { "say": "Here are the October and November fire counts for Punjab and Haryana. Before 2012, only MODIS was counting. From 2012, VIIRS takes over, and the bars suddenly jump up." },
+        { "say": "The fires did not suddenly double. VIIRS simply sees more, because its pixels are about seven times smaller by area. If we join the two records as they are, the jump looks like a real change, and it is not." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\hat V^{\\mathrm{eq}}_{r,m,y}", "say": "On the left is the value we want: how many fire cell-days VIIRS would have counted, for region r, calendar month m, and year y." },
+        { "tex": "= \\hat k_{r,m}", "say": "We get it from the exchange rate k, one number for each region and each calendar month." },
+        { "tex": "\\, M_{r,m,y}", "say": "And we multiply it by what MODIS actually counted in that same month." },
+        { "tex": "\\qquad (y < 2012)", "say": "We only do this for the years before 2012. From 2012 onward, we simply keep what VIIRS really observed." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · November 2005",
+      "steps": [
+        { "label": "MODIS counted", "value": 2332, "unit": "fire cell-days", "say": "Let's try one real month. In November 2005, MODIS counted 2,332 fire cell-days in Punjab and Haryana." },
+        { "label": "Exchange rate k · November", "value": 2.096, "factor": true, "unit": "× VIIRS per MODIS", "say": "The exchange rate for November is 2.096, learned from the years when both satellites were flying together." },
+        { "label": "Harmonised value", "value": 4888, "unit": "VIIRS-equivalent cell-days", "result": true, "band": [4643, 5126], "say": "Multiply the two, and November 2005 becomes 4,888 VIIRS-equivalent cell-days. Because k has an uncertainty range, so does the answer: from 4,643 to 5,126." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F12_a.svg",
+      "title": "One ruler for twenty-five burning seasons",
+      "beats": [
+        { "say": "This figure shows the whole record. The amber bars are raw MODIS before 2012, the teal bars are VIIRS from 2012, and the violet line is harmonised MODIS, with its uncertainty band." },
+        { "say": "The jump at 2012 is gone, and the year-to-year pattern of the burning season is kept." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "click": "Harmonised",
+      "beats": [
+        { "target": ".ex-bar", "label": "View switch · Harmonised", "say": "On the FIREWORK website, open the Calendar page. Press Harmonised, and every month before 2012 is converted with formula twelve." },
+        { "target": ".k-explain", "label": "Exchange rate k for each month", "say": "On the right, the exchange rate panel lists k for every calendar month, with its ninety-five percent range, so you can always see which number was used." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Before 2012: MODIS × k = VIIRS-equivalent value", "k is learned per region and calendar month from the overlap years", "Every harmonised value keeps its 95 % range"],
+      "next": "F13 · Separate day and night factors",
+      "beats": [
+        { "say": "So, to remember: multiply each old MODIS month by its exchange rate, keep the uncertainty range, and the twenty-five year record finally sits on one ruler." },
+        { "say": "Next, formula thirteen: separate day and night factors." }
+      ]
+    }
+  ]
+}

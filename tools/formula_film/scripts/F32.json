@@ -1,0 +1,60 @@
+{
+  "id": "F32",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_clear_2023-11-03.webp",
+      "imageLabel": "Clear sky · Punjab and Haryana · 3 Nov 2023",
+      "question": "How fast is the burning changing?",
+      "beats": [
+        { "say": "Imagine measuring how fast a plant grows by comparing every pair of days you measured it. Each pair gives a speed. A few pairs are odd, maybe you misread the ruler once, but the middle speed of all the pairs is a solid answer." },
+        { "say": "Formula thirty-two, Sen's slope, does exactly that. It takes the slope between every pair of years and reports the median. Like Mann-Kendall, it is robust: one extreme season barely moves it." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\beta =", "say": "Beta is Sen's slope: how much the series changes per year, typically." },
+        { "tex": " \\operatorname{median}_{i<j}", "say": "We take the median over every pair of years, i earlier and j later. The median ignores the wild pairs at both ends. If one season was extreme, only the slopes that touch it are odd, and they sit at the edges of the sorted list." },
+        { "tex": "\\ \\frac{x_j - x_i}{t_j - t_i}", "say": "For each pair, the slope is the change in value divided by the change in time. Using the real gap in years means missing years can simply be skipped, without bias. A p-value says whether a trend exists; this slope says how big it is." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "October + November, harmonised, 2001–2025",
+      "steps": [
+        { "label": "Pairs of years", "value": 300, "unit": "pairwise slopes", "say": "With 25 seasons there are 300 pairs of years, and so 300 slopes." },
+        { "label": "Median season", "value": 14400, "unit": "fire cell-days", "say": "The median season holds about 14,400 fire cell-days. We use it to turn the slope into a percentage, so regions of different sizes can be compared fairly. A big region and a small one can then be put side by side." },
+        { "label": "Sen's slope", "value": -114, "unit": "cell-days per year", "result": true, "say": "The median of the 300 slopes is minus 114 cell-days per year, or minus 0.79 percent of the median season per year. That is small. The collapse after 2022 is a change in level, not a steady slope." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F32_a.svg",
+      "title": "The median of all slopes",
+      "beats": [
+        { "say": "Here are the slopes between all 300 pairs of seasons, clipped at plus and minus 3,000. Some pairs rise steeply, others fall steeply. Pairs that join an early Terra-only year to the plateau rise; pairs that join the plateau to the recent low years fall." },
+        { "say": "The red line is their median, Sen's slope. It sits just below zero: a gentle decline on average across twenty-five years, despite the dramatic recent drop." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "click": "Harmonised",
+      "beats": [
+        { "target": ".ex-bar", "label": "View switch · Harmonised", "say": "On the FIREWORK website, open the Calendar and press Harmonised. The slope is measured on this one-ruler record, never on the raw stitch of two sensors." },
+        { "target": ".chart-card", "label": "Season-by-season chart", "say": "The season-by-season chart shows the seasons the slope is measured across. Notice how a long plateau followed by a sharp fall can give only a small average slope. That is why FIREWORK pairs the slope with change-point tests." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["β = median of all pairwise slopes", "Robust to single extreme seasons; skips missing years", "2001–2025: −114 cell-days per year (−0.79%)"],
+      "next": "F33 · Pettitt change-point test",
+      "beats": [
+        { "say": "So, to remember: compute the slope between every pair of years and take the middle one. It tells you how big a trend is, while Mann-Kendall tells you whether it exists." },
+        { "say": "Next, formula thirty-three: the Pettitt change-point test." }
+      ]
+    }
+  ]
+}

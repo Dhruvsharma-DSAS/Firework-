@@ -1,0 +1,60 @@
+{
+  "id": "F10",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/zoom_viirs_2020-11-04.webp",
+      "imageLabel": "VIIRS 375 m fire pixels · zoom · 4 Nov 2020",
+      "question": "How do you translate one ruler into another?",
+      "beats": [
+        { "say": "Suppose you have an old ruler in inches and a new one in centimetres. The easiest way to learn how they relate is to measure the same table with both, at the same time, and divide." },
+        { "say": "Since 2012, MODIS and VIIRS have watched the same farms at the same time. Formula ten, the monthly overlap ratio, divides the VIIRS count by the MODIS count for each month they both observed. These ratios are the raw evidence behind the exchange rate k." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "k_{r,\\sigma,y} \\;=\\;", "say": "On the left is k, one reading of the exchange rate, for region r, stratum sigma, such as a calendar month, and year y." },
+        { "tex": " \\frac{V_{r,\\sigma,y}}{M_{r,\\sigma,y}}", "say": "It is simply the VIIRS count divided by the MODIS count, in fire cell-days, for that same month of that same year." },
+        { "tex": "\\qquad \\text{for strata } \\sigma", "say": "We compute it stratum by stratum, so that October is compared with October, and November with November." },
+        { "tex": " \\text{ where both sensors observed and } M>0", "say": "And only where both sensors really observed, and MODIS counted more than zero. You cannot divide by zero, and a missing month is not agreement. Those months go into a dropped table, with a reason, so nobody mistakes them for data." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · November 2016",
+      "steps": [
+        { "label": "VIIRS counted", "value": 7711, "unit": "fire cell-days", "say": "Let's take one real month. In November 2016, VIIRS counted 7,711 fire cell-days in Punjab and Haryana." },
+        { "label": "MODIS counted", "value": 3478, "unit": "fire cell-days", "say": "In the very same month, MODIS counted 3,478." },
+        { "label": "Overlap ratio k", "value": 2.22, "unit": "VIIRS per MODIS", "result": true, "say": "Divide, and k for November 2016 is 2.22. Across fourteen Novembers, the ratio stays between 1.53 and 2.49. Octobers vary more, from 1.77 up to 4.42, with the highest in 2023 and 2024, when burning fell sharply and only the strongest fires remained visible to MODIS." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F10_a.svg",
+      "title": "The overlap evidence",
+      "beats": [
+        { "say": "On the left, every overlap month is a dot: VIIRS against MODIS fire cell-days, with lines of constant k. Most months sit in a narrow band. The busy burning months, top right, line up most tightly, because big counts are less lumpy." },
+        { "say": "On the right is one ratio per year, for October and for November. You can see how stable November is, and how October jumps in the recent low years." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sensors",
+      "beats": [
+        { "target": ".sl-side", "label": "Hot pixels by satellite and exchange rate", "say": "On the FIREWORK website, open Sensor Lab. The side panel shows hot pixels by satellite, and an exchange-rate panel built from this overlap evidence." },
+        { "target": ".sl-switch", "label": "MODIS or VIIRS", "say": "Switch between MODIS and VIIRS over the same months, and you can see for yourself why one reads higher than the other. Of 179 overlap months, 177 have a ratio, and the 2 partial-download months are listed as dropped." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["k for one month = VIIRS ÷ MODIS in the overlap", "Months with no MODIS value or partial data are dropped, with a reason", "These readings are evidence; the published k pools them"],
+      "next": "F11 · Median of ratios",
+      "beats": [
+        { "say": "So, to remember: measure the same farms with both rulers and divide, month by month. Small counts give lumpy ratios, so these readings are used as evidence and as a check, while the published k pools them together." },
+        { "say": "Next, formula eleven: median of ratios." }
+      ]
+    }
+  ]
+}

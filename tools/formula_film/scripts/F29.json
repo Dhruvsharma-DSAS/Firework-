@@ -1,0 +1,59 @@
+{
+  "id": "F29",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_721_2020-11-04.webp",
+      "imageLabel": "NASA MODIS Terra bands 7-2-1 · burn scars · 4 Nov 2020",
+      "question": "When does the burning season open, peak and close?",
+      "beats": [
+        { "say": "Think of a cricket match. When does it really start? When the first ball is bowled? A fairer answer might be when ten percent of the runs are scored. And it is basically over when ninety percent are on the board." },
+        { "say": "Formula twenty-nine, season start, peak and end, uses the same idea. Within a declared window, the season starts when ten percent of the detected activity has happened, ends at ninety percent, and peaks in the busiest week." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "S(w) =", "say": "S of w is the running total, up to week w. Think of a bucket filling up as the season goes on." },
+        { "tex": " \\sum_{u\\le w} c_u", "say": "It adds up c u, the fire cell-days of every week u, up to and including week w. The start is the first week where S passes ten percent of the season's total. The end is where it passes ninety percent. One consistent sensor is used for all years, VIIRS S-NPP from 2012." },
+        { "tex": ",\\qquad w \\in [t_a,\\ t_b]", "say": "And w only runs inside a declared window, from t a to t b. For the rice-residue season in Punjab and Haryana, that is the fifteenth of September to the thirty-first of December. A week without observation makes the whole year unknown." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "The 2025 kharif season",
+      "steps": [
+        { "label": "Start, 2025 · 10% reached", "value": 13, "unit": "October", "say": "In 2025, ten percent of the season's cell-days had happened by the thirteenth of October. That is the start." },
+        { "label": "Peak, 2025 · busiest week", "value": 3, "unit": "November", "say": "The busiest week was the week of the third of November. That is the peak." },
+        { "label": "End, 2025 · 90% reached", "value": 30, "unit": "November", "result": true, "say": "And ninety percent was reached by the thirtieth of November. That is the end. The season held 4,010 cell-days in the window, down from 18,231 in 2016. These are dates of detected activity, which is what satellites can tell us." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F29_a.svg",
+      "title": "The kharif burning season, year by year",
+      "beats": [
+        { "say": "For each year, the bar runs from the ten percent week to the ninety percent week of VIIRS S-NPP fire cell-days, in the window from mid-September to the end of December. The dot marks the busiest week." },
+        { "say": "The timing is remarkably stable: opening in the first half of October, closing in the second half of November. But in the most recent years the end has moved a week later, and the peak towards early November." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "beats": [
+        { "target": ".chart-card", "label": "Season-by-season chart", "say": "On the FIREWORK website, open the Calendar and scroll to the season-by-season chart. It lets you follow each burning season through the months, year after year." },
+        { "target": "[data-film=cal-grid]", "label": "Month × year grid", "say": "In the grid above it, you can see the season's shape too: the October and November squares light up every year. A late end matters, because the colder weeks of November trap smoke more easily." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Start = 10% of the window's activity, end = 90%", "Peak = busiest week", "2025: 13 Oct → peak 3 Nov → 30 Nov"],
+      "next": "F30 · Mann–Kendall trend test",
+      "beats": [
+        { "say": "So, to remember: fill the bucket week by week inside a fixed window, and read where it passes ten and ninety percent. It turns the calendar into a schedule that farmers, regulators and health agencies can use." },
+        { "say": "Next, formula thirty: the Mann-Kendall trend test." }
+      ]
+    }
+  ]
+}

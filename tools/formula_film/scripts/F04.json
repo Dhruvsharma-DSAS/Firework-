@@ -1,0 +1,112 @@
+{
+  "id": "F04",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_clear_2023-11-03.webp",
+      "imageLabel": "Clear sky · Punjab and Haryana · 3 Nov 2023",
+      "question": "Is every square on the map the same size?",
+      "beats": [
+        {
+          "say": "Peel an orange in slices from top to bottom. Each slice is fat in the middle and thin at the ends. A map grid on our round Earth behaves the same way: its boxes get narrower as you move towards the poles."
+        },
+        {
+          "say": "So a box of a tenth of a degree is not a fixed number of square kilometres. Formula four, the area of a grid cell on the sphere, gives the exact area of each box, so that densities and totals compare fairly."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "A_g \\;=\\; R^2",
+          "say": "A g is the area of grid cell g. It starts with R squared, the radius of the Earth squared, because area grows with the square of size."
+        },
+        {
+          "tex": "\\,\\Delta\\lambda",
+          "say": "Next comes delta lambda, the width of the cell in longitude, measured in radians. For our cells that is 0.1 degrees, a very thin slice."
+        },
+        {
+          "tex": "\\,\\big(\\sin\\varphi_2-\\sin\\varphi_1\\big)",
+          "say": "Then the difference of the sines of the top and bottom edges. This is the clever part: it shrinks the cell smoothly towards the poles, and it is exact, even for the tiny cells right next to the pole."
+        },
+        {
+          "tex": ",\\qquad R = 6371.0088\\ \\mathrm{km}",
+          "say": "For the radius we use the mean Earth radius, 6371.0088 kilometres. Using a sphere instead of the true squashed shape changes areas by less than half a percent."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "One cell size, three latitudes",
+      "steps": [
+        {
+          "label": "Cell at the equator",
+          "value": 123.6,
+          "unit": "km²",
+          "say": "At the equator, one tenth-of-a-degree cell covers 123.6 square kilometres."
+        },
+        {
+          "label": "Cell at 60°N",
+          "value": 61.7,
+          "unit": "km²",
+          "say": "Move up to 60 degrees north, and the same cell in degrees covers only 61.7 square kilometres, about half."
+        },
+        {
+          "label": "Cell at 30.9–31.0°N, Punjab",
+          "value": 106.0,
+          "unit": "km²",
+          "result": true,
+          "say": "Over Punjab, the cell from 30.9 to 31.0 degrees north covers 106.0 square kilometres. Adding up cells and their fractions gives Punjab an area of 50,444 square kilometres, close to its published area of about 50,362."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F04_a.svg",
+      "title": "True cell area",
+      "beats": [
+        {
+          "say": "On the left is the area of a cell against latitude. It falls smoothly from the equator to almost nothing at the poles. The shaded band is Punjab and Haryana."
+        },
+        {
+          "say": "On the right are region areas built by adding each cell's area times the fraction of it inside the region, on a log scale. A good check: added over the whole Earth, the cells give exactly the area of the sphere."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/formulas/F04",
+      "beats": [
+        {
+          "target": ".fp-formula",
+          "label": "The area formula",
+          "say": "On the FIREWORK website, the formula page for formula four shows the equation itself, the same one we just built, piece by piece."
+        },
+        {
+          "target": ".fp-keys",
+          "label": "Key numbers",
+          "say": "Below it, the key numbers: 106.0 square kilometres for a Punjab cell, 123.6 at the equator, and 50,444 for Punjab built from cell fractions. Haryana comes out at 43,997, against a published 44,212. When the cells add up to the real state, we know the region table is right."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "A = R² · Δλ · (sin φ₂ − sin φ₁)",
+        "Cells shrink towards the poles; Punjab cells are about 106 km²",
+        "Region area = sum of cell area × fraction inside"
+      ],
+      "next": "F05 · Fire cell-day indicator",
+      "beats": [
+        {
+          "say": "So, to remember: a degree box is not a fixed size. Use the radius squared, the width in longitude, and the difference of sines, and every cell on Earth gets its true area."
+        },
+        {
+          "say": "Next, formula five: fire cell-day indicator."
+        }
+      ]
+    }
+  ]
+}

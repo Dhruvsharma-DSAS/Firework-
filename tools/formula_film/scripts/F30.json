@@ -1,0 +1,74 @@
+{
+  "id": "F30",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_clear_2023-11-03.webp",
+      "imageLabel": "Clear sky · Punjab and Haryana · 3 Nov 2023",
+      "question": "Is burning rising or falling over the years?",
+      "beats": [
+        { "say": "Imagine comparing your height on every pair of birthdays. Older than five, taller than at five? Yes. Older than eight, taller than at eight? Yes. If almost every later birthday beats every earlier one, you are clearly growing, and you never needed a ruler of straight lines to say so." },
+        { "say": "Formula thirty, the Mann-Kendall trend test, does exactly that with burning seasons. For every pair of years, it asks: was the later one higher, or lower? It needs no straight line and no bell-shaped errors, which suits fire counts well." }
+      ]
+    },
+    {
+      "type": "series",
+      "title": "Why the test needs one ruler",
+      "subtitle": "October + November fire cell-days · Punjab and Haryana · FIREWORK archive calendar",
+      "split": 2012,
+      "leftLabel": "MODIS counting",
+      "rightLabel": "VIIRS counting",
+      "data": [[2002, 5078], [2003, 5757], [2004, 4728], [2005, 8257], [2006, 5481], [2007, 7303], [2008, 7073], [2009, 7132], [2010, 6859], [2011, 7143], [2012, 17528], [2013, 15967], [2014, 17637], [2015, 16629], [2016, 19523], [2017, 17003], [2018, 16273], [2019, 11885], [2020, 16945], [2021, 18134], [2022, 13420], [2023, 11457], [2024, 7862], [2025, 5656]],
+      "beats": [
+        { "say": "Here is the raw record, stitched together: MODIS before 2012, VIIRS from 2012. Every VIIRS year sits above almost every MODIS year." },
+        { "say": "A trend test on this raw series would see a huge rise that is really just the change of instrument. So FIREWORK runs Mann-Kendall on the harmonised series instead, where both halves use one ruler." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "S = \\sum_{i<j}", "say": "S is the Kendall score. We add up over every pair of years, i earlier and j later." },
+        { "tex": "\\operatorname{sgn}(x_j - x_i)", "say": "For each pair, the sign of the difference: plus one if the later year is higher, minus one if lower, zero if equal. Lots of plus ones mean rising; lots of minus ones mean falling." },
+        { "tex": ",\\qquad \\operatorname{Var}(S) =", "say": "To know whether S is big enough to matter, we need its variance: how much S would wobble by pure chance." },
+        { "tex": " \\frac{n(n-1)(2n+5) - \\sum_p t_p(t_p-1)(2t_p+5)}{18}", "say": "This depends only on n, the number of years, with a small correction for ties. Divide S by the square root of this variance, and we get Z, and from Z a p-value. Fewer than eight years are reported as too short." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "October + November, harmonised, 2001–2025",
+      "steps": [
+        { "label": "Kendall score S", "value": -48, "unit": "over 25 seasons", "say": "On the harmonised October and November series, from 2001 to 2025, with 25 seasons, S is minus 48. Slightly more falling pairs than rising." },
+        { "label": "Variance of S", "value": 1833.3, "unit": "", "say": "The variance of S is 1,833.3." },
+        { "label": "Z", "value": -1.10, "unit": "standardised score", "result": true, "say": "Standardised, Z is minus 1.10, with a p-value of 0.272. Over the full 25 seasons, there is no significant steady trend. The series rose to a plateau, then fell steeply to 3,479 in 2025. That recent fall is a change in level, not a steady slope." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F30_a.svg",
+      "title": "Trend in the burning season",
+      "beats": [
+        { "say": "Here are October and November fire cell-days on one ruler: harmonised MODIS before 2012, VIIRS after. The straight line is Sen's slope, from formula thirty-two." },
+        { "say": "You can see the plateau from 2005 to 2021, then the steep drop. A rank test sees roughly as many rising as falling pairs, which is why it finds no steady trend." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "click": "Harmonised",
+      "beats": [
+        { "target": ".ex-bar", "label": "View switch · Harmonised", "say": "On the FIREWORK website, open the Calendar and press Harmonised, so every season is on one ruler." },
+        { "target": ".chart-card", "label": "Season-by-season chart", "say": "The season-by-season chart then shows the kind of series the trend test runs on. You can see for yourself: up, a long plateau, and a sharp recent fall." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["S = sum of signs over every pair of years", "Run on the harmonised series, not the raw stitch", "2001–2025: S = −48, Z = −1.10, p = 0.272"],
+      "next": "F31 · Hamed–Rao autocorrelation correction",
+      "beats": [
+        { "say": "So, to remember: compare every pair of years, count ups and downs, and check against chance. Run on one ruler, the test is not fooled by the 2012 jump." },
+        { "say": "Next, formula thirty-one: the Hamed-Rao autocorrelation correction." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+ "meta": {
+  "source": "data/processed/global/calendar_global.json (region world, k_baseline)",
+  "generated_at_utc": "2026-11-07T07:52:27.278687+00:00",
+  "provenance": "SOURCE_DERIVED",
+  "method": "ratio of VIIRS S-NPP to MODIS fire cell-days per calendar month, overlap 2012-2025, year-block bootstrap 95% band",
+  "years": [
+   2000,
+   2025
+  ]
+ },
+ "data": [
+  {
+   "month": 1,
+   "k": 2.525,
+   "lo": 2.1384,
+   "hi": 2.9816,
+   "n_years": 14
+  },
+  {
+   "month": 2,
+   "k": 3.0952,
+   "lo": 3.0358,
+   "hi": 3.1557,
+   "n_years": 14
+  },
+  {
+   "month": 3,
+   "k": 3.0055,
+   "lo": 2.9061,
+   "hi": 3.1083,
+   "n_years": 14
+  },
+  {
+   "month": 4,
+   "k": 2.9027,
+   "lo": 2.7795,
+   "hi": 3.0314,
+   "n_years": 14
+  },
+  {
+   "month": 5,
+   "k": 2.7794,
+   "lo": 2.7117,
+   "hi": 2.8487,
+   "n_years": 14
+  },
+  {
+   "month": 6,
+   "k": 2.3525,
+   "lo": 2.296,
+   "hi": 2.4103,
+   "n_years": 14
+  },
+  {
+   "month": 7,
+   "k": 2.1308,
+   "lo": 1.9738,
+   "hi": 2.3003,
+   "n_years": 14
+  },
+  {
+   "month": 8,
+   "k": 2.3504,
+   "lo": 2.2247,
+   "hi": 2.4832,
+   "n_years": 14
+  },
+  {
+   "month": 9,
+   "k": 2.5584,
+   "lo": 2.5038,
+   "hi": 2.6143,
+   "n_years": 14
+  },
+  {
+   "month": 10,
+   "k": 2.8744,
+   "lo": 2.7963,
+   "hi": 2.9546,
+   "n_years": 14
+  },
+  {
+   "month": 11,
+   "k": 2.8034,
+   "lo": 2.7341,
+   "hi": 2.8744,
+   "n_years": 14
+  },
+  {
+   "month": 12,
+   "k": 2.5845,
+   "lo": 2.5145,
+   "hi": 2.6564,
+   "n_years": 14
+  }
+ ]
+}

@@ -1,0 +1,60 @@
+{
+  "id": "F09",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_cloudy_2023-07-10.webp",
+      "imageLabel": "Monsoon cloud · Punjab and Haryana · 10 Jul 2023",
+      "question": "Was it a quiet month, or a cloudy one?",
+      "beats": [
+        { "say": "Imagine counting birds from your window. On a foggy week you count fewer birds. Did the birds leave, or could you just not see them? To be fair, you should count birds per clear look, not per day." },
+        { "say": "Satellites cannot see fires through cloud. So a cloudy November and a quiet November can give the same low count. Formula nine, the clear-sky fire rate, divides the fire cell-days by the number of clear looks the satellite actually had." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "r_{s,r,m} \\;=\\;", "say": "On the left is r, the fire rate for sensor s, region r and month m. It is burning per look, not burning per calendar day." },
+        { "tex": " \\frac{F_{s,r,m}}{E_{s,r,m}}", "say": "On top is F, the fire cell-days from formula six. Underneath is E, the exposure: the number of cell-days when the satellite had a valid, clear view. One valid day is one chance to look, even if the satellite passed twice. Cloud and unknown pixels do not count as looks." },
+        { "tex": ",\\qquad r = \\text{NULL if } E_{s,r,m} = 0", "say": "If there was no clear look at all, the rate is unknown, not zero. FIREWORK also stores E next to every rate, so you can always see how many looks a rate rests on." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "Two Novembers with the same count · illustrative",
+      "steps": [
+        { "label": "Fire cell-days", "value": 600, "unit": "cell-days", "say": "Here is an illustrative example, with numbers chosen to explain the method. Two Novembers each have 600 fire cell-days." },
+        { "label": "Clear looks, cloudy November", "value": 6000, "unit": "valid cell-days", "say": "In the clear November the region offers 12,000 valid cell-days, so the rate is 0.05. But in the cloudy November there are only 6,000 clear looks." },
+        { "label": "Rate, cloudy November", "value": 0.1, "unit": "fire cell-days per look", "result": true, "say": "Divide, and the cloudy November's rate is 0.10, twice as high. It burned twice as much per look, which the raw count completely hides." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F09_a.svg",
+      "title": "Count versus rate",
+      "beats": [
+        { "say": "This figure shows the same idea. The same count of fire cell-days, in a clear month and in a cloudy month, gives two different rates once we divide by the number of valid looks." },
+        { "say": "These are illustrative numbers, chosen to explain the method. They are not measurements." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "click": "Exposure rate",
+      "beats": [
+        { "target": ".ex-bar", "label": "Metric switch · Exposure rate", "say": "On the FIREWORK website, open the Calendar and look at the metric switch called Exposure rate. For Punjab and Haryana the monthly counts are in place, but the clear-sky exposure is still a pending input." },
+        { "target": "[data-film=cal-grid]", "label": "Counts until exposure arrives", "say": "So, for now, the calendar shows counts, and the rate switch is labelled as needing clear-sky days from Earth Engine. It does not invent a rate it cannot yet compute. When the exposure arrives, the same switch will show burning per clear look for every month." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Rate = fire cell-days ÷ clear-look cell-days", "No clear looks means unknown, not zero", "Exposure for Punjab + Haryana is still pending"],
+      "next": "F10 · Monthly overlap ratio",
+      "beats": [
+        { "say": "So, to remember: divide by the number of chances the satellite had to look. Smoke and cloud are worst exactly when burning peaks, so the rate stops cloudy months from looking quiet, and cloudy years from looking like a trend." },
+        { "say": "Next, formula ten: monthly overlap ratio." }
+      ]
+    }
+  ]
+}

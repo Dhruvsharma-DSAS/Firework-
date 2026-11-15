@@ -1,0 +1,58 @@
+{
+  "id": "F11",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "Can one strange month move the exchange rate?",
+      "beats": [
+        { "say": "Imagine five friends compare pocket money, and one of them is a millionaire. The average jumps to something none of them actually gets. But the middle value, the median, still tells you what a typical friend has." },
+        { "say": "The exchange rate k should not be pushed around by one odd month either. Formula eleven, the median of ratios, is a robust second opinion on k: it asks what a typical year looks like." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\hat k_{\\mathrm{med}} \\;=\\;", "say": "On the left is k med, the median estimate of the exchange rate for one calendar month." },
+        { "tex": " \\operatorname{median}\\{\\,", "say": "We take the median, the middle value, of a set of numbers. Sort them, and pick the one in the middle." },
+        { "tex": "k_{y}", "say": "The numbers are the yearly ratios k y from formula ten, one for each overlap year." },
+        { "tex": " \\;:\\; M_{y}\\ge 5\\,\\}", "say": "But only years where MODIS counted at least five fire cell-days. A month with one MODIS cell-day could give a ratio of 1 or of 12, just by chance. That is mostly noise, so it is left out. With fewer than three usable years, the answer is insufficient, and the pooled value is used." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "November in Punjab and Haryana",
+      "steps": [
+        { "label": "Yearly ratios used", "value": 14, "unit": "Novembers", "say": "For November in Punjab and Haryana, there are 14 usable yearly ratios." },
+        { "label": "Ratio of totals · published k", "value": 2.10, "unit": "VIIRS per MODIS", "say": "The published k, the ratio of totals over all those years, is 2.10." },
+        { "label": "Median of ratios", "value": 2.14, "unit": "VIIRS per MODIS", "result": true, "say": "The median of the yearly ratios is 2.14. The two agree within a few percent. October agrees too: 2.52 against 2.47. The biggest gaps are in quiet months, like January, 6.02 against 5.49, where MODIS counts are small and single years swing widely." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F11_a.svg",
+      "title": "Robust check of k for each calendar month",
+      "beats": [
+        { "say": "For every calendar month, the grey dots are the yearly overlap ratios. The red bar is the median of ratios, using years with at least five MODIS cell-days." },
+        { "say": "The black diamond is the ratio of totals, the published k. In the burning season the bar and the diamond almost touch. In quiet months they drift apart. June, for example, gives 6.14 for the median against 5.43 for the ratio of totals, because a few small years pull the two summaries in different directions." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sensors",
+      "beats": [
+        { "target": ".sl-side", "label": "Exchange-rate panel", "say": "On the FIREWORK website, open Sensor Lab. The exchange-rate panel shows the published k, the ratio of totals. Formula eleven is the quiet check standing behind it." },
+        { "target": ".sl-globe", "label": "Same farms, two sensors", "say": "Why is the median only a check, and not the default? Because it gives a quiet year the same vote as a busy one. In simulations with very small MODIS counts, it underestimates k." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Median of yearly ratios, using years with M ≥ 5", "Robust to one odd year; a check, not the default", "November: 2.14 (median) vs 2.10 (ratio of totals)"],
+      "next": "F12 · Harmonised MODIS value",
+      "beats": [
+        { "say": "So, to remember: sort the yearly ratios and take the middle one. When it agrees with the published k, we can trust that k describes typical years. When it does not, that month needs a closer look." },
+        { "say": "Next, formula twelve: the harmonised MODIS value." }
+      ]
+    }
+  ]
+}

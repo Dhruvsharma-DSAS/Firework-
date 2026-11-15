@@ -1,0 +1,108 @@
+{
+  "id": "F42",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_clear_2023-11-03.webp",
+      "imageLabel": "Clear sky · Punjab and Haryana · 3 Nov 2023",
+      "question": "What surrounds a fire?",
+      "beats": [
+        {
+          "say": "Stand near a bakery and the smell is strong. Walk a few streets away and it fades. The closer you are, and the bigger the bakery, the more it shapes the air around you."
+        },
+        {
+          "say": "A hot spot next to a refinery is more likely industrial, and one in the middle of paddy fields is more likely crop residue. Formula forty-two, distance-decay exposure, gives each nearby feature a weight that fades with distance, and adds them up into an industrial exposure, IE, and an agricultural exposure, AE."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "\\mathrm{IE}_g = \\sum_{f\\in\\text{industry}}",
+          "say": "IE for site g is a sum over every industrial feature f nearby: factories, refineries, kilns."
+        },
+        {
+          "tex": " S_f\\,e^{-d_{g,f}/L}",
+          "say": "Each feature brings its size, S f, times a fading factor: e to the minus distance over L. L is the decay length. At a distance of one L, the weight has fallen to 37 percent. Further away, it fades towards nothing."
+        },
+        {
+          "tex": ",\\qquad \\mathrm{AE}_g = \\sum_{c\\in\\text{cropland}} S_c\\,e^{-d_{g,c}/L}",
+          "say": "AE is built the same way, summing over cropland instead. Together they describe the site's surroundings as smooth numbers a classifier can use. L and the weights are hypotheses, still to be fitted on labelled sites."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "An illustrative site",
+      "steps": [
+        {
+          "label": "Refinery, size 5, at 0.3 km",
+          "value": 5,
+          "unit": "size S",
+          "say": "This is an illustrative example, with numbers chosen to explain the method. A refinery of size 5 stands 0.3 kilometres from the site."
+        },
+        {
+          "label": "Factory, size 3, at 1.0 km",
+          "value": 3,
+          "unit": "size S",
+          "say": "A factory of size 3 stands 1.0 kilometre away. The decay length L is 1 kilometre. So the refinery is much closer than one decay length, and the factory sits exactly at one."
+        },
+        {
+          "label": "Industrial exposure IE",
+          "value": 4.81,
+          "unit": "exposure",
+          "result": true,
+          "say": "Weight each by its fading factor and add: IE is 4.81. The nearby refinery contributes most, the farther factory much less. That is the whole idea: big and near counts more than small and far."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F42_a.svg",
+      "title": "Influence that fades with distance",
+      "beats": [
+        {
+          "say": "On the left is the weight, e to the minus d over L, for three decay lengths. A short L fades fast; a long L reaches further. Choosing L is part of what labelled sites will one day decide."
+        },
+        {
+          "say": "On the right is the worked example. These are illustrative numbers chosen to explain the method; they are not measurements."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sources",
+      "beats": [
+        {
+          "target": ".pd-sec",
+          "label": "Method",
+          "say": "On the FIREWORK website, open the Sources page and read the method. Be clear about the status: the feature layers for industry and cropland are still pending."
+        },
+        {
+          "target": ".src-side",
+          "label": "Hot pixels by ground type",
+          "say": "And one rule is firm: where map coverage is missing, the exposure is unknown, not zero. Absence on the map is not absence on the ground."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "IE, AE = sum of size × e^(−distance / L)",
+        "At distance L the weight is 37%",
+        "Missing map coverage → NULL; feature layers pending"
+      ],
+      "next": "F43 · Context log-ratio L",
+      "beats": [
+        {
+          "say": "So, to remember: every nearby feature counts, but its pull fades with distance. Adding them up gives each site an industrial and an agricultural exposure, clues for the source classifier, not labels."
+        },
+        {
+          "say": "Next, formula forty-three: the context log-ratio L."
+        }
+      ]
+    }
+  ]
+}

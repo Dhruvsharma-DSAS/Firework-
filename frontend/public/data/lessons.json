@@ -1,0 +1,931 @@
+{
+ "data": [
+  {
+   "id": "lesson-01",
+   "num": "01",
+   "title": "How a satellite sees fire",
+   "kicker": "Physics of the 4 µm and 11 µm bands",
+   "lead": "Fire is far hotter than the land around it. Hot objects shine most strongly at short wavelengths, so a pixel containing fire becomes much brighter in the 4 µm band than in the 11 µm band. MODIS and VIIRS both compare these two bands, and compare each pixel with its neighbours, to decide whether a pixel holds an active fire.",
+   "hinglish": "Aag 4 micron par bahut zyada chamakti hai, zameen 11 micron par. Dono ka farak hi saboot hai ki pixel mein aag hai.",
+   "points": [
+    {
+     "title": "Two bands",
+     "text": "4 µm (mid-infrared) jumps when anything hot is in the pixel; 11 µm (thermal infrared) mostly tracks the ordinary ground temperature."
+    },
+    {
+     "title": "Huge contrast",
+     "text": "Going from 300 K land to a 1000 K flame multiplies 4 µm radiance by about 4,927× but 11 µm by only about 28.6×."
+    },
+    {
+     "title": "Tiny fires count",
+     "text": "A flame covering a very small part of a pixel can still lift the 4 µm signal enough to be flagged."
+    },
+    {
+     "title": "Context test",
+     "text": "A pixel is a fire only if it stands out from its own background, so deserts, sun-glint and hot roofs are filtered."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/l1_planck.webp",
+     "caption": "Planck curves for land, smouldering and flaming temperatures, with the two fire bands marked. PHYSICS (computed from Planck's law)."
+    },
+    {
+     "src": "/learn/fig/l1_bt_scatter.webp",
+     "caption": "Real MODIS fire pixels from Punjab + Haryana: every point sits above the T4 = T11 line. RUN_TESTED_LOCALLY on the project's FIRMS archive."
+    }
+   ],
+   "satellite": [
+    {
+     "src": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+     "caption": "MODIS Aqua true colour with MODIS thermal anomalies (orange), Punjab and Haryana, 4 Nov 2020. Smoke from crop-residue burning spreads south-east toward Delhi; each orange mark is one fire pixel, not one fire.",
+     "layer": "MODIS_Aqua_CorrectedReflectance_TrueColor + MODIS_Aqua_Thermal_Anomalies_All",
+     "date": "2020-11-04"
+    },
+    {
+     "src": "/learn/sat/punjab_721_2020-11-04.webp",
+     "caption": "MODIS Terra bands 7-2-1 false colour, same area and day. Vegetation is green, bare and burned fields are brown-red, snow is cyan. Short-wave infrared (band 7, 2.1 µm) sees through thin smoke, which is why the haze almost disappears.",
+     "layer": "MODIS_Terra_CorrectedReflectance_Bands721",
+     "date": "2020-11-04"
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1DdGr-qNwCFxemv2cZObhrHCbkalzVTF9/view?usp=sharing",
+   "sections": [
+    {
+     "heading": "Why hot things glow at short wavelengths: Planck's law",
+     "text": "Every object emits light according to its temperature. Max Planck's law gives the exact amount at each wavelength. Two facts matter for fire detection. First, hotter objects emit more at every wavelength. Second, the peak of the curve moves to shorter wavelengths as temperature rises (Wien's law: peak wavelength ≈ 2898 µm·K ÷ temperature). Ordinary ground at about 300 K peaks near 10 µm, right in the 11 µm band. A flame at about 1000 K peaks near 3 µm, right next to the 4 µm band."
+    },
+    {
+     "heading": "A fire does not need to fill the pixel",
+     "text": "A 1 km MODIS pixel is one square kilometre, about 140 football fields. A burning field of rice stubble may cover only a few hundred square metres of that. The satellite records the average radiance of the whole pixel. Because the flame is thousands of times brighter at 4 µm, even a tiny burning fraction raises the average noticeably, while the 11 µm average hardly moves."
+    },
+    {
+     "heading": "What the algorithm actually checks",
+     "text": "Both the MODIS (MOD14/MYD14) and VIIRS 375 m algorithms run a similar sequence for every pixel. The exact thresholds differ between sensors, between day and night, and between versions; the logic is the same. Mask out water and cloud first. A cloudy pixel is labelled cloud, never 'no fire'. Absolute test: if the 4 µm brightness temperature is extremely high, the pixel is flagged as fire directly. Candidate test: the pixel must be warmer than usual at 4 µm and show a large 4 µm minus 11 µm difference (ΔT). Contextual test: compare the candidate with valid neighbouring pixels in a window around it. It must stand out by several standard deviations in T4 and in ΔT."
+    },
+    {
+     "heading": "Seeing the same thing in a satellite image",
+     "text": "A true-colour image (red, green, blue bands) shows smoke but rarely flames. A false-colour image using short-wave infrared (band 7 at 2.1 µm, band 2 near-infrared, band 1 red) cuts through thin smoke and shows fresh burn scars as dark red-brown. Very hot active fires can glow orange-red even here. The fire marks you see on Worldview are drawn on top from the fire product; they are not visible in the raw colours."
+    },
+    {
+     "heading": "Fire Radiative Power (FRP)",
+     "text": "Besides 'fire or not', each detection carries FRP in megawatts: the rate at which the fire releases radiant energy. FRP is estimated from how much the 4 µm radiance exceeds the background (the 'MIR radiance method'). FRP is useful for comparing intensity and for estimating smoke emissions, but it is a pixel-level total: two small fires in one pixel and one bigger fire can give the same value."
+    },
+    {
+     "heading": "What this means for FIREWORK CHRONOS",
+     "text": "Each point on the globe is a pixel that passed these tests at one overpass, not a confirmed fire event. Pixel size and band design differ between MODIS and VIIRS, so the two never count the same number of pixels (Lesson 2). Clouds and overpass times decide what can be seen at all (Lesson 3)."
+    }
+   ],
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_01_lesson-01.pdf"
+  },
+  {
+   "id": "lesson-02",
+   "num": "02",
+   "title": "Why pixels differ",
+   "kicker": "1 km vs 375 m, and pixels that stretch",
+   "lead": "A MODIS pixel is about 1 km across at nadir; a VIIRS I-band pixel is 375 m, so its area is about seven times smaller. The same small farm fire fills a much larger share of a VIIRS pixel, so VIIRS detects many small fires MODIS misses. Pixels also stretch toward the edge of the swath, so edge pixels are bigger, not hotter.",
+   "hinglish": "Chhota pixel = chhoti aag bhi dikhti hai. VIIRS ka pixel MODIS se ~7 guna chhota hai, isliye zyada dots.",
+   "points": [
+    {
+     "title": "Area, not width",
+     "text": "1 km² ÷ (0.375 km)² ≈ 7.1. A field fire fills about 7× more of a VIIRS pixel."
+    },
+    {
+     "title": "Live proof",
+     "text": "In the live feed for 2026-10-30 → 2026-11-02, VIIRS S-NPP reported 73,292 pixels, MODIS 12,511 (≈ 5.9×)."
+    },
+    {
+     "title": "Weaker fires",
+     "text": "Median FRP per pixel: VIIRS 5.27 MW vs MODIS 14.79 MW. VIIRS adds the small, weak fires."
+    },
+    {
+     "title": "Edge stretch",
+     "text": "MODIS pixels grow to about 4.8 km along scan at the swath edge (9.6 km² in our archive)."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/l2_footprint.webp",
+     "caption": "The same 1 ha fire inside one MODIS pixel and inside a 375 m VIIRS grid. DIAGRAM."
+    },
+    {
+     "src": "/learn/fig/l2_live_counts.webp",
+     "caption": "Fire pixels per day worldwide from the live NRT feed cached by the backend. LIVE — FIRMS NRT."
+    }
+   ],
+   "satellite": [
+    {
+     "src": "/learn/sat/zoom_modis_2020-11-04.webp",
+     "caption": "Zoom on central Punjab (30–31° N, 74.8–76.05° E), 4 Nov 2020: MODIS Aqua fire pixels (orange) over the VIIRS true-colour image.",
+     "layer": "VIIRS_SNPP_CorrectedReflectance_TrueColor + MODIS_Aqua_Thermal_Anomalies_All",
+     "date": "2020-11-04"
+    },
+    {
+     "src": "/learn/sat/zoom_viirs_2020-11-04.webp",
+     "caption": "Same box and day: VIIRS S-NPP 375 m fire pixels (red). The ground and the smoke are identical; only the sensor changed, and the number of marks roughly doubles to triples.",
+     "layer": "VIIRS_SNPP_CorrectedReflectance_TrueColor + VIIRS_SNPP_Thermal_Anomalies_375m_All",
+     "date": "2020-11-04"
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1TNrq062vP1UgJQhA9oOVBrmEvL3UtMEi/view?usp=sharing",
+   "sections": [
+    {
+     "heading": "Pixel size and pixel area",
+     "text": "MODIS measures fire with 1 km pixels at nadir. VIIRS uses 375 m pixels (its I-bands). People often compare the widths (1 km vs 375 m, about 2.7×), but detection depends on area. One MODIS pixel covers 1 km² = 1,000,000 m². One VIIRS pixel covers 0.375 × 0.375 = 0.14 km². So about seven VIIRS pixels fit in one MODIS pixel."
+    },
+    {
+     "heading": "Seeing it on real images",
+     "text": "The two images below are the same 1° × 1.25° box of central Punjab on the same day, 4 November 2020, with the same VIIRS true-colour background. Only the fire layer changes."
+    },
+    {
+     "heading": "The live feed tells the same story worldwide",
+     "text": "The FIREWORK backend caches the FIRMS near-real-time (NRT) feed. For 2026-10-30 to 2026-11-02 UTC the cache holds 160,190 fire pixels: VIIRS NOAA-20 74,387, VIIRS S-NPP 73,292 and MODIS (Terra + Aqua together) 12,511. One VIIRS satellite alone reports about 5.9 times as many pixels as both MODIS satellites combined."
+    },
+    {
+     "heading": "Pixels stretch toward the edge of the swath",
+     "text": "A satellite scans from side to side. Directly below it the pixel is smallest. Looking sideways, the line of sight is longer and hits the curved Earth at a slant, so the pixel grows. FIRMS gives this as two columns: scan (across-track size) and track (along-track size), in kilometres."
+    },
+    {
+     "heading": "Consequences for a long fire record",
+     "text": "You cannot add MODIS and VIIRS counts or compare them directly; they are on different rulers. A rise in counts after 2012 in any region is partly a change of ruler (Lesson 4). To join the two records we estimate a conversion factor k from years when both flew (Lesson 5)."
+    }
+   ],
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_02_lesson-02.pdf"
+  },
+  {
+   "id": "lesson-03",
+   "num": "03",
+   "title": "Why clouds matter",
+   "kicker": "No view, no detection: exposure and overpass times",
+   "lead": "A satellite can only report fire where it can see the ground at the moment it passes. Cloud, thick smoke and the gaps between overpasses all hide fire. So a cloudy month with few detections is not necessarily a quiet month. FIREWORK divides fire-days by the number of days the ground was actually visible (the exposure) before comparing months.",
+   "hinglish": "Strike rate = runs per ball. Fire rate = aag-din per saaf-din. Badal wale din ginti mein nahi aate.",
+   "points": [
+    {
+     "title": "Cloud = unknown",
+     "text": "The fire product labels a cloudy pixel 'cloud'. It must be counted as not observed, never as zero fire."
+    },
+    {
+     "title": "Fixed times",
+     "text": "Fire satellites pass at fixed local times (~01:30, ~10:30, ~13:30, ~22:30). A fire lit and put out between passes is never seen."
+    },
+    {
+     "title": "Rate, not count",
+     "text": "Exposure rate = fire-days ÷ clear-sky days, just like a cricket strike rate = runs ÷ balls faced."
+    },
+    {
+     "title": "Day bias",
+     "text": "78.3 % of live detections are daytime; most farm burning happens in the afternoon."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/l3_lst.webp",
+     "caption": "Local solar time of every live detection: four narrow peaks, one per overpass. LIVE — FIRMS NRT."
+    },
+    {
+     "src": "/learn/fig/l3_exposure.webp",
+     "caption": "Worked example: dividing by clear days reverses the comparison. ILLUSTRATIVE numbers."
+    }
+   ],
+   "satellite": [
+    {
+     "src": "/learn/sat/punjab_cloudy_2023-07-10.webp",
+     "caption": "MODIS Aqua true colour, 10 Jul 2023 (monsoon). Cloud covers almost the whole region. Zero fire marks here means 'not observed', not 'no fire'.",
+     "layer": "MODIS_Aqua_CorrectedReflectance_TrueColor + MODIS_Aqua_Thermal_Anomalies_All",
+     "date": "2023-07-10"
+    },
+    {
+     "src": "/learn/sat/punjab_clear_2023-11-03.webp",
+     "caption": "MODIS Aqua true colour, 3 Nov 2023 (post-monsoon). Mostly clear sky: the ground is visible, so fire pixels can be counted, and smoke from them fills the plain.",
+     "layer": "MODIS_Aqua_CorrectedReflectance_TrueColor + MODIS_Aqua_Thermal_Anomalies_All",
+     "date": "2023-11-03"
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1nbCooQxgT_5BwNu5g1wZIJU2cjG4OCA3/view?usp=sharing",
+   "sections": [
+    {
+     "heading": "Clouds block the view",
+     "text": "Infrared at 4 µm and 11 µm does not pass through thick cloud. When a cloud is over a pixel, the sensor measures the cold cloud top, not the ground. The fire algorithms therefore run a cloud mask first and label such pixels as cloud. In the MODIS daily fire mask (MOD14A1/MYD14A1) the classes include 3 = water, 4 = cloud, 5 = clear land with no fire, 7–9 = fire with low, nominal or high confidence. Only classes 3, 5, 7, 8 and 9 count as a valid observation."
+    },
+    {
+     "heading": "Satellites only look at certain times",
+     "text": "Fire satellites are in sun-synchronous orbits: they cross a given latitude at roughly the same local solar time every day. Terra was designed to cross at about 10:30 and 22:30, Aqua, S-NPP and NOAA-20 at about 13:30 and 01:30. Terra and Aqua have been drifting from these times since about 2020–2022 as they run low on fuel, which itself changes what they see."
+    },
+    {
+     "heading": "Exposure: counting the days we could see",
+     "text": "For every grid cell and month, FIREWORK counts two things: fire-days (days with at least one fire pixel in the cell) and valid days (days the cell was observed clear of cloud). The exposure rate is their ratio."
+    },
+    {
+     "heading": "How FIREWORK uses this",
+     "text": "Clear-sky days per cell per month come from the MODIS and VIIRS daily fire-mask products via Google Earth Engine (valid = classes 3, 5, 7, 8, 9; cloud = 4). If exposure is available, the harmonisation step uses rates (method B2); if not, it falls back to totals (B1) and says so. Months with too few valid days are shown with a status (null + 'low exposure'), never as 0."
+    }
+   ],
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_03_lesson-03.pdf"
+  },
+  {
+   "id": "lesson-04",
+   "num": "04",
+   "title": "Why the 2012 jump is not real",
+   "kicker": "A new camera, not more fire",
+   "lead": "VIIRS data begin in January 2012. If you join the MODIS record before 2012 to the VIIRS record after it, fire counts appear to jump about two-and-a-half times overnight. The jump is the new, sharper instrument, not more burning. Until the two records are put on one ruler, long-term trends that cross 2012 are meaningless.",
+   "hinglish": "Naya camera, zyada dots — zyada aag nahi. 2012 mein VIIRS aaya, isliye ginti uchhli.",
+   "points": [
+    {
+     "title": "The numbers",
+     "text": "Punjab + Haryana: MODIS 9,294 fire cell-days in 2011; VIIRS 23,977 in 2013 (≈ 2.58×). MODIS itself in 2013: 9,476."
+    },
+    {
+     "title": "Same farms",
+     "text": "MODIS kept flying after 2012 and shows no step at all."
+    },
+    {
+     "title": "Satellite images",
+     "text": "Compare 3 Nov 2011 (MODIS) and 3 Nov 2013 (VIIRS) over the same box."
+    },
+    {
+     "title": "Rule",
+     "text": "Never splice two sensors without a calibration across their overlap."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/l4_jump.webp",
+     "caption": "Annual fire cell-days for Punjab + Haryana: MODIS, VIIRS and a naive spliced record. RUN_TESTED_LOCALLY."
+    }
+   ],
+   "satellite": [
+    {
+     "src": "/learn/sat/punjab_modis_2011-11-03.webp",
+     "caption": "3 Nov 2011, before VIIRS existed: the only fire record is MODIS (orange).",
+     "layer": "MODIS_Aqua_CorrectedReflectance_TrueColor + MODIS_Aqua_Thermal_Anomalies_All",
+     "date": "2011-11-03"
+    },
+    {
+     "src": "/learn/sat/punjab_viirs_2013-11-03.webp",
+     "caption": "3 Nov 2013, same box: VIIRS 375 m fire pixels (red) on the MODIS true-colour image. The farms did not suddenly burn three times more; a sharper eye arrived.",
+     "layer": "MODIS_Aqua_CorrectedReflectance_TrueColor + VIIRS_SNPP_Thermal_Anomalies_375m_All",
+     "date": "2013-11-03"
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1y9hg2A6QlqAIbvyPXNMKJ15UNDXBXOBa/view?usp=sharing",
+   "sections": [
+    {
+     "heading": "What happened in 2012",
+     "text": "Suomi NPP launched in October 2011 carrying the first VIIRS. Its fire archive in FIRMS starts on 20 January 2012. NOAA-20 followed (archive from 1 April 2018) and NOAA-21 (from 1 March 2023). MODIS on Terra (from November 2000) and Aqua (from July 2002) kept running. From 2012 onward, both sensors watched the same fields every day."
+    },
+    {
+     "heading": "The spliced record trap",
+     "text": "A tempting shortcut is to use 'the best sensor available' each year: MODIS until 2011, VIIRS from 2012. The dashed line in the chart below is exactly that. It looks like burning in Punjab and Haryana more than doubled in a single year."
+    },
+    {
+     "heading": "See it in the imagery",
+     "text": "Same box, same date two years apart, both in peak paddy-stubble season. The 2013 image is covered in far more marks because each 375 m VIIRS pixel is smaller and more sensitive (Lesson 2), not because farmers burned three times as much."
+    },
+    {
+     "heading": "Other instrument changes to watch for",
+     "text": "Aqua joins Terra in mid-2002: the MODIS record itself gains a second daily look and an afternoon overpass, so 2000–2002 are not comparable with later years without care. NOAA-20 (2018) and NOAA-21 (2023) add more VIIRS looks; FIREWORK uses S-NPP alone as the VIIRS reference so the ruler stays fixed. Terra and Aqua orbit drift from about 2020–2022 changes their overpass times and so what they see; part of the recent MODIS decline can be instrumental."
+    }
+   ],
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_04_lesson-04.pdf"
+  },
+  {
+   "id": "lesson-05",
+   "num": "05",
+   "title": "How harmonisation works",
+   "kicker": "One ruler for 2000 → today",
+   "lead": "From 2012 to today, MODIS and VIIRS watch the same places. For every calendar month we compute k, the ratio of what VIIRS saw to what MODIS saw over those overlap years. Multiplying an old MODIS-only month by k converts it into a VIIRS-equivalent estimate, and a bootstrap over the overlap years gives a 95 % band around it.",
+   "hinglish": "Exchange rate tab seekho jab dono dukaan khuli hon. 2012–2025 mein dono sensor saath the — wahi se k nikalta hai.",
+   "points": [
+    {
+     "title": "Exchange rate",
+     "text": "k is like a currency rate between two sensors, learned while both shops are open."
+    },
+    {
+     "title": "Per month",
+     "text": "k changes with the season: in Punjab + Haryana the median is 2.13 in November but 7.25 in June."
+    },
+    {
+     "title": "Ratio of totals",
+     "text": "k_m = Σ VIIRS ÷ Σ MODIS over overlap years for month m."
+    },
+    {
+     "title": "Always a band",
+     "text": "Harmonised months before 2012 carry a 95 % interval; months from 2012 are VIIRS observations."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/l5_k.webp",
+     "caption": "Spread of the yearly VIIRS ÷ MODIS ratio for each calendar month, 2012–2025. RUN_TESTED_LOCALLY."
+    },
+    {
+     "src": "/learn/fig/l5_harmonised.webp",
+     "caption": "November series: MODIS, VIIRS and the harmonised record with its band. RUN_TESTED_LOCALLY."
+    }
+   ],
+   "satellite": [
+    {
+     "src": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+     "caption": "MODIS Aqua true colour with MODIS thermal anomalies (orange), Punjab and Haryana, 4 Nov 2020. Smoke from crop-residue burning spreads south-east toward Delhi; each orange mark is one fire pixel, not one fire.",
+     "layer": "MODIS_Aqua_CorrectedReflectance_TrueColor + MODIS_Aqua_Thermal_Anomalies_All",
+     "date": "2020-11-04"
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/18kQ1Ib112RxCoZt-NGWRZInQU_bZObba/view?usp=sharing",
+   "sections": [
+    {
+     "heading": "Why we need it",
+     "text": "Lessons 2 and 4 showed that VIIRS reports more pixels than MODIS for the same fires, and that splicing them creates a false jump. Yet only MODIS covers 2000–2011. Harmonisation lets the full 25-year record be read on one ruler: the VIIRS S-NPP ruler."
+    },
+    {
+     "heading": "The method step by step",
+     "text": "Build monthly totals per region for MODIS (Terra + Aqua) and for VIIRS S-NPP: hot-spot counts and fire cell-days (and, when exposure exists, rates per valid day). Take only the overlap years, 2012 onward, and drop months marked partial or failed. For each calendar month m, compute k_m as a ratio of totals over those years (formula below)."
+    },
+    {
+     "heading": "k is not one number",
+     "text": "October and November, the paddy-stubble months, have k near 2.13–2.55 and very tight spread: thousands of fires every year make the ratio stable. In quiet months with few detections (for example June, September, December) k is larger and wider, because small fires that only VIIRS sees dominate and a handful of pixels changes the ratio a lot. April–May (wheat residue) sit in between."
+    },
+    {
+     "heading": "The result",
+     "text": "Example: November 2005. MODIS recorded about 2,350 fire cell-days. Harmonised, that becomes about 5,375 VIIRS-equivalent cell-days, with a 95 % band from about 2,184 to 9,330."
+    },
+    {
+     "heading": "Assumptions and limits",
+     "text": "The relationship between sensors is assumed stable over time for a given month and region. Orbit drift after 2020 can violate this; that is one reason the band exists. k is region-specific: fire sizes and types differ, so a k from Punjab is not used for California. Day and night can have different k; separate day/night ratios are part of the method roadmap."
+    }
+   ],
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_05_lesson-05.pdf"
+  },
+  {
+   "id": "lesson-06",
+   "num": "06",
+   "title": "How to read a band",
+   "kicker": "Uncertainty you can see",
+   "lead": "A band is the range in which the true value probably lies. FIREWORK shows 95 % bands: if we repeated the estimate many times, about 95 in 100 such ranges would contain the truth. A narrow band means high confidence; a wide band means few data or an unstable ratio. Every band always states its level.",
+   "hinglish": "Band chhota = bharosa zyada. Band bada = data kam ya k ghoomta hai.",
+   "points": [
+    {
+     "title": "Three numbers",
+     "text": "Every harmonised month has low – estimate – high. November 2005: 2,184 – 5,375 – 9,330 cell-days."
+    },
+    {
+     "title": "Width = honesty",
+     "text": "July 2005: 0.0 – 32.8 – 275.3. Few fires, so the band is huge relative to the value."
+    },
+    {
+     "title": "Overlap test",
+     "text": "If two months' bands overlap a lot, do not claim one burned more than the other."
+    },
+    {
+     "title": "Observed years",
+     "text": "From 2012 the value is a VIIRS observation, so the harmonisation band collapses."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/l6_band_2005.webp",
+     "caption": "Every month of 2005 with its 95 % band. RUN_TESTED_LOCALLY."
+    },
+    {
+     "src": "/learn/fig/l6_bandwidth.webp",
+     "caption": "Band width relative to the estimate, by year. RUN_TESTED_LOCALLY."
+    }
+   ],
+   "satellite": [
+    {
+     "src": "/learn/sat/california_2020-08-20.webp",
+     "caption": "MODIS Terra true colour with fire pixels, northern California, 20 Aug 2020 (August Complex and LNU/SCU lightning complexes). Large wildfires make long clustered lines of pixels along the active fire front.",
+     "layer": "MODIS_Terra_CorrectedReflectance_TrueColor + MODIS_Terra_Thermal_Anomalies_All",
+     "date": "2020-08-20"
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1RBmTOlcJo4LrpOn0cxgzEhp1ljnBIcvE/view?usp=sharing",
+   "sections": [
+    {
+     "heading": "What a 95 % band means",
+     "text": "Suppose we could rerun history many times, each time with slightly different overlap years and counts, and recompute the estimate. The 95 % band is built so that about 95 out of 100 such ranges would contain the true value. It is not a promise that the truth is inside this particular band; it is a statement about how reliable the procedure is."
+    },
+    {
+     "heading": "Reading a band chart",
+     "text": "The bar (or line) is the central estimate. The whiskers (or shaded area) are the 95 % band: low to high. Compare widths relative to the value. ± 50 on 100 is weak; ± 500 on 5,000 is strong."
+    },
+    {
+     "heading": "Why some bands are wide",
+     "text": "Few detections: quiet months have small counts, so k is unstable (July 2005 band 0.0 to 275.3 around 32.8). Unstable k: when the VIIRS/MODIS ratio swings from year to year, the bootstrap spreads widely. Few overlap years: fewer years to learn from means a wider band; FIREWORK requires at least three."
+    },
+    {
+     "heading": "Comparing two values",
+     "text": "If the bands of two months barely overlap or do not overlap, the difference is likely real. If they overlap heavily, the data cannot tell them apart and you should say 'similar'. (Overlapping 95 % bands do not prove the difference is zero; they mean the evidence is weak.)"
+    },
+    {
+     "heading": "Bands also apply to big wildfires",
+     "text": "The same rules hold for any region. Below is a huge 2020 California wildfire event. On days like this, one large fire produces hundreds of pixels along its front. The record must report pixels and cell-days with their uncertainty; it cannot turn pixel counts into hectares burned or number of fires."
+    }
+   ],
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_06_lesson-06.pdf"
+  },
+  {
+   "id": "lesson-07",
+   "num": "07",
+   "title": "Meet the satellites",
+   "kicker": "Terra, Aqua, S-NPP, NOAA-20, NOAA-21",
+   "lead": "Five satellites build the global fire record. Two carry MODIS (Terra since 2000, Aqua since 2002) and three carry VIIRS (S-NPP since 2012, NOAA-20 since 2018, NOAA-21 since 2023). They fly in sun-synchronous orbits about 700–830 km up and each images most of the Earth twice a day, once in daylight and once at night.",
+   "hinglish": "Paanch satellite, do camera ke type: MODIS (purana, 1 km) aur VIIRS (naya, 375 m). Har ek din mein do baar dekhta hai.",
+   "points": [
+    {
+     "title": "MODIS pair",
+     "text": "Terra (~10:30 morning pass) and Aqua (~13:30 afternoon pass). Both are drifting and near the end of their missions (planned end of science 2027)."
+    },
+    {
+     "title": "VIIRS trio",
+     "text": "S-NPP, NOAA-20 and NOAA-21 all cross near 13:30 and 01:30, spaced tens of minutes apart along the same afternoon orbit."
+    },
+    {
+     "title": "Handover",
+     "text": "S-NPP new data end in November 2026. A harmonised record is how 25 years survive these changes."
+    },
+    {
+     "title": "One ruler",
+     "text": "FIREWORK uses VIIRS S-NPP as the reference ruler and MODIS (Terra + Aqua combined) as the long history."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/x_timeline.webp",
+     "caption": "Years each fire satellite contributes to the FIRMS archive. Planned end dates are from NASA announcements and can change. OFFICIAL_DOCUMENTED (satellite.csv)."
+    }
+   ],
+   "satellite": [],
+   "sections": [
+    {
+     "heading": "Sun-synchronous orbits",
+     "text": "Each satellite circles the Earth about 14 times a day over the poles. The orbit is tilted so it crosses any given latitude at the same local solar time every day, which keeps lighting conditions comparable from day to day."
+    },
+    {
+     "heading": "Why the morning and afternoon passes differ",
+     "text": "Fires grow during the day and peak in the afternoon. The 13:30 passes (Aqua and VIIRS) usually see more and bigger fires than Terra's morning pass, so mixing satellites changes counts even without any change on the ground."
+    },
+    {
+     "heading": "Orbit drift",
+     "text": "Terra and Aqua no longer have fuel to hold their exact times. Terra now crosses earlier and Aqua later than designed, which slowly changes what they see. FIREWORK flags this as a known limitation for recent MODIS years."
+    },
+    {
+     "heading": "End of an era",
+     "text": "NASA plans to end Terra and Aqua science operations in 2027 and S-NPP stops delivering new data in November 2026. NOAA-20, NOAA-21 and future JPSS satellites carry VIIRS forward."
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1jct6hOPTL0q_c1HgP9U4rv6dlmbzjuML/view?usp=sharing",
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_07_lesson-07.pdf"
+  },
+  {
+   "id": "lesson-08",
+   "num": "08",
+   "title": "From pixels to cell-days",
+   "kicker": "How dots become a calendar",
+   "lead": "Raw detections are points at pixel centres. To compare places and years, FIREWORK snaps every detection onto a fixed 0.1° grid and counts fire cell-days: a cell scores one for a day if it had at least one fire pixel. This removes the double counting that happens when one fire produces many pixels or is seen by several passes.",
+   "hinglish": "Ek din mein ek khane (cell) mein 1 ya 50 dot — dono ka score 1. Isse ek badi aag baar-baar nahi ginti.",
+   "points": [
+    {
+     "title": "0.1° grid",
+     "text": "About 11 km × 11 km near the equator, smaller in area toward the poles; each cell's true area is stored."
+    },
+    {
+     "title": "Cell-day",
+     "text": "1 if any fire pixel fell in the cell that day, else 0 (or null if not observed)."
+    },
+    {
+     "title": "Fewer duplicates",
+     "text": "Overlapping passes and big fires no longer inflate the count."
+    },
+    {
+     "title": "Rounding matters",
+     "text": "The cell index rounds before taking the floor so points on a boundary don't flip cells by floating-point error."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/x_cells.webp",
+     "caption": "Toy example: scattered fire pixels in one day collapse into a handful of fire cell-days. DIAGRAM."
+    }
+   ],
+   "satellite": [
+    {
+     "src": "/learn/sat/punjab_truecolor_2020-11-04.webp",
+     "caption": "MODIS Aqua true colour with MODIS thermal anomalies (orange), Punjab and Haryana, 4 Nov 2020. Smoke from crop-residue burning spreads south-east toward Delhi; each orange mark is one fire pixel, not one fire.",
+     "layer": "MODIS_Aqua_CorrectedReflectance_TrueColor + MODIS_Aqua_Thermal_Anomalies_All",
+     "date": "2020-11-04"
+    }
+   ],
+   "sections": [
+    {
+     "heading": "Why not just count pixels?",
+     "text": "Pixel counts depend on pixel size, swath position and the number of passes (Lessons 02 and 03). One wildfire front can make hundreds of pixels. Cell-days ask a simpler, steadier question: was there fire in this place on this day?"
+    },
+    {
+     "heading": "How a point finds its cell",
+     "text": "row = floor((lat + 90) ÷ 0.1) and col = floor((lon + 180) ÷ 0.1), after rounding away tiny floating-point errors. The cell id is row_col, and every cell carries its centre and area in km²."
+    },
+    {
+     "heading": "What a cell-day is not",
+     "text": "It is not burned area and not a number of fires. A cell-day with one tiny stubble fire and one with a huge forest blaze both count as 1; intensity lives in FRP (Lesson 10)."
+    },
+    {
+     "heading": "Building the calendar",
+     "text": "Summing cell-days over all cells in a region for each month gives the month × year calendar on the site, first per sensor, then harmonised (Lesson 05)."
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1GMQQqxhMkzKzHLl0UQm5DDRcoX5zcmtw/view?usp=sharing",
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_08_lesson-08.pdf"
+  },
+  {
+   "id": "lesson-09",
+   "num": "09",
+   "title": "Crop, forest or industry?",
+   "kicker": "Telling fire types apart",
+   "lead": "Not every hot pixel is a burning field. FIREWORK labels detections as agricultural, wildland or industrial/static using land cover, the FIRMS type code, repetition in the same place, and timing. Volcanoes, gas flares and steel plants must be removed before a crop-burning calendar makes sense.",
+   "hinglish": "Har garam pixel khet ki aag nahi hota — factory, gas flare, jwalamukhi bhi chamakte hain. Inhe alag karna zaroori hai.",
+   "points": [
+    {
+     "title": "MODIS type code",
+     "text": "0 vegetation fire, 1 active volcano, 2 other static land source, 3 offshore. Codes 1–3 are excluded from the crop calendar."
+    },
+    {
+     "title": "Land cover",
+     "text": "ESA WorldCover 10 m classes (cropland, tree cover, grassland, built-up…) say what the cell is mostly made of."
+    },
+    {
+     "title": "Persistence",
+     "text": "A source that is hot on most nights all year in the same spot is almost certainly industrial."
+    },
+    {
+     "title": "Season",
+     "text": "Punjab paddy residue burns Oct–Nov, wheat residue Apr–May; forest fires follow dry seasons."
+    }
+   ],
+   "figures": [],
+   "satellite": [
+    {
+     "src": "/learn/sat/punjab_721_2020-11-04.webp",
+     "caption": "MODIS Terra bands 7-2-1 false colour, same area and day. Vegetation is green, bare and burned fields are brown-red, snow is cyan. Short-wave infrared (band 7, 2.1 µm) sees through thin smoke, which is why the haze almost disappears.",
+     "layer": "MODIS_Terra_CorrectedReflectance_Bands721",
+     "date": "2020-11-04"
+    }
+   ],
+   "sections": [
+    {
+     "heading": "Clues from the ground",
+     "text": "Land cover tells us whether a cell is mostly cropland or forest. A detection in a cell that is 90 % cropland during harvest season is very likely residue burning."
+    },
+    {
+     "heading": "Clues from repetition",
+     "text": "Industrial sources such as gas flares and furnaces are hot almost every night in exactly the same place. Counting how often a pixel location repeats across a year separates them from moving crop fires."
+    },
+    {
+     "heading": "Clues from the calendar",
+     "text": "Agricultural burning follows the crop cycle and is short and bursty. Wildfires follow drought and wind, and can last weeks along a moving front, as in the California images in Lesson 06."
+    },
+    {
+     "heading": "Uncertainty",
+     "text": "Classification is a probability, not a fact. Mixed cells and small fires near villages stay 'unknown' unless the evidence is strong."
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/13V3iSco-f6KuhcbyXfbUdXY4bqN15BaN/view?usp=sharing",
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_09_lesson-09.pdf"
+  },
+  {
+   "id": "lesson-10",
+   "num": "10",
+   "title": "Fire power and smoke",
+   "kicker": "FRP, energy and what reaches the air",
+   "lead": "Fire Radiative Power (FRP, in megawatts) measures how fast a fire is releasing radiant energy at the moment of the pass. Adding FRP over time gives Fire Radiative Energy, which scales with the amount of vegetation burned and so with the smoke released. It is the bridge from fire detection to air quality.",
+   "hinglish": "FRP = aag kitni zor se jal rahi hai (MW). Zyada FRP = zyada dhuan, lekin ek pixel ka total hai, ek aag ka nahi.",
+   "points": [
+    {
+     "title": "Units",
+     "text": "FRP in MW per pixel; Fire Radiative Energy (FRE) in MJ = FRP integrated over time."
+    },
+    {
+     "title": "Biomass link",
+     "text": "Studies find roughly 0.37 kg of dry matter burned per MJ of FRE (Wooster et al. 2005), with large uncertainty."
+    },
+    {
+     "title": "Sensor differences",
+     "text": "VIIRS sees weaker fires and has smaller pixels, so its per-pixel FRP is lower (Lesson 02)."
+    },
+    {
+     "title": "Snapshots only",
+     "text": "Two looks a day cannot integrate a fire that flares between passes; FRE from polar orbiters is a rough estimate."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/l2_frp.webp",
+     "caption": "FRP per pixel in the live feed: VIIRS reaches weaker fires (lower median) than MODIS. LIVE — FIRMS NRT."
+    }
+   ],
+   "satellite": [
+    {
+     "src": "/learn/sat/california_2020-08-20.webp",
+     "caption": "MODIS Terra true colour with fire pixels, northern California, 20 Aug 2020 (August Complex and LNU/SCU lightning complexes). Large wildfires make long clustered lines of pixels along the active fire front.",
+     "layer": "MODIS_Terra_CorrectedReflectance_TrueColor + MODIS_Terra_Thermal_Anomalies_All",
+     "date": "2020-08-20"
+    }
+   ],
+   "sections": [
+    {
+     "heading": "Measuring power from orbit",
+     "text": "FRP is computed from how much brighter the pixel is at 4 µm than its background. Because emission rises steeply with temperature, the 4 µm excess is roughly proportional to the total radiated power, regardless of exact fire temperature."
+    },
+    {
+     "heading": "From power to smoke",
+     "text": "Integrate FRP over the life of a fire to get energy, convert energy to burned biomass, and multiply by emission factors (grams of PM2.5, CO or CO₂ per kg burned) to estimate emissions. Each step adds uncertainty."
+    },
+    {
+     "heading": "Air quality next to fire",
+     "text": "FIREWORK can show OpenAQ PM2.5 and PM10 from ground stations beside the fire record. Smoke travels with the wind, so a station's peak can lag the fire and be hundreds of kilometres away."
+    },
+    {
+     "heading": "Common mistake",
+     "text": "Comparing raw FRP across sensors or across swath positions. Large edge-of-swath MODIS pixels add up more fire; compare FRP per km² or use one sensor."
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/13Sy1XeEIOnCsravAoyfTzj2zyOeyDZfs/view?usp=sharing",
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_10_lesson-10.pdf"
+  },
+  {
+   "id": "lesson-11",
+   "num": "11",
+   "title": "Reading the calendar and anomalies",
+   "kicker": "Is this month unusual?",
+   "lead": "The calendar shows every month of every year as one tile. To judge whether a month is unusual, FIREWORK compares it with the same calendar month in all other years using a robust z-score on a log scale. Above +1 means notably more fire than usual for that month, below −1 notably less.",
+   "hinglish": "Har mahine ko baaki saalon ke usi mahine se milao. z > +1 matlab normal se kaafi zyada aag.",
+   "points": [
+    {
+     "title": "Same month only",
+     "text": "November is compared with other Novembers, never with June."
+    },
+    {
+     "title": "Robust z",
+     "text": "z = (log(x+0.5) − median log) ÷ max(1.4826 × MAD, 0.15). Median and MAD resist extreme years."
+    },
+    {
+     "title": "Enough history",
+     "text": "At least 8 reference years = 'ok'; fewer = 'indicative'."
+    },
+    {
+     "title": "Harmonised scale",
+     "text": "Anomalies use the harmonised record so the 2012 sensor jump is not read as an anomaly."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/x_anomaly.webp",
+     "caption": "Robust z of each November in Punjab + Haryana against all other Novembers on the harmonised scale. Early years are low partly because only Terra flew in 2000–2002. RUN_TESTED_LOCALLY."
+    }
+   ],
+   "satellite": [],
+   "sections": [
+    {
+     "heading": "Why a log scale",
+     "text": "Fire counts are skewed: a bad month can be ten times a quiet one. Working on log(x + 0.5) treats 'twice as much' the same at any level and keeps zero months finite."
+    },
+    {
+     "heading": "Why median and MAD",
+     "text": "The mean and standard deviation get dragged by one extreme year. The median and the median absolute deviation (MAD) do not, so one catastrophic season does not hide the others."
+    },
+    {
+     "heading": "Reading the tiles",
+     "text": "Colour shows the harmonised value; an outline or badge marks |z| > 1. Null tiles (grey hatch) are unobserved or unprocessed, not zero."
+    },
+    {
+     "heading": "Cautions",
+     "text": "An anomaly is a statement about the record, not a cause. Check exposure (cloudy months), sensor changes and policy events before explaining it."
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1NSndh2qvl2X-ue4pW47EBWLIxc7Ao37K/view?usp=sharing",
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_11_lesson-11.pdf"
+  },
+  {
+   "id": "lesson-12",
+   "num": "12",
+   "title": "How we keep the numbers honest",
+   "kicker": "Provenance labels and validation",
+   "lead": "Every number on FIREWORK carries one of five provenance labels saying where it came from and how far to trust it. Simulated demo data always wear an amber SIMULATED chip, missing data are null with a status, and harmonised values must pass a held-out test before they lose their 'proposed' label.",
+   "hinglish": "Har number ke saath label: kahan se aaya, kitna bharosa. Demo data hamesha 'SIMULATED' dikhega.",
+   "points": [
+    {
+     "title": "Five labels",
+     "text": "OFFICIAL_DOCUMENTED, SOURCE_DERIVED, RUN_TESTED_LOCALLY, SIMULATED_DEMO, PROPOSED_UNVALIDATED."
+    },
+    {
+     "title": "Null ≠ 0",
+     "text": "Unobserved months, failed downloads and unprocessed regions are null + status."
+    },
+    {
+     "title": "Held-out test",
+     "text": "Hide some overlap years, predict them from MODIS × k, compare with real VIIRS."
+    },
+    {
+     "title": "Words only",
+     "text": "If an AI writes text for the Brief page, it only describes computed numbers; it never creates or edits one."
+    }
+   ],
+   "figures": [],
+   "satellite": [],
+   "sections": [
+    {
+     "heading": "The five labels",
+     "text": "OFFICIAL_DOCUMENTED matches a NASA/NOAA/ESA page or paper. SOURCE_DERIVED is computed directly from an official dataset. RUN_TESTED_LOCALLY was produced and checked by our pipeline. SIMULATED_DEMO is made-up data for showing the interface. PROPOSED_UNVALIDATED is a method or value not yet tested."
+    },
+    {
+     "heading": "Validation of harmonisation",
+     "text": "For each overlap year, k is fitted without that year, MODIS × k predicts VIIRS, and the error and band coverage are measured. If about 95 % of true values fall inside the 95 % bands, the bands are honest."
+    },
+    {
+     "heading": "What the site will never do",
+     "text": "Turn VIIRS confidence classes into percentages, present simulated files as results, show missing data as zero, or call a hotspot a fire or a cell-day burned area."
+    },
+    {
+     "heading": "Not an alert system",
+     "text": "FIREWORK CHRONOS is research decision support. For emergencies, follow local fire and disaster authorities."
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1iwMFS2yNtKW9uUMKgyBpajV89l-zPnNP/view?usp=sharing",
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_12_lesson-12.pdf"
+  },
+  {
+   "id": "myths",
+   "num": "13",
+   "title": "Most misunderstood ideas",
+   "kicker": "Four myths and what is actually true",
+   "lead": "Four mistakes appear again and again when people read fire maps. Each comes from treating a detection as a direct picture of fire instead of the output of a sensor that has a pixel size, a schedule, a cloud mask and its own way of labelling confidence.",
+   "hinglish": "Zyada dots ≠ zyada aag. Koi dot nahi ≠ koi aag nahi. Confidence 0.6 ≠ 60%.",
+   "points": [
+    {
+     "title": "More dots = more fire",
+     "text": "More dots can mean a finer sensor, more satellite passes or fewer clouds."
+    },
+    {
+     "title": "No detection = no fire",
+     "text": "Under cloud or between passes it means unknown."
+    },
+    {
+     "title": "Burned area validates hotspots",
+     "text": "MCD64A1 burned area uses MODIS active fire as an input, so it is not independent."
+    },
+    {
+     "title": "Confidence 0.6 means 60 %",
+     "text": "VIIRS classes l/n/h are categories; MODIS 0–100 is a score, not a probability."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/myth_confidence.webp",
+     "caption": "Confidence values in the live feed: VIIRS three classes, MODIS 0–100 score. LIVE — FIRMS NRT."
+    }
+   ],
+   "satellite": [
+    {
+     "src": "/learn/sat/punjab_cloudy_2023-07-10.webp",
+     "caption": "MODIS Aqua true colour, 10 Jul 2023 (monsoon). Cloud covers almost the whole region. Zero fire marks here means 'not observed', not 'no fire'.",
+     "layer": "MODIS_Aqua_CorrectedReflectance_TrueColor + MODIS_Aqua_Thermal_Anomalies_All",
+     "date": "2023-07-10"
+    }
+   ],
+   "pdf": "https://drive.google.com/file/d/1-kb31q7c7_vl6RfavEFsBer9czajiWqS/view?usp=sharing",
+   "sections": [
+    {
+     "heading": "Myth 1 — “More dots = more fire”",
+     "text": "The number of fire pixels depends on at least four things besides fire: pixel size (VIIRS 375 m vs MODIS 1 km), the number of satellite passes (one MODIS vs two MODIS vs three VIIRS satellites), cloud and smoke, and view angle. In the live feed for 2026-10-30 → 2026-11-02, VIIRS S-NPP alone reported 73,292 pixels while MODIS reported 12,511, over the same fires."
+    },
+    {
+     "heading": "Myth 2 — “No detection = no fire”",
+     "text": "A cell with no fire pixels was either clear and not burning, or not observed: cloud-covered, smoke-covered, between overpasses, or the fire was too small or too cool. The fire mask records cloud explicitly so we can tell these apart. FIREWORK shows unobserved cells as null with a status, never 0."
+    },
+    {
+     "heading": "Myth 3 — “Burned area validates hotspots”",
+     "text": "The MODIS burned-area product MCD64A1 maps burn scars from changes in surface reflectance, but it uses MODIS active-fire detections to train and seed its classification. If you check hotspots against MCD64A1 and they agree, part of that agreement is built in. It is a useful companion product, not an independent judge. Independent checks use higher-resolution imagery (Landsat, Sentinel-2), field reports or airborne data."
+    },
+    {
+     "heading": "Myth 4 — “Confidence 0.6 means 60 %”",
+     "text": "VIIRS labels each detection low (l), nominal (n) or high (h). These are categories describing which tests the pixel passed and how strongly, not probabilities. MODIS gives a 0–100 confidence score; FIRMS suggests reading 0–29 as low, 30–79 as nominal, 80–100 as high. A score of 60 is not a 60 % chance of fire, and VIIRS 'n' cannot be converted to a number."
+    },
+    {
+     "heading": "Three more pitfalls",
+     "text": "A hotspot is a pixel, not a fire: one large fire makes many pixels; several small fires can share one pixel. A cell-day is not burned area: it says some fire was detected in a grid cell on a day, not how many hectares burned. Harmonised values are estimates with a band, not measurements."
+    }
+   ],
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_13_myths.pdf"
+  },
+  {
+   "id": "live",
+   "num": "14",
+   "title": "Reading the live feed",
+   "kicker": "What the Live source on this site shows",
+   "lead": "The Live source shows near-real-time (NRT) fire pixels from NASA FIRMS, usually available within about three hours of the satellite pass. Live data are fast but provisional: they are later replaced by standard-processing (SP) archive data, and they follow every rule of the lessons above.",
+   "hinglish": "Live data = pichhle kuch ghanton ke pixels. Pehle 'kaun sa sensor, kab, kitna saaf aasmaan' poocho, phir nateeja nikalo.",
+   "points": [
+    {
+     "title": "What's in it",
+     "text": "160,190 pixels for 2026-10-30 → 2026-11-02: VIIRS NOAA-20 74,387, VIIRS S-NPP 73,292, MODIS 12,511."
+    },
+    {
+     "title": "Where",
+     "text": "Most live fires are in the tropics and southern hemisphere this season; India had 1,258 VIIRS S-NPP pixels."
+    },
+    {
+     "title": "Provisional",
+     "text": "NRT is replaced by SP archive data after about 5 months."
+    },
+    {
+     "title": "Not an alert system",
+     "text": "Research decision support, not life-safety warnings."
+    }
+   ],
+   "figures": [
+    {
+     "src": "/learn/fig/live_global.webp",
+     "caption": "All live NRT fire pixels in the backend cache plotted on a world map. LIVE — FIRMS NRT."
+    }
+   ],
+   "satellite": [],
+   "pdf": "https://drive.google.com/file/d/1nnACrqcz86W-cfVO6AHD0WgsI3g6mR-d/view?usp=sharing",
+   "sections": [
+    {
+     "heading": "What 'live' means here",
+     "text": "FIRMS publishes near-real-time (NRT) fire detections a few hours after each satellite pass. The FIREWORK backend requests them with the FIRMS Area API (day range 1–5 days) and caches them, so the browser never sees the API key. The Live source on the site reads from that cache."
+    },
+    {
+     "heading": "Who is reporting",
+     "text": "Top countries by live pixels: BRA 17,981, AUS 12,849, MOZ 12,757, SSD 9,594, CHN 8,308, SDN 8,193, MDG 7,532, TCD 6,171. India: VIIRS_NOAA20 1,098, VIIRS_SNPP 1,258, MODIS 372."
+    },
+    {
+     "heading": "A checklist before you read a live map",
+     "text": "Which sensor? Do not mix VIIRS and MODIS counts. Which time? Note local solar time of the pass (Lesson 3). Was it clear? A gap may be cloud."
+    },
+    {
+     "heading": "NRT vs archive (SP)",
+     "text": "About five months after acquisition FIRMS replaces NRT with standard-processing (SP) data that use final orbit and calibration information. Long-term statistics and harmonisation in FIREWORK use SP data; the Live view is for recent situational awareness."
+    },
+    {
+     "heading": "Viewing live satellite imagery yourself",
+     "text": "The Learn page includes a live satellite viewer that loads images straight from NASA GIBS (no key needed). Pick a date and a region to see true colour with MODIS or VIIRS fire pixels on top. The same images are available in NASA Worldview (worldview.earthdata.nasa.gov)."
+    }
+   ],
+   "pdf_suggested": "/learn/pdf/FIREWORK_Learn_14_live.pdf"
+  },
+  {
+   "id": "data-modes",
+   "num": "15",
+   "title": "Demo, Archive and Live",
+   "kicker": "What the data switch at the top right loads",
+   "lead": "Every Explore page has a three-way switch. Live, the default, loads NASA FIRMS near-real-time fire pixels from the last 1–5 days. Archive loads NASA's reprocessed standard-processing pixels for 5–6 November 2025. Demo loads a synthetic teaching set shipped inside the website, so every page still works with no internet or API key. Demo numbers are never measurements.",
+   "hinglish": "Live = abhi ke NASA pixels. Archive = NASA ka final, reprocessed record. Demo = sikhane ke liye banaya hua data, asli nahi.",
+   "points": [
+    {
+     "title": "Live (default)",
+     "text": "NASA FIRMS near-real-time MODIS and VIIRS pixels (S-NPP, NOAA-20, NOAA-21), last 1–5 days. If NASA is unreachable the last good copy is shown and labelled as a saved copy."
+    },
+    {
+     "title": "Archive",
+     "text": "NASA FIRMS standard processing (MODIS_SP and VIIRS_SNPP_SP) for 5–6 Nov 2025: 103,142 science-quality pixels. The Calendar always uses the 2000–2025 archive: 407 million FIRMS points."
+    },
+    {
+     "title": "Demo",
+     "text": "A synthetic week, 20–26 Oct 2026: 7,375 made-up pixels placed in 17 real fire regions and 7 gas-flare areas, plus a simulated calendar with k = 2.45. Generated with a fixed random seed, so it is identical every time."
+    },
+    {
+     "title": "How to tell",
+     "text": "The switch, the status label (amber = Demo data, blue = Archive, green = Live), the dates (demo is always 20–26 Oct 2026) and the count (the demo file holds 7,375 pixels)."
+    }
+   ],
+   "sections": [
+    {
+     "heading": "Why a demo set exists",
+     "text": "A judge, teacher or student must be able to open every page even when NASA is slow, the key has run out or there is no internet. The demo set keeps every chart and the globe working so the method can be taught. Switching reloads the whole page, so demo and real numbers never mix."
+    },
+    {
+     "heading": "What stays real in every setting",
+     "text": "Facts are not measurements, so they are the same in all three settings: satellite launch dates and orbits, the formula registry F01–F46, region boxes, country borders and the source list."
+    },
+    {
+     "heading": "Rules",
+     "text": "Demo values never enter the real calendar, validation gates or exports. Missing real data stays empty and is never filled from the demo. Anything that only works on demo data is marked Proposed · not yet validated."
+    }
+   ],
+   "satellite": [],
+   "figures": [
+    {
+     "src": "/learn/fig/data_modes.webp",
+     "caption": "Top: the 7,375-pixel demo set in tidy, hand-picked clusters. Bottom: real NASA FIRMS standard processing for 5–6 Nov 2025 (20,000 of 103,142 pixels): wider, patchier and full of small fires the demo never invents."
+    }
+   ],
+   "pdf": "/learn/pdf/FIREWORK_Learn_15_data_modes.pdf"
+  }
+ ],
+ "meta": {
+  "provenance": "mixed — each figure caption carries its own label",
+  "generated_from": "FIRMS archive (data/raw/firms), backend NRT cache 2026-10-30→2026-11-02, harmonised_punjab_haryana.json; satellite images NASA GIBS",
+  "demo": false
+ }
+}

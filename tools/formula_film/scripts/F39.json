@@ -1,0 +1,58 @@
+{
+  "id": "F39",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "What if a model could say, I'm not sure?",
+      "beats": [
+        { "say": "Ask a friend to identify a bird far away. A good friend does not always pick one name. Sometimes they say: it is a sparrow. Sometimes they say: it is a sparrow or a finch, I can't tell from here. That honest answer is more useful than a confident wrong one." },
+        { "say": "When a model classifies a fire site as crop, kiln or industry, it should be just as honest. Formula thirty-nine, split conformal prediction sets, returns a set of labels that contains the truth with a stated probability: just crop when the model is sure, crop or kiln when it is not." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "s_i = 1 - \\hat p_{y_i}(x_i)", "say": "For every calibration site i, whose true label we know, we compute a score s: one minus the probability the model gave to the correct label. A confident, correct model gives a small score. A surprised model gives a big one." },
+        { "tex": ",\\qquad \\hat q =", "say": "Then we find q hat, a cut-off taken from those scores." },
+        { "tex": " \\text{the } \\Big\\lceil (n+1)(1-\\alpha)\\Big\\rceil", "say": "With n calibration sites and a chosen error rate alpha, we compute n plus one, times one minus alpha, and round up. That tells us which position in the sorted list to pick." },
+        { "tex": "\\text{-th smallest } s_i", "say": "q hat is the score at that position. For a new site, every label whose score would be at most q hat goes into the set. The guarantee: the set contains the truth with the stated probability, on average." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "An illustrative calibration",
+      "steps": [
+        { "label": "Calibration sites", "value": 100, "unit": "sites (illustrative)", "say": "This example is illustrative, with numbers chosen to explain the method. Suppose we have 100 calibration sites, and alpha is 0.1." },
+        { "label": "Position in the sorted scores", "value": 91, "unit": "st smallest score", "say": "Then q hat is the 91st smallest score." },
+        { "label": "Cut-off q̂", "value": 0.64, "unit": "score", "result": true, "say": "Here that score is 0.64. So a label enters the set if its probability is at least 0.36. Site A, crop at 0.90, gets just crop. Site B, crop 0.52 and kiln 0.41, gets crop or kiln. Site C, kiln 0.44 and industry 0.48, gets kiln or industry." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F39_a.svg",
+      "title": "Sets instead of single labels",
+      "beats": [
+        { "say": "On the left are the scores on an illustrative calibration set, with the cut-off q hat marked." },
+        { "say": "On the right are the three example sites. The classes inside each set are blue. These are illustrative numbers chosen to explain the method; they are not measurements." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sources",
+      "beats": [
+        { "target": ".pd-sec", "label": "Method", "say": "On the FIREWORK website, open the Sources page and read the method. Source attribution is uncertain by nature, so a set lets the page say crop or kiln honestly, and abstain when the set has more than one member." },
+        { "target": ".src-side", "label": "Hot pixels by ground type", "say": "Be clear about the status: real labelled sites do not exist yet, so no real conformal result is published. When they arrive, coverage will be reported by region, because the guarantee is an average, not a promise for every district." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Score = 1 − probability of the true label", "q̂ = the ⌈(n+1)(1−α)⌉-th smallest score", "Labelled sites are pending: no real result yet"],
+      "next": "F40 · Haversine distance",
+      "beats": [
+        { "say": "So, to remember: calibrate a cut-off on sites with known labels, then give each new site every label that clears it. The set is small when the model is sure, larger when it is not, and it comes with a coverage guarantee." },
+        { "say": "Next, formula forty: haversine distance." }
+      ]
+    }
+  ]
+}

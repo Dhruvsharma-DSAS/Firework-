@@ -1,0 +1,57 @@
+{
+  "id": "F24",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "How sure are we about k?",
+      "beats": [
+        { "say": "Imagine writing each year of data on a card and putting the cards in a hat. Draw a card, write it down, and put it back. Do that until you have as many cards as years. Some years appear twice, some not at all. Each draw is a slightly different history." },
+        { "say": "Formula twenty-four, the block bootstrap over years, does exactly that. It recomputes k for thousands of such histories, and reads the middle ninety-five percent of the results. That spread is how sure we can be about k." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\hat k^{*(b)} =", "say": "On the left is k star b: the exchange rate computed from bootstrap sample number b." },
+        { "tex": " \\frac{\\sum_{y\\in Y^{*(b)}} V_y}{\\sum_{y\\in Y^{*(b)}} M_y}", "say": "On top, we add up the VIIRS totals of the years drawn in that sample, Y star b. Underneath, we add up their MODIS totals. Then we divide. Summing first avoids dividing by a zero year. We resample whole years, not months, because months within a year share the same weather, policy and harvest." },
+        { "tex": ",\\quad b=1,\\dots,B", "say": "We repeat this B times. FIREWORK uses 2,000 samples, with a fixed random seed so anyone can reproduce the result. Then we read off the 2.5 and 97.5 percent points." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · November",
+      "steps": [
+        { "label": "Overlap years", "value": 14, "unit": "Novembers", "say": "For November in Punjab and Haryana, we have 14 overlap years, each with its MODIS and VIIRS totals." },
+        { "label": "Bootstrap samples", "value": 2000, "unit": "resampled histories", "say": "We draw 14 years with replacement, recompute k, and repeat 2,000 times." },
+        { "label": "Exchange rate k, November", "value": 2.096, "unit": "VIIRS per MODIS", "result": true, "band": [1.992, 2.209], "say": "The estimate is 2.096, and the ninety-five percent interval runs from 1.992 to 2.209. The pipeline's own run stored 1.991 to 2.198. The small difference is just bootstrap randomness. Every band on the site states its level." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F24_a.svg",
+      "title": "Resampling whole years",
+      "beats": [
+        { "say": "On the left are the fourteen November blocks, one ratio per year. These are the cards in the hat. Some years sit higher than others, and that real difference between years is what widens the band." },
+        { "say": "On the right are the 2,000 bootstrap values of k. The solid red lines mark the ninety-five percent interval, the dotted lines the ninety percent interval, and the black line the estimate." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "beats": [
+        { "target": ".k-explain", "label": "Exchange rate k with its range", "say": "On the FIREWORK website, open the Calendar. The exchange-rate panel shows k for every calendar month, together with its ninety-five percent range from this bootstrap." },
+        { "target": "[data-film=cal-inspector]", "label": "Month inspector", "say": "Click a month, and the inspector shows the band too. That range then carries into every harmonised value. With fewer than about eight years, the interval is reported as indicative only." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Resample whole years with replacement, recompute k", "2,000 samples; read the 2.5% and 97.5% points", "November: 2.096 [1.99, 2.21]"],
+      "next": "F25 · Monte Carlo error propagation",
+      "beats": [
+        { "say": "So, to remember: shuffle whole years, not single months, and let the real differences between years set the width of the band. No Poisson assumption is needed, and odd years widen the interval as they should." },
+        { "say": "Next, formula twenty-five: Monte Carlo error propagation." }
+      ]
+    }
+  ]
+}

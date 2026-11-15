@@ -1,0 +1,53 @@
+{
+ "model": "harmonise_modis_to_viirs",
+ "version": "0.1",
+ "trained_at_utc": "2026-11-02T01:02:13.632089+00:00",
+ "provenance": "RUN_TESTED_LOCALLY",
+ "target": "VIIRS (S-NPP) cell-days per 0.1\u00b0 cell per month, learned as log1p",
+ "algorithm": "sklearn HistGradientBoostingRegressor, Poisson loss for the point estimate + quantile loss 0.05/0.95 with split-conformal shift (CQR) for the band",
+ "features": [
+  "modis_log",
+  "modis_frp_log",
+  "modis_night_share",
+  "month",
+  "lat",
+  "abs_lat",
+  "modis_neigh_log"
+ ],
+ "fit_years": [
+  2012,
+  2020
+ ],
+ "calibration_years": [
+  2021,
+  2022
+ ],
+ "test_years": [
+  2023,
+  2026
+ ],
+ "n_fit": 107352,
+ "n_cal": 23856,
+ "n_test": 42742,
+ "conformal_shift_log": 0.0,
+ "target_coverage": 0.9,
+ "baseline_constant_k": 2.662603323035819,
+ "cell_month_test": {
+  "mae_model": 0.8414822868001842,
+  "mae_constant_k": 1.0005474009390678,
+  "bias_model": 0.023110793182582738,
+  "interval_coverage": 0.9303027467128352,
+  "rmse_model": 1.6144898325614823,
+  "rmse_constant_k": 2.3518405176333212,
+  "mean_interval_width": 3.054861292201756
+ },
+ "region_month_test": {
+  "mape_model": 0.18613138684749106,
+  "mape_constant_k": 0.4758384777898808
+ },
+ "limits": [
+  "Assumes the MODIS\u2192VIIRS relation in 2012\u20132026 also held before 2012.",
+  "Regional intervals here are summed cell bounds (conservative, too wide).",
+  "A cell-day is not burned area."
+ ]
+}

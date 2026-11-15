@@ -1,0 +1,60 @@
+{
+  "id": "F03",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/zoom_viirs_2020-11-04.webp",
+      "imageLabel": "VIIRS 375 m fire pixels · zoom · 4 Nov 2020",
+      "question": "How do you compare dots that never land in the same place?",
+      "beats": [
+        { "say": "Imagine two friends throwing marbles onto a floor. Their marbles never land on exactly the same spot, so how do you compare them? You lay down an egg carton and count which cups have marbles in them." },
+        { "say": "FIREWORK does the same with fire detections. It drops every point into one fixed grid of cells, a tenth of a degree wide. Formula three, the grid cell index, turns a latitude and longitude into the number of its cell." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "i = \\min\\!\\Big(", "say": "We want i, the row number of the cell, counted from the south. The word min at the front is a safety rail; we will come back to it." },
+        { "tex": "\\Big\\lfloor \\operatorname{round}_9\\!", "say": "The floor brackets mean: round down to a whole row. But first we round to nine decimals, so a value like 1180.9999999999998 becomes 1181 before it is cut." },
+        { "tex": "\\frac{\\varphi+90}{\\Delta}\\Big\\rfloor", "say": "Inside, we add ninety to the latitude, so the south pole becomes zero, and divide by delta, the cell size of 0.1 degrees. That counts how many cells we are from the bottom of the world." },
+        { "tex": ",\\ \\frac{180}{\\Delta}-1\\Big)", "say": "And here is the safety rail. A point exactly at latitude 90 would create a row outside the grid, so min holds it to the last row. Columns work the same way with longitude." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · a fire near Ludhiana",
+      "steps": [
+        { "label": "Row i · latitude 30.91°N", "value": 1209, "unit": "row", "say": "Take a fire near Ludhiana, at 30.91 degrees north and 75.85 degrees east. Add ninety to the latitude, divide by 0.1, round down, and we get row 1209." },
+        { "label": "Column j · longitude 75.85°E", "value": 2558, "unit": "column", "say": "For the longitude we add 180 instead, and the same steps give column 2558." },
+        { "label": "cell_id", "value": 4354958, "unit": "one cell, 30.9–31.0°N, 75.8–75.9°E", "result": true, "say": "Combine them: 1209 times 3600, plus 2558, gives cell number 4354958. Every sensor, every year, drops this fire into the same box. And the rounding step matters: without it, a plain floor sends 1,287 longitude edges into the wrong cell. With it, the number is 0." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F03_a.svg",
+      "title": "From points to cells",
+      "beats": [
+        { "say": "On the left are all the detections on the fifth of November 2023 in a small window near Ludhiana, with the grid laid on top. Each dot is counted in exactly one cell." },
+        { "say": "On the right, the red bars show how many exact cell edges a plain floor gets wrong across the whole world grid. The green bars, after rounding to nine decimals, are zero." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/explore",
+      "beats": [
+        { "target": ".ex-globe", "label": "One grid for the whole Earth", "say": "On the FIREWORK website, open Explorer and turn the globe. Every count you see on the site starts from these fixed cells, the same for MODIS and VIIRS." },
+        { "target": ".ex-kpis", "label": "Headline numbers", "say": "The headline numbers at the top are built by adding up cells. In Punjab and Haryana, 994 cells have held fires." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["Shift, divide by 0.1°, round to 9 decimals, floor", "Clamp the edges so no point falls off the grid", "One cell_id per box, the same for every sensor"],
+      "next": "F04 · Area of a grid cell on the sphere",
+      "beats": [
+        { "say": "So, to remember: shift the coordinates, divide by the cell size, round carefully, then cut down to a whole number. Two sensors can only be compared fairly when they count in the very same boxes." },
+        { "say": "Next, formula four: area of a grid cell on the sphere." }
+      ]
+    }
+  ]
+}

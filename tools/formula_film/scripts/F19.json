@@ -1,0 +1,110 @@
+{
+ "id": "F19",
+ "scenes": [
+  {
+   "type": "hook",
+   "question": "Is VIIRS always the same multiple of MODIS?",
+   "beats": [
+    {
+     "say": "Suppose a shop always charges twice the wholesale price. That is a fixed multiple. But many shops give discounts on big orders, so the multiple shrinks as the order grows. Which kind of shop is the satellite record?"
+    },
+    {
+     "say": "Formula nineteen, power law versus ratio, asks whether VIIRS is a fixed multiple of MODIS, or whether the multiple changes with the size of the month. FIREWORK decides by testing which shape predicts years it has never seen."
+    }
+   ]
+  },
+  {
+   "type": "build",
+   "title": "Building the formula",
+   "parts": [
+    {
+     "tex": "\\text{ratio:}\\quad",
+     "say": "This is the ratio model, the shape used for the live calibration. The power law is its rival."
+    },
+    {
+     "tex": "\\log\\mu_{m,y} = \\log E",
+     "say": "On the left is the log of the expected VIIRS count, for month m and year y. It starts with the log of exposure, the number of looks."
+    },
+    {
+     "tex": " + \\beta_m",
+     "say": "Plus beta m, one number per calendar month. Turned back from the log scale, it is that month's exchange rate k."
+    },
+    {
+     "tex": " + \\log(M_{m,y}+0.5)",
+     "say": "Plus the log of the MODIS count, with a half added so a zero month still works. In the ratio model this enters with a fixed slope of one. The power law sets that slope free, as b, so the multiple can bend with the size of the month."
+    }
+   ]
+  },
+  {
+   "type": "example",
+   "title": "Held-out test · leave one year out",
+   "steps": [
+    {
+     "label": "Held-out deviance, ratio",
+     "value": 12132,
+     "unit": "Poisson deviance",
+     "say": "For each overlap year, FIREWORK hides that year, fits both models on the others, and predicts the hidden one. Over 15 folds, the ratio model's held-out deviance adds up to 12,132. Lower is better."
+    },
+    {
+     "label": "Held-out deviance, power law",
+     "value": 7812,
+     "unit": "Poisson deviance",
+     "say": "The power law scores 7,812, with a fitted slope b of 0.73."
+    },
+    {
+     "label": "Improvement with b free",
+     "value": 35.6,
+     "unit": "% lower deviance",
+     "result": true,
+     "say": "That is 35.6 percent lower, far above the 2 percent bar. So the multiple is not constant: busier MODIS months have a smaller VIIRS to MODIS ratio, consistent with VIIRS keeping more of the small fires that dominate quiet months."
+    }
+   ]
+  },
+  {
+   "type": "figure",
+   "file": "figures/F19_a.svg",
+   "title": "Straight or curved",
+   "beats": [
+    {
+     "say": "On the left, all overlap months on log-log axes. The ratio model is a line with slope one; the power law has the fitted, flatter slope."
+    },
+    {
+     "say": "On the right is the total held-out Poisson deviance, leaving one year out at a time. The power law's bar is clearly shorter."
+    }
+   ]
+  },
+  {
+   "type": "site",
+   "page": "/formulas/F19",
+   "beats": [
+    {
+     "target": ".fp-formula",
+     "label": "The formula, numbered F19",
+     "say": "On the FIREWORK website, this method lives in the Formulas section. Its page shows the equation, numbered as formula 19, with every symbol explained."
+    },
+    {
+     "target": ".fl-cards",
+     "label": "Where it comes from · why · how · example",
+     "say": "Below it, four short cards explain where the method comes from, why FIREWORK needs it, how it works step by step, and a worked example. The full derivation is in the PDF on the same page."
+    }
+   ]
+  },
+  {
+   "type": "recap",
+   "points": [
+    "Ratio: slope 1 on log MODIS; power law: slope b free",
+    "Chosen by held-out deviance, not by in-sample fit",
+    "Power law 35.6% better (b = 0.73); adoption is gated"
+   ],
+   "next": "F20 · Detection-probability curve (FRP₅₀)",
+   "beats": [
+    {
+     "say": "So, to remember: let the relation bend, and judge it on years the model never saw. In Punjab and Haryana the curve wins clearly, and that result is reported honestly, while the calendar waits for the gates."
+    },
+    {
+     "say": "Next, formula twenty: the detection-probability curve."
+    }
+   ]
+  }
+ ]
+}

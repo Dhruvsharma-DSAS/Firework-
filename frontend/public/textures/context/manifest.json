@@ -1,0 +1,13 @@
+{
+ "landcover": {
+  "file": "landcover_2021.webp",
+  "period": "2021",
+  "source": "ESA WorldCover v200 (10 m), Google Earth Engine"
+ },
+ "clearsky": {
+  "file": "clearsky_2026-08.webp",
+  "period": "2026-08",
+  "source": "MODIS MOD14A1 valid-observation days (1 km, Terra), Google Earth Engine",
+  "max_days": 31
+ }
+}

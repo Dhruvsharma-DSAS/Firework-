@@ -1,0 +1,108 @@
+{
+  "id": "F05",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/zoom_viirs_2020-11-04.webp",
+      "imageLabel": "VIIRS 375 m fire pixels · zoom · 4 Nov 2020",
+      "question": "Many dots, or one fire?",
+      "beats": [
+        {
+          "say": "Picture two cameras photographing the same bonfire. One has a fine sensor and shows forty little bright pixels. The other is coarse and shows two big ones. If you count pixels, you are measuring the cameras, not the fire."
+        },
+        {
+          "say": "VIIRS and MODIS are exactly like that. So FIREWORK asks both sensors one fair yes-or-no question. Formula five, the fire cell-day indicator, asks: was any fire detected in this cell on this local day?"
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "c_{s,g,d,\\delta}",
+          "say": "On the left is the flag c. Its little labels say which sensor platform, which grid cell, which local day, and whether it was a day pass or a night pass. Keeping the platform and the pass in the label lets FIREWORK later compare day and night separately."
+        },
+        {
+          "tex": " \\;=\\; \\mathbb{1}\\!",
+          "say": "The bold one is an indicator. It can only be one or zero: yes or no."
+        },
+        {
+          "tex": "\\left[\\,n_{s,g,d,\\delta}\\ \\ge 1\\,\\right]",
+          "say": "Inside the brackets is the question. n is the number of detections in that cell on that day. If n is at least one, the flag is one. Three detections or eighty, it is still one."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · one cell near Ludhiana, 5 Nov 2023",
+      "steps": [
+        {
+          "label": "S-NPP detections",
+          "value": 37,
+          "unit": "detections",
+          "say": "On the fifth of November 2023, one cell near Ludhiana held 37 detections from the S-NPP satellite, all in the daytime. The finer VIIRS pixels split the burning fields into many small dots."
+        },
+        {
+          "label": "NOAA-20 detections",
+          "value": 44,
+          "unit": "detections",
+          "say": "The NOAA-20 satellite saw 44 detections in the same cell, and Aqua, with its bigger pixels, saw 9."
+        },
+        {
+          "label": "Cell-days per platform",
+          "value": 1,
+          "unit": "cell-day each",
+          "result": true,
+          "say": "But each platform contributes exactly one cell-day. Thirty-seven, forty-four and nine all become one. Across the archive, an S-NPP cell-day holds 3.7 detections on average, and a MODIS cell-day 2.0. The flag removes that pixel-size difference."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F05_a.svg",
+      "title": "Many dots, one flag",
+      "beats": [
+        {
+          "say": "On the left is that one cell on the fifth of November 2023, with its VIIRS and MODIS detections. However many dots there are, each platform gives a single cell-day."
+        },
+        {
+          "say": "On the right is how many detections make up one cell-day, for MODIS and for S-NPP, since January 2012. VIIRS cell-days are built from many more dots. The busiest one collapsed 84 detections into a single flag."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/calendar/b_punjab_haryana",
+      "beats": [
+        {
+          "target": "[data-film=cal-grid]",
+          "label": "Month × year grid of cell-days",
+          "say": "On the FIREWORK website, open the Calendar. Every square in this grid is built from these yes-or-no flags, added up over a month. Remember, a cell-day is a day with a detected fire in a box. It is not a fire count, and it is not burned area."
+        },
+        {
+          "target": "[data-film=cal-inspector]",
+          "label": "Month inspector",
+          "say": "Click a month, and the inspector tells you how many fire cell-days it holds."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "A cell-day is 1 if any fire was detected in the cell that local day",
+        "Many detections from one platform still make one cell-day",
+        "Cell-days compare sensors fairly; they are not burned area"
+      ],
+      "next": "F06 · Monthly cell-day count",
+      "beats": [
+        {
+          "say": "So, to remember: ask each sensor the same yes-or-no question, for the same box on the same day. That way the difference between MODIS and VIIRS is about what they can detect, not how big their pixels are. Several visits by the same satellite in one day are one chance to look, not several fires."
+        },
+        {
+          "say": "Next, formula six: monthly cell-day count."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+ "name": "Harmoniser v2 (correction to k)",
+ "generated_at_utc": "2026-11-15T06:57:22.659006+00:00",
+ "data": "Colab export/calendar_region_monthly.csv, 2012-2025 overlap, world + countries + boxes, MODIS >= 10 cell-days",
+ "rows": 19978,
+ "features": [
+  "m_sin",
+  "m_cos",
+  "lat_mean",
+  "night_share",
+  "terra_share",
+  "frp_per_hotspot",
+  "hotspots_per_cd",
+  "log_m",
+  "log_k"
+ ],
+ "baseline": "exchange rate k = ratio of totals per region and month, learned without the held-out year",
+ "rule": "READY only if the model beats k (mean absolute error) in every held-out year",
+ "leave_one_year_out": [
+  {
+   "mae_k": 577.1759169663421,
+   "mae_model": 501.9451959029082,
+   "medae_log_k": 0.14574220043863245,
+   "medae_log_model": 0.1348227581194146,
+   "n": 1337,
+   "year": 2012,
+   "model_wins": true
+  },
+  {
+   "mae_k": 336.24341248703684,
+   "mae_model": 321.79066480732,
+   "medae_log_k": 0.1221576481919523,
+   "medae_log_model": 0.1168024976129691,
+   "n": 1466,
+   "year": 2013,
+   "model_wins": true
+  },
+  {
+   "mae_k": 357.39821458376747,
+   "mae_model": 312.79204450100235,
+   "medae_log_k": 0.12342514054196492,
+   "medae_log_model": 0.11393313995498386,
+   "n": 1469,
+   "year": 2014,
+   "model_wins": true
+  },
+  {
+   "mae_k": 399.7692992680531,
+   "mae_model": 335.98817332078573,
+   "medae_log_k": 0.1257693872890334,
+   "medae_log_model": 0.12175371047614086,
+   "n": 1503,
+   "year": 2015,
+   "model_wins": true
+  },
+  {
+   "mae_k": 403.9351570955943,
+   "mae_model": 392.54841392575435,
+   "medae_log_k": 0.13690668151986382,
+   "medae_log_model": 0.1279980235376674,
+   "n": 1465,
+   "year": 2016,
+   "model_wins": true
+  },
+  {
+   "mae_k": 403.1394714838279,
+   "mae_model": 337.57282284449616,
+   "medae_log_k": 0.12943209287358193,
+   "medae_log_model": 0.11920922643781706,
+   "n": 1471,
+   "year": 2017,
+   "model_wins": true
+  },
+  {
+   "mae_k": 417.45467687373196,
+   "mae_model": 393.9487463080554,
+   "medae_log_k": 0.14124819481619738,
+   "medae_log_model": 0.12602856221405592,
+   "n": 1375,
+   "year": 2018,
+   "model_wins": true
+  },
+  {
+   "mae_k": 356.39531498795577,
+   "mae_model": 355.8767838834234,
+   "medae_log_k": 0.11807445340578668,
+   "medae_log_model": 0.11490403362670007,
+   "n": 1459,
+   "year": 2019,
+   "model_wins": true
+  },
+  {
+   "mae_k": 576.0668522926719,
+   "mae_model": 532.1993292697927,
+   "medae_log_k": 0.13603673066393931,
+   "medae_log_model": 0.1258741162756294,
+   "n": 1413,
+   "year": 2020,
+   "model_wins": true
+  },
+  {
+   "mae_k": 390.9256362754407,
+   "mae_model": 365.336160836143,
+   "medae_log_k": 0.13242841021826676,
+   "medae_log_model": 0.11005434206315681,
+   "n": 1431,
+   "year": 2021,
+   "model_wins": true
+  },
+  {
+   "mae_k": 776.1717429172998,
+   "mae_model": 788.0342190358327,
+   "medae_log_k": 0.1766800946466151,
+   "medae_log_model": 0.15850931757183728,
+   "n": 1376,
+   "year": 2022,
+   "model_wins": false
+  },
+  {
+   "mae_k": 446.43312423029204,
+   "mae_model": 419.3242822286162,
+   "medae_log_k": 0.13600424521138604,
+   "medae_log_model": 0.12081584076963336,
+   "n": 1390,
+   "year": 2023,
+   "model_wins": true
+  },
+  {
+   "mae_k": 861.7057226849187,
+   "mae_model": 845.7824446686617,
+   "medae_log_k": 0.17252246156904638,
+   "medae_log_model": 0.16825838600375087,
+   "n": 1414,
+   "year": 2024,
+   "model_wins": true
+  },
+  {
+   "mae_k": 546.4063782035921,
+   "mae_model": 521.7448033200358,
+   "medae_log_k": 0.1696206848861626,
+   "medae_log_model": 0.1564259061464034,
+   "n": 1409,
+   "year": 2025,
+   "model_wins": true
+  }
+ ],
+ "years_won": 13,
+ "leave_one_continent_out": [
+  {
+   "mae_k": 1066.8254765051763,
+   "mae_model": 992.4649479602712,
+   "medae_log_k": 0.32784467950792684,
+   "medae_log_model": 0.30126940533427865,
+   "n": 6361,
+   "continent": "Africa",
+   "model_wins": true
+  },
+  {
+   "mae_k": 566.8115663334178,
+   "mae_model": 537.9590540345658,
+   "medae_log_k": 0.39683643005314956,
+   "medae_log_model": 0.3676755692429732,
+   "n": 5545,
+   "continent": "Asia",
+   "model_wins": true
+  },
+  {
+   "mae_k": 359.33831538189736,
+   "mae_model": 316.9919844568139,
+   "medae_log_k": 0.2693222218202586,
+   "medae_log_model": 0.2450896975121095,
+   "n": 2561,
+   "continent": "Europe",
+   "model_wins": true
+  },
+  {
+   "mae_k": 453.06854550480404,
+   "mae_model": 401.18913813207206,
+   "medae_log_k": 0.28748692478359317,
+   "medae_log_model": 0.2474113144414493,
+   "n": 2135,
+   "continent": "North America",
+   "model_wins": true
+  },
+  {
+   "mae_k": 1205.1692213803467,
+   "mae_model": 792.8186778144711,
+   "medae_log_k": 0.4014247972004635,
+   "medae_log_model": 0.2876381586297116,
+   "n": 774,
+   "continent": "Oceania",
+   "model_wins": true
+  },
+  {
+   "mae_k": 977.5217406176299,
+   "mae_model": 918.8528611648244,
+   "medae_log_k": 0.24356345086475947,
+   "medae_log_model": 0.2232579812278765,
+   "n": 2206,
+   "continent": "South America",
+   "model_wins": true
+  }
+ ],
+ "continents_won": 6,
+ "ready": false,
+ "verdict": "NOT READY - the calendar keeps using k"
+}

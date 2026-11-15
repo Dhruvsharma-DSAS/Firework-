@@ -1,0 +1,59 @@
+{
+  "id": "F20",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/zoom_modis_2020-11-04.webp",
+      "imageLabel": "MODIS 1 km fire pixels · zoom · 4 Nov 2020",
+      "question": "Why does VIIRS see more fires?",
+      "beats": [
+        { "say": "Imagine trying to spot a match being struck at the far end of a football stadium. A bonfire you would see easily. A match, probably not. Whether you notice a flame depends on how strong it is." },
+        { "say": "MODIS misses small fires in the same way. Formula twenty, the detection-probability curve, gives the chance that MODIS detects a fire of a given strength, and the strength at which it catches half of them, called FRP fifty." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\operatorname{logit}\\,P\\big(D_M = 1 \\mid F_V\\big)", "say": "On the left is the chance that MODIS detects a fire, given F V, the strength of that same fire as measured by VIIRS. Strength here is fire radiative power, in megawatts. The logit stretches a probability onto a line that can run from minus to plus infinity." },
+        { "tex": " \\;=\\; \\beta_0 + \\beta_1 \\ln F_V", "say": "That stretched chance is a straight line in the log of strength. So each doubling of a fire's power adds the same amount to the odds of being seen." },
+        { "tex": ",\\qquad \\mathrm{FRP}_{50} = e^{-\\beta_0/\\beta_1}", "say": "Set the chance to one half, and solve. The answer, FRP fifty, is the fire strength that MODIS detects half of the time." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "Matched fires · Aqua against S-NPP",
+      "steps": [
+        { "label": "Intercept β₀", "value": -2.52, "unit": "log-odds", "say": "FIREWORK took 300,766 S-NPP daytime fires in Punjab and Haryana, from 2012 to 2025, on days when Aqua passed within 15 minutes. Aqua detected only 22 percent of them. The fitted intercept is minus 2.52." },
+        { "label": "Slope β₁", "value": 0.71, "unit": "per ln MW", "say": "The fitted slope is 0.71." },
+        { "label": "FRP₅₀", "value": 35.6, "unit": "MW", "result": true, "say": "So FRP fifty is e to the power 2.52 over 0.71, which is 35.6 megawatts. Now the key fact: the median VIIRS fire has only 5.3 megawatts. Most crop-residue fires are far too weak for MODIS's one-kilometre pixel to register reliably." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F20_a.svg",
+      "title": "MODIS misses weak fires",
+      "beats": [
+        { "say": "On the left, the black points are the share of S-NPP fires also seen by Aqua, binned by strength. The red line is the logistic fit, and the dashed line marks FRP fifty." },
+        { "say": "On the right is the spread of VIIRS fire strength for the matched fires. Most of them sit well to the left of FRP fifty, where MODIS usually misses." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sensors",
+      "beats": [
+        { "target": ".sl-switch", "label": "MODIS or VIIRS", "say": "On the FIREWORK website, open Sensor Lab and switch between MODIS and VIIRS over the same farms. The extra VIIRS dots are mostly weak fires that MODIS cannot register." },
+        { "target": ".sl-side", "label": "Exchange-rate panel", "say": "This is the mechanism behind the exchange rate in the side panel. Where fires are small, MODIS misses more and k is larger. That is also why k learned in one region may not transfer to another, and why FIREWORK fits it per region and month." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["logit P(MODIS sees it) = β₀ + β₁ · ln FRP", "FRP₅₀ = 35.6 MW; median VIIRS fire = 5.3 MW", "Small fires explain why k is above 1"],
+      "next": "F21 · Log transform of FRP",
+      "beats": [
+        { "say": "So, to remember: match fires seen by both satellites within minutes, and fit how detection rises with strength. MODIS catches half the fires only at 35.6 megawatts, and most farm fires are far weaker." },
+        { "say": "Next, formula twenty-one: the log transform of FRP." }
+      ]
+    }
+  ]
+}

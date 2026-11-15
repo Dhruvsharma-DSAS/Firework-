@@ -1,0 +1,59 @@
+{
+  "id": "F21",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/california_2020-08-20.webp",
+      "imageLabel": "California wildfires · 20 Aug 2020",
+      "question": "What happens when one giant joins the average?",
+      "beats": [
+        { "say": "Imagine a room of ten people, and then a billionaire walks in. The average wealth in the room shoots up, but nobody else got richer. Averages of very uneven numbers are ruled by a few giants." },
+        { "say": "Fire radiative power, or FRP, is like that. It runs from under 1 megawatt for a small field to over 1,000 megawatts for an industrial flare. Formula twenty-one, the log transform of FRP, turns that long tail into a shape that charts and models can handle." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "y \\;=\\;", "say": "On the left is y, the transformed fire strength." },
+        { "tex": " \\ln\\!\\Big(1", "say": "We take the natural logarithm. A logarithm squeezes big numbers together: going from ten to a hundred is one step, and from a hundred to a thousand is just one more step of the same size. Inside, we start with one." },
+        { "tex": " + \\frac{\\mathrm{FRP}}{1\\ \\mathrm{MW}}\\Big)", "say": "And we add the FRP, measured in megawatts. The added one means a fire of zero megawatts gives zero, instead of minus infinity. Missing or negative FRP stays unknown, not zero." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "Squeezing the long tail",
+      "steps": [
+        { "label": "A strong detection, raw FRP", "value": 1000, "unit": "MW", "say": "Take a very strong detection of 1,000 megawatts. On a raw scale it would dominate every mean and every colour scale, and statistical tests that assume rough symmetry would mislead." },
+        { "label": "After the log", "value": 6.909, "unit": "log units", "say": "After the transform, it becomes the log of 1001, which is 6.909. A 5 megawatt fire becomes the log of 6, which is 1.79. The giant is now only a few steps away." },
+        { "label": "Skewness after the log, S-NPP", "value": 0.7, "unit": "skewness", "result": true, "say": "For S-NPP in Punjab and Haryana, the skewness of FRP, a measure of how lopsided the values are, falls from 5.0 to 0.7. The median S-NPP fire is 4.9 megawatts, while the median MODIS fire is 12.8." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F21_a.svg",
+      "title": "A long tail made readable",
+      "beats": [
+        { "say": "On the left is the raw FRP of all detections, clipped at 200 megawatts. Almost everything is piled up near zero, with a long thin tail to the right." },
+        { "say": "On the right, the same values after the log transform. The pile spreads out into a nearly symmetric hill, which is much easier to read and to model." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/formulas/F21",
+      "beats": [
+        { "target": ".fp-formula", "label": "The log transform", "say": "On the FIREWORK website, the formula page for formula twenty-one shows the transform. One rule matters here: FRP is compared only within one sensor." },
+        { "target": ".fp-keys", "label": "Key numbers", "say": "The key numbers show why. MODIS and VIIRS measure FRP with different pixel sizes and bands, so the median VIIRS value of 4.9 megawatts and the median MODIS value of 12.8 cannot be compared directly. That alignment is the job of formula twenty-two." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["y = ln(1 + FRP in MW)", "Skewness of S-NPP FRP falls from 5.0 to 0.7", "Compare FRP only within one sensor"],
+      "next": "F22 · Quantile mapping (FRP only)",
+      "beats": [
+        { "say": "So, to remember: add one, take the log, and the giants stop ruling the averages. The transform is used for the detection curve, for source attribution and for the FRP views, always within one sensor." },
+        { "say": "Next, formula twenty-two: quantile mapping, for FRP only." }
+      ]
+    }
+  ]
+}

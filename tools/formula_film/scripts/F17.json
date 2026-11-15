@@ -1,0 +1,57 @@
+{
+  "id": "F17",
+  "scenes": [
+    {
+      "type": "hook",
+      "question": "Should a new player's first two games decide their rating?",
+      "beats": [
+        { "say": "Imagine a new basketball player who scores in both of their first two shots. Are they a perfect shooter? Probably not. A sensible coach starts from the league average, and moves towards the player's own record as the games pile up." },
+        { "say": "FIREWORK faces the same problem with small regions. A few noisy months can give an extreme exchange rate. Formula seventeen, shrink the local factor toward the global one, pulls that value towards a global k by a fixed amount of prior years." }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        { "tex": "\\tilde k", "say": "On the left, k with a wavy line on top. That is the shrunk exchange rate, the value we will actually use for a region." },
+        { "tex": " \\;=\\;", "say": "It equals a weighted average. Think of a tug of war between two values: the region's own evidence, and the global value." },
+        { "tex": " \\frac{n\\,k_{\\mathrm{loc}} + n_0\\,k_{\\mathrm{glob}}}{n + n_0}", "say": "On top, the local k is weighted by n, the number of years of local data. The global k is weighted by n zero, a fixed number of pretend prior years. Underneath, we divide by the total weight. Few local years, and the global value wins. Many local years, and the region keeps its own." }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "A worked example · September, with n₀ = 4",
+      "steps": [
+        { "label": "Local k, September", "value": 6.11, "unit": "VIIRS per MODIS", "say": "Take September in Punjab and Haryana. Its own exchange rate is 6.11, far above the burning-season months." },
+        { "label": "Global k, all months", "value": 2.56, "unit": "VIIRS per MODIS", "say": "The all-month value is 2.56. We give it a weight of 4 prior years, while September has 14 years of its own." },
+        { "label": "Shrunk k, September", "value": 5.37, "unit": "VIIRS per MODIS", "result": true, "say": "The weighted average moves September from 6.11 to 5.37. With 14 years, a month keeps 78 percent of its own value. A region with only 2 years would keep just 33 percent. November barely moves, from 2.10 to 2.20." }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F17_a.svg",
+      "title": "A fixed pull toward the centre",
+      "beats": [
+        { "say": "For each calendar month, the black mark is the local exchange rate, and the red mark is the value after shrinking towards the global k, with n zero equal to 4." },
+        { "say": "Months far from the centre, like September and August, are pulled the most. August moves up from 1.49 to 1.72. Months close to the centre hardly move at all." }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/sensors",
+      "beats": [
+        { "target": ".sl-side", "label": "Exchange-rate panel", "say": "On the FIREWORK website, open Sensor Lab. The exchange-rate panel shows Punjab and Haryana's own k, which rests on many years of data and needs little help." },
+        { "target": ".sl-globe", "label": "Any region on Earth", "say": "The shrink rule matters for the regions still to come. Here, the shrinkage is only an illustration: calendar months differ for real physical reasons, so in use the targets would be other regions in the same calendar month. It is the simple fallback when there are fewer than three regions to pool." }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": ["k̃ = (n · local + n₀ · global) ÷ (n + n₀)", "With 14 years and n₀ = 4, a month keeps 78% of its own value", "Simple, transparent fallback for small samples"],
+      "next": "F18 · Empirical Bayes partial pooling of log k",
+      "beats": [
+        { "say": "So, to remember: treat the global value as a few pretend years of data, and take a weighted average. Small samples borrow strength, while large samples keep their own value." },
+        { "say": "Next, formula eighteen: empirical Bayes partial pooling of log k." }
+      ]
+    }
+  ]
+}

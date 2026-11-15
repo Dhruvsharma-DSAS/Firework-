@@ -1,0 +1,221 @@
+{
+  "id": "F33",
+  "scenes": [
+    {
+      "type": "hook",
+      "image": "/learn/sat/punjab_modis_2011-11-03.webp",
+      "imageLabel": "MODIS · Punjab and Haryana · 3 Nov 2011",
+      "question": "Where is the biggest jump in the record?",
+      "beats": [
+        {
+          "say": "Imagine a long staircase in the dark. You walk along it with your hand on the wall, feeling for the one place where the floor suddenly steps up. If there is one big step, you will find it. If the floor is smooth, you will find nothing."
+        },
+        {
+          "say": "Formula thirty-three, the Pettitt change-point test, scans every possible split year for the single most likely jump. On the raw stitched record it should find the 2012 instrument seam. On the harmonised record, it should not."
+        }
+      ]
+    },
+    {
+      "type": "series",
+      "title": "The seam Pettitt should find",
+      "subtitle": "October + November fire cell-days · Punjab and Haryana · FIREWORK archive calendar",
+      "split": 2012,
+      "leftLabel": "MODIS counting",
+      "rightLabel": "VIIRS counting",
+      "data": [
+        [
+          2002,
+          5078
+        ],
+        [
+          2003,
+          5757
+        ],
+        [
+          2004,
+          4728
+        ],
+        [
+          2005,
+          8257
+        ],
+        [
+          2006,
+          5481
+        ],
+        [
+          2007,
+          7303
+        ],
+        [
+          2008,
+          7073
+        ],
+        [
+          2009,
+          7132
+        ],
+        [
+          2010,
+          6859
+        ],
+        [
+          2011,
+          7143
+        ],
+        [
+          2012,
+          17528
+        ],
+        [
+          2013,
+          15967
+        ],
+        [
+          2014,
+          17637
+        ],
+        [
+          2015,
+          16629
+        ],
+        [
+          2016,
+          19523
+        ],
+        [
+          2017,
+          17003
+        ],
+        [
+          2018,
+          16273
+        ],
+        [
+          2019,
+          11885
+        ],
+        [
+          2020,
+          16945
+        ],
+        [
+          2021,
+          18134
+        ],
+        [
+          2022,
+          13420
+        ],
+        [
+          2023,
+          11457
+        ],
+        [
+          2024,
+          7862
+        ],
+        [
+          2025,
+          5656
+        ]
+      ],
+      "beats": [
+        {
+          "say": "Here is the raw stitched record: MODIS before 2012, VIIRS from 2012. The step is impossible to miss."
+        },
+        {
+          "say": "That step is the instrument, not the fields. A good harmonisation should make it disappear, and Pettitt gives us a direct before-and-after check."
+        }
+      ]
+    },
+    {
+      "type": "build",
+      "title": "Building the formula",
+      "parts": [
+        {
+          "tex": "U_t = \\sum_{i\\le t}\\ \\sum_{j>t}",
+          "say": "For a candidate split at year t, U t compares every year before the split, i, with every year after it, j."
+        },
+        {
+          "tex": "\\operatorname{sgn}(x_j - x_i)",
+          "say": "Each comparison gives plus one if the later year is higher, minus one if lower. If everything after the split is higher, U t becomes very large."
+        },
+        {
+          "tex": ",\\qquad K = \\max_t |U_t|",
+          "say": "K is the biggest size of U t over all possible splits. The year where it peaks is the most likely change point."
+        },
+        {
+          "tex": ",\\qquad p \\approx 2\\exp\\!\\Big(\\frac{-6K^2}{n^3+n^2}\\Big)",
+          "say": "And this turns K into an approximate p-value, given n years. A big K means a small p: a jump that chance alone is unlikely to make."
+        }
+      ]
+    },
+    {
+      "type": "example",
+      "title": "Raw versus harmonised · 2001–2025",
+      "steps": [
+        {
+          "label": "Raw stitched · K",
+          "value": 122,
+          "unit": "change after 2011",
+          "say": "On the raw stitched series, K is 122, with the change after 2011 and a p-value of 0.0082. That is the instrument seam at 2012, found exactly."
+        },
+        {
+          "label": "Harmonised · K",
+          "value": 76,
+          "unit": "most likely split after 2017",
+          "say": "On the harmonised series, K drops to 76, and the most likely split moves to after 2017."
+        },
+        {
+          "label": "Harmonised · p-value",
+          "value": 0.24,
+          "unit": "not significant",
+          "result": true,
+          "say": "Its p-value is 0.24, not significant. The seam is gone. The weak split that remains marks the start of the recent decline. But a non-significant result is necessary, not sufficient, because the test has low power with 25 points."
+        }
+      ]
+    },
+    {
+      "type": "figure",
+      "file": "figures/F33_a.svg",
+      "title": "Before and after harmonisation",
+      "beats": [
+        {
+          "say": "This figure shows the Pettitt statistic U t for every split year. The black line is the raw stitched series, and it peaks sharply at the 2012 seam."
+        },
+        {
+          "say": "The violet line is the harmonised series. Its peak is much lower, and no longer at the instrument change."
+        }
+      ]
+    },
+    {
+      "type": "site",
+      "page": "/validation",
+      "beats": [
+        {
+          "target": ".va-board",
+          "label": "Gates summary",
+          "say": "On the FIREWORK website, open the Validation page. Pettitt is one of the checks that the seam is really gone. FIREWORK pairs it with placebo years and the seam ratio of formula thirty-five, because one weak test is not enough."
+        }
+      ]
+    },
+    {
+      "type": "recap",
+      "points": [
+        "Scan every split year; K = largest |U_t|",
+        "Raw: break after 2011, p = 0.0082",
+        "Harmonised: p = 0.24, the seam is gone"
+      ],
+      "next": "F34 · PELT multiple change points",
+      "beats": [
+        {
+          "say": "So, to remember: Pettitt finds the single biggest step. It finds the 2012 seam in the raw record, and does not find it after harmonisation."
+        },
+        {
+          "say": "Next, formula thirty-four: PELT, multiple change points."
+        }
+      ]
+    }
+  ]
+}
