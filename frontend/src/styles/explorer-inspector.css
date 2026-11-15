@@ -1,0 +1,40 @@
+.insp-observation-note {
+  margin: 12px 0;
+  color: var(--dim);
+  font-size: .85rem;
+  line-height: 1.5;
+}
+
+.insp-density-details {
+  margin-top: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+}
+
+.insp-density-details summary {
+  color: var(--text);
+  cursor: pointer;
+  padding-block: 4px;
+}
+
+.srow.insp-satellite-button {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
+.srow.insp-satellite-button:last-child {
+  border-bottom: 0;
+}
+
+.insp-density-details summary:focus-visible,
+.srow.insp-satellite-button:focus-visible {
+  outline: 2px solid var(--viirs);
+  outline-offset: 2px;
+}
