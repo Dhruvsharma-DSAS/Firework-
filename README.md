@@ -148,15 +148,6 @@ An assistant that answers only from the project's own data and says so when it d
 
 </div>
 
-We ran 12 pre-set tests. We publish all of them, including the ones we did not pass:
-
-```
-✅ Passed  7   held-out years · 2012 seam · platform seams · band coverage · agreement · zeros · data provenance
-🟡 Partial 1   persistent heat sources (known-site list still to check)
-❌ Failed  2   transfer to other countries · placebo seams
-⚪ Open    2   water/city masks · source classifier
-```
-
 > Being honest about limits is part of the method. Full details are on the **[Validation page](https://firework-nasa.vercel.app)**.
 
 ---
