@@ -110,7 +110,7 @@ Fires follow the sun. See which hours each satellite watches and which it misses
 <td>
 <h3>✅ Validation</h3>
 <img src="frontend/public/learn/tour/validation.webp" alt="Validation page"><br>
-Every test we ran, with the result — passed or failed — and our research paper.
+Every test behind the numbers, with clear results and our research paper.
 </td>
 </tr>
 <tr>
